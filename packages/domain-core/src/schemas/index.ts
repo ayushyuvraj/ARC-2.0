@@ -241,3 +241,15 @@ export const ImpactAnalysisRequestSchema = z.object({
   resourceType: z.enum(['MODEL', 'TOOL', 'MCP', 'POLICY', 'AGENT', 'WORKFLOW', 'USE_CASE']),
   resourceId: z.string()
 });
+
+export const CreateUseCaseSchema = z.object({
+  applicationId: z.string().default('app_tars'),
+  name: z.string().min(2),
+  description: z.string().default(''),
+  businessPurpose: z.string().default(''),
+  workflowId: z.string().default('wf_tars_recon_v2'),
+  agentIds: z.array(z.string()).default([]),
+  policyIds: z.array(z.string()).default([]),
+  toolIds: z.array(z.string()).default([]),
+  dataClassification: DataClassificationSchema.default('RESTRICTED')
+});

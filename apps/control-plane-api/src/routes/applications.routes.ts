@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '@arc/database';
 import { sendSuccess } from '../middleware/envelope.js';
-import { CreateApplicationSchema } from '@arc/domain-core';
+import { CreateApplicationSchema, CreateUseCaseSchema } from '@arc/domain-core';
 
 export const applicationsRouter = Router();
 
@@ -92,3 +92,46 @@ applicationsRouter.post('/applications', async (req, res, next) => {
     next(error);
   }
 });
+
+// POST /api/v1/applications/:appId/use-cases & /api/v1/use-cases
+const handleCreateUseCase = async (req: any, res: any, next: any) => {
+  try {
+    const validated = CreateUseCaseSchema.parse({
+      ...req.body,
+      applicationId: req.params.appId || req.body.applicationId || 'app_tars'
+    });
+
+    const created = await prisma.useCase.create({
+      data: {
+        applicationId: validated.applicationId,
+        name: validated.name,
+        description: validated.description,
+        businessPurpose: validated.businessPurpose,
+        workflowId: validated.workflowId,
+        agentIdsJson: JSON.stringify(validated.agentIds),
+        policyIdsJson: JSON.stringify(validated.policyIds),
+        toolIdsJson: JSON.stringify(validated.toolIds),
+        dataClassification: validated.dataClassification
+      }
+    });
+
+    // Seed dependency edges for blast radius tracking
+    for (const agentId of validated.agentIds) {
+      await prisma.dependencyEdge.create({
+        data: { sourceType: 'AGENT', sourceId: agentId, targetType: 'USE_CASE', targetId: created.id }
+      }).catch(() => {});
+    }
+    for (const toolId of validated.toolIds) {
+      await prisma.dependencyEdge.create({
+        data: { sourceType: 'TOOL', sourceId: toolId, targetType: 'USE_CASE', targetId: created.id }
+      }).catch(() => {});
+    }
+
+    sendSuccess(res, created, 201);
+  } catch (error) {
+    next(error);
+  }
+};
+
+applicationsRouter.post('/applications/:appId/use-cases', handleCreateUseCase);
+applicationsRouter.post('/use-cases', handleCreateUseCase);
