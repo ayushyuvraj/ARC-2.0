@@ -15,7 +15,7 @@ export function generateWorkflowFromNaturalLanguage(description: string): NLWork
     {
       id: 'node_start',
       type: 'START',
-      name: 'Dataset Ingestion & Schema Validation',
+      name: 'Ingestion & Schema Validation',
       configuration: {},
       inputMapping: {},
       outputMapping: {},
@@ -27,6 +27,39 @@ export function generateWorkflowFromNaturalLanguage(description: string): NLWork
 
   const edges: WorkflowEdge[] = [];
   let prevNodeId = 'node_start';
+
+  // Topic / Document / KPMG Template detection
+  if (lower.includes('topic') || lower.includes('content') || lower.includes('template') || lower.includes('kpmg') || lower.includes('format') || lower.includes('doc') || lower.includes('ppt')) {
+    const topicAgentId = 'node_topic_extractor';
+    nodes.push({
+      id: topicAgentId,
+      type: 'AGENT',
+      name: 'Content Analysis & Topic Extraction Agent',
+      configuration: { agentId: 'agent_matching' },
+      inputMapping: {},
+      outputMapping: {},
+      dependencies: [prevNodeId],
+      enabled: true,
+      version: '1.0.0'
+    });
+    edges.push({ id: `e_${prevNodeId}_${topicAgentId}`, sourceNodeId: prevNodeId, targetNodeId: topicAgentId });
+    prevNodeId = topicAgentId;
+
+    const templateEngineId = 'node_kpmg_template_engine';
+    nodes.push({
+      id: templateEngineId,
+      type: 'DETERMINISTIC_TASK',
+      name: 'KPMG Template & Layout Formatter',
+      configuration: { componentId: 'tool_report_compiler' },
+      inputMapping: {},
+      outputMapping: {},
+      dependencies: [prevNodeId],
+      enabled: true,
+      version: '1.0.0'
+    });
+    edges.push({ id: `e_${prevNodeId}_${templateEngineId}`, sourceNodeId: prevNodeId, targetNodeId: templateEngineId });
+    prevNodeId = templateEngineId;
+  }
 
   // Deterministic step detection
   if (lower.includes('deterministic') || lower.includes('match') || lower.includes('reconcil') || lower.includes('filter')) {
@@ -83,13 +116,13 @@ export function generateWorkflowFromNaturalLanguage(description: string): NLWork
   }
 
   // Human approval step detection
-  if (lower.includes('human') || lower.includes('approval') || lower.includes('review') || lower.includes('sign-off')) {
+  if (lower.includes('human') || lower.includes('approval') || lower.includes('review') || lower.includes('sign-off') || lower.includes('kpmg')) {
     const humanId = 'node_human_approval';
     nodes.push({
       id: humanId,
       type: 'HUMAN_APPROVAL',
-      name: 'Ambiguity Review Panel (A2UI)',
-      configuration: { a2uiSurfaceKey: 'ambiguity_review', approvalRole: 'TAX_AUDITOR' },
+      name: 'Executive Review & Sign-Off Panel (A2UI)',
+      configuration: { a2uiSurfaceKey: 'ambiguity_review', approvalRole: 'AUDITOR' },
       inputMapping: {},
       outputMapping: {},
       dependencies: [prevNodeId],
@@ -105,7 +138,7 @@ export function generateWorkflowFromNaturalLanguage(description: string): NLWork
   nodes.push({
     id: compilerId,
     type: 'DETERMINISTIC_TASK',
-    name: 'Compile Final Audit Deliverable',
+    name: 'Compile Final Formatted Deliverable',
     configuration: { componentId: 'tool_report_compiler' },
     inputMapping: {},
     outputMapping: {},
@@ -121,7 +154,7 @@ export function generateWorkflowFromNaturalLanguage(description: string): NLWork
   nodes.push({
     id: endId,
     type: 'END',
-    name: 'Workflow Completed & Sealed',
+    name: 'Workflow Finalized & Sealed',
     configuration: {},
     inputMapping: {},
     outputMapping: {},
@@ -136,6 +169,6 @@ export function generateWorkflowFromNaturalLanguage(description: string): NLWork
     description,
     nodes,
     edges,
-    summary: `Generated pipeline with ${nodes.length} nodes including deterministic matching, multi-agent reasoning, policy validation, and human sign-off.`
+    summary: `Synthesized pipeline with ${nodes.length} nodes including content extraction, template formatting, reasoning, and executive sign-off.`
   };
 }

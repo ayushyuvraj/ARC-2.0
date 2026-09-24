@@ -22,12 +22,12 @@ workflowsRouter.get('/workflows/:id', async (req: Request, res: Response, next: 
   }
 });
 
-// POST /api/v1/workflows/generate-from-nl - Natural Language to Workflow Graph Generator
-workflowsRouter.post('/workflows/generate-from-nl', async (req: Request, res: Response, next: NextFunction) => {
+// POST /api/v1/workflows/generate-from-nl & /api/v1/workflows/generate-from-prompt
+const handleNLGeneration = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { description } = req.body;
+    const description = req.body.prompt || req.body.description;
     if (!description || typeof description !== 'string') {
-      return res.status(400).json({ success: false, error: { message: 'Workflow description is required' } });
+      return res.status(400).json({ success: false, error: { message: 'Workflow description or prompt is required' } });
     }
 
     const proposal = generateWorkflowFromNaturalLanguage(description);
@@ -40,7 +40,10 @@ workflowsRouter.post('/workflows/generate-from-nl', async (req: Request, res: Re
   } catch (error) {
     next(error);
   }
-});
+};
+
+workflowsRouter.post('/workflows/generate-from-nl', handleNLGeneration);
+workflowsRouter.post('/workflows/generate-from-prompt', handleNLGeneration);
 
 // POST /api/v1/workflows/:id/validate - Validate graph topology
 workflowsRouter.post('/workflows/:id/validate', async (req: Request, res: Response, next: NextFunction) => {
