@@ -11,6 +11,7 @@ import { governanceRouter } from './routes/governance.routes.js';
 import { evaluationRouter } from './routes/evaluation.routes.js';
 import { a2aRouter } from './routes/a2a.routes.js';
 import { a2uiRouter } from './routes/a2ui.routes.js';
+import { deploymentsRouter } from './routes/deployments.routes.js';
 import { errorHandler } from './middleware/envelope.js';
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/v1', governanceRouter);
 app.use('/api/v1', evaluationRouter);
 app.use('/api/v1', a2aRouter);
 app.use('/api/v1', a2uiRouter);
+app.use('/api/v1', deploymentsRouter);
 
 // Global Error Handler
 app.use(errorHandler);
