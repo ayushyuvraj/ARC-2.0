@@ -8,6 +8,7 @@ import { runsRouter } from './routes/runs.routes.js';
 import { dependenciesRouter } from './routes/dependencies.routes.js';
 import { observabilityRouter } from './routes/observability.routes.js';
 import { governanceRouter } from './routes/governance.routes.js';
+import { evaluationRouter } from './routes/evaluation.routes.js';
 import { errorHandler } from './middleware/envelope.js';
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/api/v1', runsRouter);
 app.use('/api/v1', dependenciesRouter);
 app.use('/api/v1', observabilityRouter);
 app.use('/api/v1', governanceRouter);
+app.use('/api/v1', evaluationRouter);
 
 // Global Error Handler
 app.use(errorHandler);

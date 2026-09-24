@@ -344,3 +344,55 @@ model AuditLog {
   environment      String   @default("DEVELOPMENT")
   timestamp        DateTime @default(now())
 }
+
+model GoldenDataset {
+  id              String          @id @default(cuid())
+  name            String
+  applicationId   String
+  description     String
+  version         String          @default("1.0.0")
+  domain          String          @default("TAX_RECONCILIATION")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  testCases       TestCase[]
+  evaluationRuns  EvaluationRun[]
+}
+
+model TestCase {
+  id                 String         @id @default(cuid())
+  datasetId          String
+  name               String
+  category           String         @default("EDGE_CASE")
+  inputPayloadJson   String         @default("{}")
+  expectedOutputJson String         @default("{}")
+  assertionRulesJson String         @default("[]")
+  dataClassification String         @default("CONFIDENTIAL")
+  createdAt          DateTime       @default(now())
+
+  dataset            GoldenDataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+}
+
+model EvaluationRun {
+  id                    String         @id @default(cuid())
+  datasetId             String
+  variantName           String
+  targetType            String         @default("AGENT")
+  targetId              String
+  modelOrVersion        String
+  accuracyScore         Float          @default(0.0)
+  hallucinationRate     Float          @default(0.0)
+  policyAdherenceScore  Float          @default(0.0)
+  latencyP50Ms          Int            @default(0)
+  latencyP95Ms          Int            @default(0)
+  costPer1kRunsUsd      Float          @default(0.0)
+  totalCases            Int            @default(0)
+  passedCases           Int            @default(0)
+  failedCases           Int            @default(0)
+  resultsJson           String         @default("[]")
+  status                String         @default("COMPLETED")
+  createdAt             DateTime       @default(now())
+
+  dataset               GoldenDataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+}
+

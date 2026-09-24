@@ -4,6 +4,9 @@ export async function seed() {
   console.log('🌱 Starting ARC Platform Seed Engine...');
 
   // Clean existing data for clean baseline
+  await prisma.evaluationRun.deleteMany();
+  await prisma.testCase.deleteMany();
+  await prisma.goldenDataset.deleteMany();
   await prisma.auditLog.deleteMany();
   await prisma.approvalRequest.deleteMany();
   await prisma.dependencyEdge.deleteMany();
@@ -479,6 +482,131 @@ export async function seed() {
     ]
   });
 
+  // 14. Continuous Evaluation (Golden Dataset & Benchmark Runs)
+  const goldenDataset = await prisma.goldenDataset.create({
+    data: {
+      id: 'ds_golden_tars_recon',
+      name: 'TARS Indirect Tax Reconciliation Golden Benchmark',
+      applicationId: appTars.id,
+      description: 'Authoritative ground-truth corpus covering exact matches, rounding variance, syntactic GSTIN defects, and Section 16(2) statutory edge cases.',
+      version: '2.4.0',
+      domain: 'INDIRECT_TAX'
+    }
+  });
+
+  await prisma.testCase.createMany({
+    data: [
+      {
+        id: 'tc_exact_gst_match',
+        datasetId: goldenDataset.id,
+        name: 'Exact Pair Reconciliation (Standard)',
+        category: 'STANDARD_EXACT',
+        inputPayloadJson: JSON.stringify({ gstin: '27AABCU9603R1ZM', invoiceNo: 'INV-2026-0891', taxAmount: 12450.00 }),
+        expectedOutputJson: JSON.stringify({ matchStatus: 'EXACT_MATCH', confidence: 1.0, admissibleITC: 12450.00 }),
+        assertionRulesJson: JSON.stringify([{ field: 'matchStatus', operator: 'EXACT_MATCH', expectedValue: 'EXACT_MATCH' }]),
+        dataClassification: 'CONFIDENTIAL'
+      },
+      {
+        id: 'tc_rounding_tolerance',
+        datasetId: goldenDataset.id,
+        name: 'Minor Rounding Discrepancy ($0.04 Variance)',
+        category: 'NUMERIC_TOLERANCE',
+        inputPayloadJson: JSON.stringify({ gstin: '27AABCU9603R1ZM', invoiceNo: 'INV-2026-0892', taxPR: 8400.00, taxGST: 8400.04 }),
+        expectedOutputJson: JSON.stringify({ matchStatus: 'RECONCILED_WITH_TOLERANCE', variance: 0.04, statutoryClause: 'Section 16(2) Tolerance Exemption' }),
+        assertionRulesJson: JSON.stringify([{ field: 'matchStatus', operator: 'EXACT_MATCH', expectedValue: 'RECONCILED_WITH_TOLERANCE' }]),
+        dataClassification: 'CONFIDENTIAL'
+      },
+      {
+        id: 'tc_vendor_gstin_punctuation',
+        datasetId: goldenDataset.id,
+        name: 'Syntactic Punctuation in Vendor GSTIN',
+        category: 'SYNTACTIC_AMBIGUITY',
+        inputPayloadJson: JSON.stringify({ vendorRawGstin: '27-AABCU-9603R-1ZM', invoiceNo: 'INV-2026-0893', taxAmount: 4320.00 }),
+        expectedOutputJson: JSON.stringify({ normalizedGstin: '27AABCU9603R1ZM', matchStatus: 'RECONCILED_NORMALIZED' }),
+        assertionRulesJson: JSON.stringify([{ field: 'normalizedGstin', operator: 'EXACT_MATCH', expectedValue: '27AABCU9603R1ZM' }]),
+        dataClassification: 'CONFIDENTIAL'
+      },
+      {
+        id: 'tc_statutory_itc_clause42',
+        datasetId: goldenDataset.id,
+        name: 'Late Receipt Statutory ITC Admissibility',
+        category: 'LEGAL_POLICY_REASONING',
+        inputPayloadJson: JSON.stringify({ invoiceDate: '2026-07-15', filingDate: '2026-09-20', taxAmount: 18900.00, statutoryCutoff: '2026-09-30' }),
+        expectedOutputJson: JSON.stringify({ admissibleITC: 18900.00, policyVerdict: 'COMPLIANT_SUBJECT_TO_AUDITOR_SIGNOFF', citation: 'Section 16(2) Timing Clause 4.2' }),
+        assertionRulesJson: JSON.stringify([{ field: 'policyVerdict', operator: 'EXACT_MATCH', expectedValue: 'COMPLIANT_SUBJECT_TO_AUDITOR_SIGNOFF' }]),
+        dataClassification: 'RESTRICTED'
+      },
+      {
+        id: 'tc_fraudulent_gstin_mismatch',
+        datasetId: goldenDataset.id,
+        name: 'Unregistered Vendor GSTIN Flagging',
+        category: 'FRAUD_EXCEPTION',
+        inputPayloadJson: JSON.stringify({ gstin: '99UNKNOWN0000X1Z', invoiceNo: 'INV-2026-9999', taxAmount: 55000.00 }),
+        expectedOutputJson: JSON.stringify({ matchStatus: 'REJECTED_UNREGISTERED_ENTITY', admissibleITC: 0.00, auditFlag: true }),
+        assertionRulesJson: JSON.stringify([{ field: 'matchStatus', operator: 'EXACT_MATCH', expectedValue: 'REJECTED_UNREGISTERED_ENTITY' }]),
+        dataClassification: 'RESTRICTED'
+      }
+    ]
+  });
+
+  // Variant A Run (GPT-4o Baseline)
+  await prisma.evaluationRun.create({
+    data: {
+      id: 'eval_run_variant_a',
+      datasetId: goldenDataset.id,
+      variantName: 'Agent v1.0 (GPT-4o Production Baseline)',
+      targetType: 'AGENT',
+      targetId: 'agent_tax_policy',
+      modelOrVersion: 'gpt-4o',
+      accuracyScore: 96.2,
+      hallucinationRate: 1.2,
+      policyAdherenceScore: 98.0,
+      latencyP50Ms: 1420,
+      latencyP95Ms: 2180,
+      costPer1kRunsUsd: 24.50,
+      totalCases: 5,
+      passedCases: 4,
+      failedCases: 1,
+      resultsJson: JSON.stringify([
+        { testCaseId: 'tc_exact_gst_match', testCaseName: 'Exact Pair Reconciliation', passed: true, latencyMs: 210 },
+        { testCaseId: 'tc_rounding_tolerance', testCaseName: 'Minor Rounding Discrepancy', passed: true, latencyMs: 980 },
+        { testCaseId: 'tc_vendor_gstin_punctuation', testCaseName: 'Syntactic Punctuation in Vendor GSTIN', passed: true, latencyMs: 1120 },
+        { testCaseId: 'tc_statutory_itc_clause42', testCaseName: 'Late Receipt Statutory ITC Admissibility', passed: true, latencyMs: 1840 },
+        { testCaseId: 'tc_fraudulent_gstin_mismatch', testCaseName: 'Unregistered Vendor GSTIN Flagging', passed: false, errorDetails: 'Failed to flag fraud exception with required audit flag', latencyMs: 2180 }
+      ]),
+      status: 'COMPLETED'
+    }
+  });
+
+  // Variant B Run (Claude 3.5 Sonnet / Multi-Agent Harness Candidate)
+  await prisma.evaluationRun.create({
+    data: {
+      id: 'eval_run_variant_b',
+      datasetId: goldenDataset.id,
+      variantName: 'Agent v1.1 (Claude 3.5 Sonnet + ARC Harness v2)',
+      targetType: 'AGENT',
+      targetId: 'agent_tax_policy',
+      modelOrVersion: 'claude-3-5-sonnet',
+      accuracyScore: 98.8,
+      hallucinationRate: 0.2,
+      policyAdherenceScore: 99.8,
+      latencyP50Ms: 980,
+      latencyP95Ms: 1350,
+      costPer1kRunsUsd: 16.20,
+      totalCases: 5,
+      passedCases: 5,
+      failedCases: 0,
+      resultsJson: JSON.stringify([
+        { testCaseId: 'tc_exact_gst_match', testCaseName: 'Exact Pair Reconciliation', passed: true, latencyMs: 190 },
+        { testCaseId: 'tc_rounding_tolerance', testCaseName: 'Minor Rounding Discrepancy', passed: true, latencyMs: 740 },
+        { testCaseId: 'tc_vendor_gstin_punctuation', testCaseName: 'Syntactic Punctuation in Vendor GSTIN', passed: true, latencyMs: 820 },
+        { testCaseId: 'tc_statutory_itc_clause42', testCaseName: 'Late Receipt Statutory ITC Admissibility', passed: true, latencyMs: 1250 },
+        { testCaseId: 'tc_fraudulent_gstin_mismatch', testCaseName: 'Unregistered Vendor GSTIN Flagging', passed: true, latencyMs: 1350 }
+      ]),
+      status: 'COMPLETED'
+    }
+  });
+
   console.log('✅ ARC Platform Seed Complete:');
   console.log('   - 3 Applications (TARS 2.0, Matching Intelligence, PPT Preparation)');
   console.log('   - 4 Foundation Models (GPT-4o, Gemini 1.5 Pro, Claude 3.5, Mock Provider)');
@@ -488,6 +616,8 @@ export async function seed() {
   console.log('   - 9 Dependency Edges for blast-radius calculation');
   console.log('   - 3 Governance Approval Requests (Pending & Approved)');
   console.log('   - 3 Tamper-Evident Audit Log entries');
+  console.log('   - 1 Golden Benchmark Dataset (5 Ground-Truth Test Cases)');
+  console.log('   - 2 Model/Prompt Regression Evaluation Runs (Variant A vs Variant B)');
 }
 
 // Allow direct execution: npx tsx src/seed.ts
@@ -501,3 +631,4 @@ if (process.argv[1]?.endsWith('seed.ts')) {
       await prisma.$disconnect();
     });
 }
+

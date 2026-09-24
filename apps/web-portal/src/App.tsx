@@ -9,6 +9,7 @@ import { WorkflowBuilder } from './features/workflow/WorkflowBuilder.js';
 import { ObservabilityDashboard } from './features/observability/ObservabilityDashboard.js';
 import { RunExplorer } from './features/runs/RunExplorer.js';
 import { GovernanceDashboard } from './features/governance/GovernanceDashboard.js';
+import { EvaluationDashboard } from './features/evaluation/EvaluationDashboard.js';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState('apps');
@@ -78,6 +79,7 @@ export function App() {
           {currentTab === 'runs' && <RunExplorer />}
           {currentTab === 'observability' && <ObservabilityDashboard />}
           {currentTab === 'governance' && <GovernanceDashboard />}
+          {currentTab === 'evaluations' && <EvaluationDashboard />}
         </main>
       </div>
     </div>

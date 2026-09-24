@@ -545,3 +545,86 @@ export interface A2UIComponent {
   id?: string;
   props: Record<string, unknown>;
 }
+
+// Continuous Evaluation Entities
+export interface GoldenDataset {
+  id: string;
+  name: string;
+  applicationId: string;
+  description: string;
+  version: string;
+  domain: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TestCase {
+  id: string;
+  datasetId: string;
+  name: string;
+  category: string;
+  inputPayload: Record<string, unknown>;
+  expectedOutput: Record<string, unknown>;
+  assertionRules: Array<{
+    field: string;
+    operator: 'EXACT_MATCH' | 'NUMERIC_TOLERANCE' | 'CONTAINS' | 'POLICY_CITATION_MATCH';
+    expectedValue: unknown;
+    tolerance?: number;
+  }>;
+  dataClassification: DataClassification;
+  createdAt: string;
+}
+
+export interface EvaluationRun {
+  id: string;
+  datasetId: string;
+  variantName: string;
+  targetType: 'AGENT' | 'WORKFLOW' | 'PROMPT';
+  targetId: string;
+  modelOrVersion: string;
+  accuracyScore: number;
+  hallucinationRate: number;
+  policyAdherenceScore: number;
+  latencyP50Ms: number;
+  latencyP95Ms: number;
+  costPer1kRunsUsd: number;
+  totalCases: number;
+  passedCases: number;
+  failedCases: number;
+  results: Array<{
+    testCaseId: string;
+    testCaseName: string;
+    passed: boolean;
+    actualOutput: Record<string, unknown>;
+    errorDetails?: string;
+    latencyMs: number;
+  }>;
+  status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  createdAt: string;
+}
+
+export interface RegressionComparison {
+  experimentId: string;
+  datasetName: string;
+  variantA: {
+    name: string;
+    model: string;
+    accuracy: number;
+    hallucinationRate: number;
+    policyAdherence: number;
+    avgLatencyMs: number;
+    costPer1kRuns: number;
+  };
+  variantB: {
+    name: string;
+    model: string;
+    accuracy: number;
+    hallucinationRate: number;
+    policyAdherence: number;
+    avgLatencyMs: number;
+    costPer1kRuns: number;
+  };
+  recommendation: 'PROCEED_WITH_VARIANT_B' | 'RETAIN_VARIANT_A' | 'INCONCLUSIVE';
+  rationale: string;
+}
+
