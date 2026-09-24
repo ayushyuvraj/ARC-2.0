@@ -5,6 +5,7 @@ import { AppCatalog } from './features/portal/AppCatalog.js';
 import { AppDetail } from './features/portal/AppDetail.js';
 import { RegistryViewer } from './features/registries/RegistryViewer.js';
 import { ImpactViewer } from './features/dependencies/ImpactViewer.js';
+import { WorkflowBuilder } from './features/workflow/WorkflowBuilder.js';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState('apps');
@@ -70,20 +71,7 @@ export function App() {
             <RegistryViewer registryType={currentTab as any} />
           )}
           {currentTab === 'dependencies' && <ImpactViewer />}
-          {currentTab === 'workflows' && (
-            <div className="p-8 max-w-7xl mx-auto space-y-4">
-              <h1 className="text-xl font-bold text-white">Workflows Registry (DAG & Cycles)</h1>
-              <p className="text-xs text-gray-400">
-                Visual Workflow Graph Composer is prepared for Phase 3 (@xyflow/react canvas).
-              </p>
-              <div className="p-6 rounded-xl border border-arc-border bg-arc-surface text-xs space-y-2">
-                <span className="font-semibold text-blue-400">Active Workflow: wf_tars_recon_v2</span>
-                <p className="text-gray-300">
-                  Nodes: Dataset Ingestion (START) → Exact Hash Matcher (DETERMINISTIC) → Matching Agent (AZURE) → Tax Policy Agent (VERTEX A2A) → Ambiguity Review Panel (A2UI HUMAN) → Audit Report Compiler (DETERMINISTIC) → Finalized (END).
-                </p>
-              </div>
-            </div>
-          )}
+          {currentTab === 'workflows' && <WorkflowBuilder />}
           {currentTab === 'runs' && (
             <div className="p-8 max-w-7xl mx-auto space-y-4">
               <h1 className="text-xl font-bold text-white">Active Runs & Execution Spans</h1>

@@ -11,6 +11,7 @@
   "dependencies": {
     "@arc/database": "*",
     "@arc/domain-core": "*",
+    "@arc/workflow-engine": "*",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "zod": "^3.23.8"

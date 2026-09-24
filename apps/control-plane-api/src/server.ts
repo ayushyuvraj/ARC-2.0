@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { healthRouter } from './routes/health.routes.js';
 import { applicationsRouter } from './routes/applications.routes.js';
+import { workflowsRouter } from './routes/workflows.routes.js';
 import { registriesRouter } from './routes/registries.routes.js';
 import { runsRouter } from './routes/runs.routes.js';
 import { dependenciesRouter } from './routes/dependencies.routes.js';
@@ -16,6 +17,7 @@ app.use(express.json());
 // Routes
 app.use('/api/v1', healthRouter);
 app.use('/api/v1', applicationsRouter);
+app.use('/api/v1', workflowsRouter);
 app.use('/api/v1', registriesRouter);
 app.use('/api/v1', runsRouter);
 app.use('/api/v1', dependenciesRouter);
