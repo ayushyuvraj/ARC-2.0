@@ -6,6 +6,7 @@ import { workflowsRouter } from './routes/workflows.routes.js';
 import { registriesRouter } from './routes/registries.routes.js';
 import { runsRouter } from './routes/runs.routes.js';
 import { dependenciesRouter } from './routes/dependencies.routes.js';
+import { observabilityRouter } from './routes/observability.routes.js';
 import { errorHandler } from './middleware/envelope.js';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/v1', workflowsRouter);
 app.use('/api/v1', registriesRouter);
 app.use('/api/v1', runsRouter);
 app.use('/api/v1', dependenciesRouter);
+app.use('/api/v1', observabilityRouter);
 
 // Global Error Handler
 app.use(errorHandler);

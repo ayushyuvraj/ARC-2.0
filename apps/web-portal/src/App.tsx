@@ -6,6 +6,8 @@ import { AppDetail } from './features/portal/AppDetail.js';
 import { RegistryViewer } from './features/registries/RegistryViewer.js';
 import { ImpactViewer } from './features/dependencies/ImpactViewer.js';
 import { WorkflowBuilder } from './features/workflow/WorkflowBuilder.js';
+import { ObservabilityDashboard } from './features/observability/ObservabilityDashboard.js';
+import { RunExplorer } from './features/runs/RunExplorer.js';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState('apps');
@@ -72,15 +74,8 @@ export function App() {
           )}
           {currentTab === 'dependencies' && <ImpactViewer />}
           {currentTab === 'workflows' && <WorkflowBuilder />}
-          {currentTab === 'runs' && (
-            <div className="p-8 max-w-7xl mx-auto space-y-4">
-              <h1 className="text-xl font-bold text-white">Active Runs & Execution Spans</h1>
-              <p className="text-xs text-gray-400">Run State Machine and Distributed Tracing Waterfall.</p>
-              <div className="p-6 rounded-xl border border-arc-border bg-arc-surface text-xs text-gray-400">
-                Execute a run from TARS 2.0 to observe real-time trace spans and checkpoint deltas.
-              </div>
-            </div>
-          )}
+          {currentTab === 'runs' && <RunExplorer />}
+          {currentTab === 'observability' && <ObservabilityDashboard />}
         </main>
       </div>
     </div>
