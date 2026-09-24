@@ -13,10 +13,12 @@ import { EvaluationDashboard } from './features/evaluation/EvaluationDashboard.j
 import { A2ADashboard } from './features/a2a/A2ADashboard.js';
 import { A2UIStudio } from './features/a2ui/A2UIStudio.js';
 import { DeploymentsDashboard } from './features/deployments/DeploymentsDashboard.js';
+import { AcceptanceRunnerModal } from './features/portal/AcceptanceRunnerModal.js';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState('apps');
   const [selectedAppSlug, setSelectedAppSlug] = useState<string | null>(null);
+  const [isAcceptanceModalOpen, setIsAcceptanceModalOpen] = useState(false);
 
   const handleSelectApp = (slug: string) => {
     setSelectedAppSlug(slug);
@@ -56,7 +58,10 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-arc-dark flex flex-col">
-      <Navbar currentTab={currentTab} />
+      <Navbar
+        currentTab={currentTab}
+        onOpenAcceptanceTest={() => setIsAcceptanceModalOpen(true)}
+      />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           currentTab={currentTab === 'app-detail' ? 'apps' : currentTab}
@@ -72,6 +77,7 @@ export function App() {
               appSlug={selectedAppSlug}
               onBack={handleBackToApps}
               onStartRun={handleStartRun}
+              onOpenAcceptanceTest={() => setIsAcceptanceModalOpen(true)}
             />
           )}
           {['models', 'tools', 'mcp', 'policies', 'agents'].includes(currentTab) && (
@@ -88,6 +94,12 @@ export function App() {
           {currentTab === 'deployments' && <DeploymentsDashboard />}
         </main>
       </div>
+
+      {/* 29-Step Full Platform Acceptance Modal */}
+      <AcceptanceRunnerModal
+        isOpen={isAcceptanceModalOpen}
+        onClose={() => setIsAcceptanceModalOpen(false)}
+      />
     </div>
   );
 }

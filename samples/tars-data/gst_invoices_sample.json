@@ -1,0 +1,72 @@
+[
+  {
+    "gstin": "27AABCU9603R1ZM",
+    "vendorName": "Tata Consultancy Services Ltd",
+    "invoiceNo": "INV-2026-0891",
+    "invoiceDate": "2026-08-15",
+    "taxableValue": 124500.00,
+    "cgst": 11205.00,
+    "sgst": 11205.00,
+    "igst": 0.00,
+    "totalTax": 22410.00,
+    "totalAmount": 146910.00,
+    "filingPeriod": "082026",
+    "filingStatus": "FILED_ON_TIME"
+  },
+  {
+    "gstin": "27AAACG0564K1Z2",
+    "vendorName": "Reliance Retail Digital Logistics Ltd",
+    "invoiceNo": "INV-2026-0984",
+    "invoiceDate": "2026-08-28",
+    "taxableValue": 24500.00,
+    "cgst": 0.00,
+    "sgst": 0.00,
+    "igst": 4410.00,
+    "totalTax": 4410.00,
+    "totalAmount": 28910.00,
+    "filingPeriod": "082026",
+    "filingStatus": "FILED_ON_TIME"
+  },
+  {
+    "gstin": "29AAACB2284D1ZB",
+    "vendorName": "Infosys Technologies BPO",
+    "invoiceNo": "INV-2026-1102",
+    "invoiceDate": "2026-08-20",
+    "taxableValue": 84000.00,
+    "cgst": 0.00,
+    "sgst": 0.00,
+    "igst": 15120.00,
+    "totalTax": 15120.00,
+    "totalAmount": 99120.00,
+    "filingPeriod": "082026",
+    "filingStatus": "FILED_ON_TIME"
+  },
+  {
+    "gstin": "07AAACW3456F1Z8",
+    "vendorName": "Wipro Cloud Infrastructure Ltd",
+    "invoiceNo": "INV-2026-4421",
+    "invoiceDate": "2026-08-22",
+    "taxableValue": 55000.00,
+    "cgst": 4950.00,
+    "sgst": 4950.00,
+    "igst": 0.00,
+    "totalTax": 9900.00,
+    "totalAmount": 64900.00,
+    "filingPeriod": "082026",
+    "filingStatus": "FILED_ON_TIME"
+  },
+  {
+    "gstin": "33AAACL1982J1Z1",
+    "vendorName": "L&T Heavy Engineering Corp",
+    "invoiceNo": "INV-2026-9005",
+    "invoiceDate": "2026-08-30",
+    "taxableValue": 235000.00,
+    "cgst": 0.00,
+    "sgst": 0.00,
+    "igst": 42300.00,
+    "totalTax": 42300.00,
+    "totalAmount": 277300.00,
+    "filingPeriod": "082026",
+    "filingStatus": "FILED_ON_TIME"
+  }
+]

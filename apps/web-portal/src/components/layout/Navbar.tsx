@@ -3,9 +3,10 @@ import { Layers, ShieldCheck, Activity, Terminal } from 'lucide-react';
 
 interface NavbarProps {
   currentTab: string;
+  onOpenAcceptanceTest?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentTab }) => {
+export const Navbar: React.FC<NavbarProps> = ({ currentTab, onOpenAcceptanceTest }) => {
   return (
     <header className="h-14 border-b border-arc-border bg-arc-surface px-6 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center space-x-4">
@@ -35,6 +36,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab }) => {
       </div>
 
       <div className="flex items-center space-x-3">
+        {/* 29-Step Platform Acceptance Runner Trigger */}
+        <button
+          onClick={onOpenAcceptanceTest}
+          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600/30 to-indigo-600/30 hover:from-blue-600/40 hover:to-indigo-600/40 border border-blue-500/40 text-blue-300 text-xs font-semibold shadow-sm transition-all"
+        >
+          <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+          <span>29-Step Acceptance Suite</span>
+        </button>
+
         {/* Simulated Execution Plane Alert Badge */}
         <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />

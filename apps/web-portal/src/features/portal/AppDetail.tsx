@@ -18,9 +18,10 @@ interface AppDetailProps {
   appSlug: string;
   onBack: () => void;
   onStartRun: (appId: string, useCaseId: string) => void;
+  onOpenAcceptanceTest?: () => void;
 }
 
-export const AppDetail: React.FC<AppDetailProps> = ({ appSlug, onBack, onStartRun }) => {
+export const AppDetail: React.FC<AppDetailProps> = ({ appSlug, onBack, onStartRun, onOpenAcceptanceTest }) => {
   const [app, setApp] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -91,6 +92,16 @@ export const AppDetail: React.FC<AppDetailProps> = ({ appSlug, onBack, onStartRu
           </div>
 
           <div className="flex items-center space-x-3">
+            {app.slug === 'tars' && onOpenAcceptanceTest && (
+              <button
+                onClick={onOpenAcceptanceTest}
+                className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-emerald-500/20 transition-all"
+              >
+                <Shield className="w-4 h-4" />
+                <span>Run 29-Step Acceptance Test</span>
+              </button>
+            )}
+
             {primaryUseCase && (
               <button
                 onClick={() => onStartRun(app.id, primaryUseCase.id)}
