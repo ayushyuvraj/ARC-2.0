@@ -11,6 +11,20 @@ export function sendSuccess(res: Response, data: unknown, status = 200) {
   });
 }
 
+export function sendError(res: Response, code: string, message: string, status = 400) {
+  return res.status(status).json({
+    success: false,
+    data: null,
+    error: {
+      code,
+      message
+    },
+    meta: {
+      timestamp: new Date().toISOString()
+    }
+  });
+}
+
 export function errorHandler(err: unknown, req: Request, res: Response, _next: NextFunction) {
   console.error('API Error:', err);
   const message = err instanceof Error ? err.message : 'Internal Server Error';

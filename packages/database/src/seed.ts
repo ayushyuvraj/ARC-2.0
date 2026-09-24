@@ -389,6 +389,96 @@ export async function seed() {
     ]
   });
 
+  // 12. Approval Requests (Multi-role Governance)
+  await prisma.approvalRequest.createMany({
+    data: [
+      {
+        id: 'req_appr_tars_prod',
+        actionType: 'DEPLOY_PRODUCTION',
+        targetResourceId: 'app_tars',
+        requestedBy: 'lead-tax-arch@kpmg.com',
+        reason: 'Promote TARS 2.0 Indirect Tax Reconciliation to Production GCC Target with Section 16(2) compliance verification.',
+        riskAssessmentJson: JSON.stringify({
+          level: 'HIGH',
+          affectedEntitiesCount: 4,
+          details: 'Direct impact on live production tax filing calculations and statutory outputs.'
+        }),
+        status: 'PENDING'
+      },
+      {
+        id: 'req_appr_disable_tool',
+        actionType: 'DISABLE_SHARED_TOOL',
+        targetResourceId: 'tool_exact_matcher',
+        requestedBy: 'devops-lead@kpmg.com',
+        reason: 'Scheduled maintenance upgrade of high-throughput C-extension matcher engine to v2.1.',
+        riskAssessmentJson: JSON.stringify({
+          level: 'CRITICAL',
+          affectedEntitiesCount: 5,
+          details: 'Downstream blast radius affects TARS 2.0, Matching Intelligence, and 2 active workflow execution graphs.'
+        }),
+        status: 'PENDING'
+      },
+      {
+        id: 'req_appr_policy_update',
+        actionType: 'CHANGE_POLICY',
+        targetResourceId: 'policy_kpmg_tax_v12',
+        requestedBy: 'compliance-officer@kpmg.com',
+        reason: 'Statutory update to GST Section 16(2) threshold and rounding variance tolerance guidelines.',
+        riskAssessmentJson: JSON.stringify({
+          level: 'MEDIUM',
+          affectedEntitiesCount: 2,
+          details: 'Changes rule criteria for ITC Admissibility agent reasoning.'
+        }),
+        status: 'APPROVED',
+        reviewedBy: 'chief-legal-officer@kpmg.com',
+        reviewComment: 'Approved following statutory circular 183/15/2022-GST review.',
+        reviewedAt: new Date()
+      }
+    ]
+  });
+
+  // 13. Audit Logs (Tamper-evident system activity)
+  await prisma.auditLog.createMany({
+    data: [
+      {
+        id: 'audit_log_1',
+        who: 'chief-legal-officer@kpmg.com',
+        what: 'APPROVE_GOVERNANCE_REQUEST',
+        resourceType: 'APPROVAL_REQUEST',
+        resourceId: 'req_appr_policy_update',
+        beforeStateJson: JSON.stringify({ status: 'PENDING' }),
+        afterStateJson: JSON.stringify({ status: 'APPROVED', reviewer: 'chief-legal-officer@kpmg.com' }),
+        justification: 'Statutory compliance verification completed.',
+        environment: 'PRODUCTION',
+        timestamp: new Date(Date.now() - 3600000 * 2)
+      },
+      {
+        id: 'audit_log_2',
+        who: 'lead-tax-arch@kpmg.com',
+        what: 'EXECUTE_WORKFLOW',
+        resourceType: 'WORKFLOW',
+        resourceId: 'wf_tars_recon_v2',
+        beforeStateJson: null,
+        afterStateJson: JSON.stringify({ runId: 'cmufw1pu300019xz80fhmogg0', status: 'COMPLETED' }),
+        justification: 'Automated tax reconciliation run for September 2026 books.',
+        environment: 'DEVELOPMENT',
+        timestamp: new Date(Date.now() - 3600000 * 4)
+      },
+      {
+        id: 'audit_log_3',
+        who: 'SYSTEM:POLICY_GUARD',
+        what: 'SECURITY_BOUNDARY_CHECK',
+        resourceType: 'DATA_CLASSIFICATION',
+        resourceId: 'art_pr_records_raw',
+        beforeStateJson: null,
+        afterStateJson: JSON.stringify({ classification: 'RESTRICTED', action: 'AUTHORIZED', targetAgent: 'agent_tax_policy' }),
+        justification: 'Agent clearance verified against RESTRICTED data classification policy.',
+        environment: 'DEVELOPMENT',
+        timestamp: new Date(Date.now() - 3600000 * 6)
+      }
+    ]
+  });
+
   console.log('✅ ARC Platform Seed Complete:');
   console.log('   - 3 Applications (TARS 2.0, Matching Intelligence, PPT Preparation)');
   console.log('   - 4 Foundation Models (GPT-4o, Gemini 1.5 Pro, Claude 3.5, Mock Provider)');
@@ -396,6 +486,8 @@ export async function seed() {
   console.log('   - 1 Institutional Policy (KPMG Tax v12)');
   console.log('   - 3 Multi-Cloud Deployment Targets (GCC, Azure, Vertex)');
   console.log('   - 9 Dependency Edges for blast-radius calculation');
+  console.log('   - 3 Governance Approval Requests (Pending & Approved)');
+  console.log('   - 3 Tamper-Evident Audit Log entries');
 }
 
 // Allow direct execution: npx tsx src/seed.ts
