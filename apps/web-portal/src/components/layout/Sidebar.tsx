@@ -41,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
       items: [
         { id: 'workflows', label: 'Workflows', icon: GitFork },
         { id: 'agents', label: 'Agents', icon: Bot },
+        { id: 'a2a', label: 'A2A Fabric', icon: Radio },
         { id: 'orchestrators', label: 'Orchestrators', icon: Cpu }
       ]
     },

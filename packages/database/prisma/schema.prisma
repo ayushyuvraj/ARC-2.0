@@ -396,3 +396,24 @@ model EvaluationRun {
   dataset               GoldenDataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
 }
 
+model A2AMessage {
+  id                   String   @id @default(cuid())
+  correlationId        String
+  runId                String?
+  parentSpanId         String?
+  senderAgentId        String
+  senderExecutionPlane String   @default("LOCAL")
+  recipientAgentId     String
+  operation            String
+  classification       String   @default("RESTRICTED")
+  requestPayloadJson   String   @default("{}")
+  responsePayloadJson  String   @default("{}")
+  status               String   @default("SUCCESS")
+  latencyMs            Int      @default(0)
+  tokensUsed           Int      @default(0)
+  costUsd              Float    @default(0.0)
+  policyCitation       String?
+  createdAt            DateTime @default(now())
+}
+
+

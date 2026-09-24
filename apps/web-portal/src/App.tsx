@@ -10,6 +10,7 @@ import { ObservabilityDashboard } from './features/observability/ObservabilityDa
 import { RunExplorer } from './features/runs/RunExplorer.js';
 import { GovernanceDashboard } from './features/governance/GovernanceDashboard.js';
 import { EvaluationDashboard } from './features/evaluation/EvaluationDashboard.js';
+import { A2ADashboard } from './features/a2a/A2ADashboard.js';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState('apps');
@@ -80,6 +81,7 @@ export function App() {
           {currentTab === 'observability' && <ObservabilityDashboard />}
           {currentTab === 'governance' && <GovernanceDashboard />}
           {currentTab === 'evaluations' && <EvaluationDashboard />}
+          {currentTab === 'a2a' && <A2ADashboard />}
         </main>
       </div>
     </div>
