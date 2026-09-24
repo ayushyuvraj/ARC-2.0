@@ -36,6 +36,7 @@ export const WorkflowNodeTypeSchema = z.enum([
 
 export const ModelProviderTypeSchema = z.enum(['OPENAI', 'AZURE_OPENAI', 'VERTEX_AI', 'ANTHROPIC', 'LOCAL_MOCK', 'CUSTOM']);
 export const ModelCategorySchema = z.enum(['REASONING', 'CHAT', 'EMBEDDING', 'EXTRACTION', 'CLASSIFICATION', 'MULTIMODAL', 'RERANKING']);
+export const ToolExecutionTypeSchema = z.enum(['PYTHON_SANDBOX', 'SQL_QUERY', 'REST_API', 'DETERMINISTIC_BINARY', 'INTERNAL_FUNCTION']);
 
 export const CreateApplicationSchema = z.object({
   name: z.string().min(2),
@@ -50,6 +51,115 @@ export const CreateApplicationSchema = z.object({
     accentColor: z.string().default('#3B82F6')
   }).default({ primaryColor: '#1E3A8A', accentColor: '#3B82F6' }),
   uiMode: UIModeSchema.default('GENERATED_A2UI')
+});
+
+export const CreateModelSchema = z.object({
+  name: z.string().min(2),
+  provider: ModelProviderTypeSchema,
+  modelIdentifier: z.string().min(2),
+  modelType: ModelCategorySchema.default('CHAT'),
+  endpoint: z.string().default('https://api.arc.local/v1/models'),
+  contextWindowTokens: z.number().int().positive().default(128000),
+  maxOutputTokens: z.number().int().positive().default(4096),
+  securityClassification: DataClassificationSchema.default('CONFIDENTIAL'),
+  pricing: z.object({
+    currency: z.string().default('USD'),
+    inputPricePer1kTokens: z.number().default(0.005),
+    outputPricePer1kTokens: z.number().default(0.015)
+  }).default({ currency: 'USD', inputPricePer1kTokens: 0.005, outputPricePer1kTokens: 0.015 })
+});
+
+export const CreateToolSchema = z.object({
+  name: z.string().min(2),
+  description: z.string().default(''),
+  executionType: ToolExecutionTypeSchema.default('INTERNAL_FUNCTION'),
+  isDeterministic: z.boolean().default(true),
+  timeoutMs: z.number().int().positive().default(30000),
+  costPerInvocation: z.number().default(0.0),
+  permittedClassification: DataClassificationSchema.default('CONFIDENTIAL'),
+  inputSchema: z.record(z.unknown()).default({}),
+  outputSchema: z.record(z.unknown()).default({})
+});
+
+export const CreateMCPServerSchema = z.object({
+  name: z.string().min(2),
+  endpoint: z.string().min(2),
+  transport: z.enum(['STDIO', 'SSE', 'STREAMABLE_HTTP']).default('SSE'),
+  exposedTools: z.array(z.object({
+    name: z.string(),
+    description: z.string().default(''),
+    inputSchema: z.record(z.unknown()).default({})
+  })).default([]),
+  exposedResources: z.array(z.object({
+    uri: z.string(),
+    name: z.string(),
+    mimeType: z.string().default('application/json')
+  })).default([])
+});
+
+export const CreateSkillSchema = z.object({
+  name: z.string().min(2),
+  objective: z.string().min(5),
+  instructions: z.string().min(10),
+  recommendedTools: z.array(z.string()).default([]),
+  requiredTools: z.array(z.string()).default([]),
+  constraints: z.array(z.string()).default([]),
+  examples: z.array(z.object({
+    input: z.string(),
+    reasoningTrace: z.string(),
+    output: z.string()
+  })).default([])
+});
+
+export const CreatePolicySchema = z.object({
+  name: z.string().min(2),
+  sourceAuthority: z.string().min(2),
+  canonicalDocumentUri: z.string().min(2),
+  documentHash: z.string().default('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'),
+  effectiveDate: z.string().default(() => new Date().toISOString()),
+  jurisdiction: z.string().default('Global'),
+  businessScope: z.string().default('General Compliance'),
+  requirements: z.array(z.string()).default([]),
+  prohibitions: z.array(z.string()).default([]),
+  exceptions: z.array(z.string()).default([]),
+  provenance: z.record(z.unknown()).default({})
+});
+
+export const CreateAgentSchema = z.object({
+  name: z.string().min(2),
+  role: z.string().min(2),
+  systemPromptTemplate: z.string().min(5),
+  modelId: z.string(),
+  frameworkId: z.string().default('native'),
+  runtimeId: z.string().default('nodejs-v20'),
+  toolIds: z.array(z.string()).default([]),
+  mcpServerIds: z.array(z.string()).default([]),
+  skillIds: z.array(z.string()).default([]),
+  policyIds: z.array(z.string()).default([]),
+  permittedDataClassification: DataClassificationSchema.default('CONFIDENTIAL'),
+  a2uiEnabled: z.boolean().default(true),
+  a2aCapabilities: z.array(z.object({
+    operation: z.string(),
+    inputSchema: z.record(z.unknown()).default({}),
+    outputSchema: z.record(z.unknown()).default({})
+  })).default([])
+});
+
+export const CreateOrchestratorSchema = z.object({
+  name: z.string().min(2),
+  description: z.string().default(''),
+  modelId: z.string(),
+  frameworkId: z.string().default('native'),
+  routingRules: z.array(z.object({
+    condition: z.string(),
+    targetAgentId: z.string()
+  })).default([]),
+  delegationStrategy: z.enum(['SEQUENTIAL', 'PARALLEL', 'HIERARCHICAL', 'ADAPTIVE']).default('SEQUENTIAL')
+});
+
+export const UpdateLifecycleStatusSchema = z.object({
+  status: LifecycleStatusSchema,
+  justification: z.string().default('Operational status change via Control Plane')
 });
 
 export const CreateRunSchema = z.object({
