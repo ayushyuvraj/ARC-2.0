@@ -1,0 +1,22 @@
+{
+  "name": "@arc/database",
+  "version": "1.0.0",
+  "description": "ARC Relational Database Schema, Prisma Client, and Seed Engine",
+  "main": "./dist/client.js",
+  "types": "./dist/client.d.ts",
+  "scripts": {
+    "generate": "prisma generate",
+    "db:push": "prisma db push",
+    "seed": "tsx src/seed.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@arc/domain-core": "*",
+    "@prisma/client": "^5.19.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.4"
+  }
+}

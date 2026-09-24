@@ -1,0 +1,23 @@
+{
+  "name": "arc-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ARC — Enterprise Agentic Application & Runtime Control Platform",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspaces --parallel",
+    "test": "npm run test --workspaces --if-present",
+    "db:generate": "npm run generate --workspace=@arc/database",
+    "db:push": "npm run db:push --workspace=@arc/database",
+    "db:seed": "npm run seed --workspace=@arc/database",
+    "start:api": "npm run dev --workspace=@arc/control-plane-api",
+    "start:web": "npm run dev --workspace=@arc/web-portal"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

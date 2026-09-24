@@ -1,0 +1,346 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./arc.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Application {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String   @default("")
+  owner           String   @default("admin@arc.local")
+  businessUnit    String   @default("Enterprise Advisory")
+  domain          String   @default("General")
+  brandingJson    String   @default("{\"primaryColor\":\"#1E3A8A\",\"accentColor\":\"#3B82F6\"}")
+  uiMode          String   @default("GENERATED_A2UI")
+  permissionsJson String   @default("{\"viewers\":[],\"operators\":[],\"admins\":[]}")
+  userGroupsJson  String   @default("[]")
+  lifecycleStatus String   @default("ACTIVE")
+  version         String   @default("1.0.0")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  useCases        UseCase[]
+  runs            Run[]
+  deployments     Deployment[]
+}
+
+model UseCase {
+  id                   String   @id @default(cuid())
+  applicationId        String
+  name                 String
+  description          String   @default("")
+  businessPurpose      String   @default("")
+  owner                String   @default("admin@arc.local")
+  businessUnit         String   @default("Enterprise Advisory")
+  domain               String   @default("General")
+  inputsSchemaJson     String   @default("{}")
+  outputsSchemaJson    String   @default("{}")
+  triggerTypesJson     String   @default("[\"HUMAN_UI\",\"REST_API\"]")
+  workflowId           String?
+  agentIdsJson         String   @default("[]")
+  orchestratorIdsJson  String   @default("[]")
+  toolIdsJson          String   @default("[]")
+  policyIdsJson        String   @default("[]")
+  dataClassification   String   @default("CONFIDENTIAL")
+  lifecycleStatus      String   @default("ACTIVE")
+  version              String   @default("1.0.0")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  application          Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  runs                 Run[]
+}
+
+model Workflow {
+  id                   String   @id @default(cuid())
+  name                 String
+  description          String   @default("")
+  version              String   @default("1.0.0")
+  nodesJson            String   @default("[]")
+  edgesJson            String   @default("[]")
+  triggerJson          String   @default("{\"type\":\"MANUAL\"}")
+  inputsSchemaJson     String   @default("{}")
+  outputsSchemaJson    String   @default("{}")
+  errorHandlingJson    String   @default("{\"onFailure\":\"HALT\"}")
+  retryPolicyJson      String   @default("{\"maxAttempts\":3,\"backoffMs\":1000,\"backoffFactor\":2}")
+  timeoutSeconds       Int      @default(300)
+  concurrencyLimit     Int      @default(10)
+  lifecycleStatus      String   @default("ACTIVE")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  runs                 Run[]
+}
+
+model Agent {
+  id                          String   @id @default(cuid())
+  name                        String
+  role                        String
+  systemPromptTemplate        String
+  modelId                     String
+  frameworkId                 String   @default("native")
+  runtimeId                   String   @default("nodejs-v20")
+  toolIdsJson                 String   @default("[]")
+  mcpServerIdsJson            String   @default("[]")
+  skillIdsJson                String   @default("[]")
+  knowledgeSourceIdsJson      String   @default("[]")
+  policyIdsJson               String   @default("[]")
+  memoryConfigJson            String   @default("{\"type\":\"RUN_LOCAL\",\"maxTokens\":4000,\"retentionDays\":1}")
+  a2aCapabilitiesJson         String   @default("[]")
+  a2uiEnabled                 Boolean  @default(true)
+  permittedDataClassification String   @default("CONFIDENTIAL")
+  lifecycleStatus             String   @default("ACTIVE")
+  version                     String   @default("1.0.0")
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+}
+
+model Orchestrator {
+  id                   String   @id @default(cuid())
+  name                 String
+  description          String   @default("")
+  modelId              String
+  frameworkId          String   @default("native")
+  routingRulesJson     String   @default("[]")
+  delegationStrategy   String   @default("SEQUENTIAL")
+  stateAggregationMode String   @default("APPEND")
+  errorHandlingJson    String   @default("{\"retryAgentAttempts\":2}")
+  version              String   @default("1.0.0")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Model {
+  id                           String   @id @default(cuid())
+  name                         String
+  provider                     String
+  modelIdentifier              String
+  modelType                    String   @default("CHAT")
+  endpoint                     String   @default("https://api.arc.local/v1/models")
+  contextWindowTokens          Int      @default(128000)
+  maxOutputTokens              Int      @default(4096)
+  supportedRegionsJson         String   @default("[\"us-east\",\"eu-west\",\"ap-south\"]")
+  dataResidencyCertifications  String   @default("[\"EU_GDPR\",\"SOC2\"]")
+  securityClassification       String   @default("CONFIDENTIAL")
+  pricingJson                  String   @default("{\"currency\":\"USD\",\"inputPricePer1kTokens\":0.005,\"outputPricePer1kTokens\":0.015}")
+  lifecycleStatus              String   @default("ACTIVE")
+  version                      String   @default("1.0.0")
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+}
+
+model Tool {
+  id                      String   @id @default(cuid())
+  name                    String
+  description             String   @default("")
+  executionType           String   @default("INTERNAL_FUNCTION")
+  inputSchemaJson         String   @default("{}")
+  outputSchemaJson        String   @default("{}")
+  endpointUrl             String?
+  isDeterministic         Boolean  @default(true)
+  timeoutMs               Int      @default(30000)
+  costPerInvocation       Float    @default(0.0)
+  permittedClassification String   @default("CONFIDENTIAL")
+  lifecycleStatus         String   @default("ACTIVE")
+  version                 String   @default("1.0.0")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model MCPServer {
+  id                  String   @id @default(cuid())
+  name                String
+  endpoint            String
+  transport           String   @default("SSE")
+  capabilitiesJson    String   @default("{\"resources\":true,\"prompts\":true,\"tools\":true,\"logging\":true}")
+  exposedToolsJson    String   @default("[]")
+  exposedResourcesJson String  @default("[]")
+  healthStatus        String   @default("HEALTHY")
+  lifecycleStatus     String   @default("ACTIVE")
+  version             String   @default("1.0.0")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Skill {
+  id                  String   @id @default(cuid())
+  name                String
+  objective           String
+  instructions        String
+  recommendedToolsJson String  @default("[]")
+  requiredToolsJson   String   @default("[]")
+  constraintsJson     String   @default("[]")
+  examplesJson        String   @default("[]")
+  version             String   @default("1.0.0")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Policy {
+  id                   String   @id @default(cuid())
+  name                 String
+  sourceAuthority      String
+  canonicalDocumentUri String
+  documentHash         String
+  effectiveDate        DateTime
+  expiryDate           DateTime?
+  jurisdiction         String
+  businessScope        String
+  requirementsJson     String   @default("[]")
+  prohibitionsJson     String   @default("[]")
+  exceptionsJson       String   @default("[]")
+  provenanceJson       String   @default("{}")
+  lifecycleStatus      String   @default("ACTIVE")
+  version              String   @default("1.0.0")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model DeploymentTarget {
+  id                      String   @id @default(cuid())
+  name                    String
+  type                    String   // AZURE, VERTEX, KPMG_GCC, LOCAL
+  region                  String   @default("global")
+  isSimulated             Boolean  @default(true)
+  networkSecurityBoundary String   @default("AIR_GAPPED_SIMULATION")
+  egressRestrictionsJson  String   @default("[]")
+  healthStatus            String   @default("HEALTHY")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  deployments             Deployment[]
+}
+
+model Deployment {
+  id                String   @id @default(cuid())
+  applicationId     String
+  useCaseId         String?
+  environment       String   @default("DEVELOPMENT")
+  targetId          String
+  version           String   @default("1.0.0")
+  runtimeConfigJson String   @default("{}")
+  status            String   @default("DEPLOYED")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  application       Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  target            DeploymentTarget  @relation(fields: [targetId], references: [id])
+  runs              Run[]
+}
+
+model Run {
+  id                 String    @id @default(cuid())
+  applicationId      String
+  useCaseId          String
+  workflowId         String
+  workflowVersion    String    @default("1.0.0")
+  triggerType        String    @default("MANUAL")
+  environment        String    @default("DEVELOPMENT")
+  deploymentId       String?
+  status             String    @default("QUEUED")
+  startTime          DateTime  @default(now())
+  endTime            DateTime?
+  durationMs         Int?
+  inputsJson         String    @default("{}")
+  outputsJson        String?
+  checkpointStateJson String   @default("{}")
+  resumeToken        String?
+  tokensPrompt       Int       @default(0)
+  tokensCompletion   Int       @default(0)
+  tokensTotal        Int       @default(0)
+  costModelUsd       Float     @default(0.0)
+  costComputeUsd     Float     @default(0.0)
+  costTotalUsd       Float     @default(0.0)
+  errorJson          String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  application        Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  useCase            UseCase     @relation(fields: [useCaseId], references: [id], onDelete: Cascade)
+  workflow           Workflow    @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  deployment         Deployment? @relation(fields: [deploymentId], references: [id])
+  traces             TraceSpan[]
+  artifacts          Artifact[]
+}
+
+model TraceSpan {
+  spanId           String   @id @default(cuid())
+  parentSpanId     String?
+  traceId          String
+  runId            String
+  componentType    String
+  componentId      String
+  componentVersion String   @default("1.0.0")
+  operationName    String
+  startTime        DateTime @default(now())
+  endTime          DateTime @default(now())
+  durationMs       Int      @default(0)
+  status           String   @default("OK")
+  tokensPrompt     Int      @default(0)
+  tokensCompletion Int      @default(0)
+  tokensTotal      Int      @default(0)
+  costUsd          Float    @default(0.0)
+  metadataJson     String   @default("{}")
+  error            String?
+
+  run              Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+}
+
+model Artifact {
+  id                     String   @id @default(cuid())
+  runId                  String
+  name                   String
+  type                   String   @default("DATASET_JSON")
+  locationUri            String
+  contentHash            String
+  byteSize               Int      @default(0)
+  dataClassification     String   @default("CONFIDENTIAL")
+  derivedFromIdsJson     String   @default("[]")
+  schemaDefinitionJson   String?
+  createdAt              DateTime @default(now())
+
+  run                    Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+}
+
+model DependencyEdge {
+  id         String   @id @default(cuid())
+  sourceType String
+  sourceId   String
+  targetType String
+  targetId   String
+  isCritical Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+model ApprovalRequest {
+  id                   String   @id @default(cuid())
+  actionType           String
+  targetResourceId     String
+  requestedBy          String   @default("user@arc.local")
+  reason               String   @default("")
+  riskAssessmentJson   String   @default("{\"level\":\"MEDIUM\",\"affectedEntitiesCount\":1}")
+  status               String   @default("PENDING")
+  reviewedBy           String?
+  reviewComment        String?
+  reviewedAt           DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model AuditLog {
+  id               String   @id @default(cuid())
+  who              String
+  what             String
+  resourceType     String
+  resourceId       String
+  beforeStateJson  String?
+  afterStateJson   String?
+  justification    String
+  environment      String   @default("DEVELOPMENT")
+  timestamp        DateTime @default(now())
+}
