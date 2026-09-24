@@ -14,11 +14,13 @@ import { A2ADashboard } from './features/a2a/A2ADashboard.js';
 import { A2UIStudio } from './features/a2ui/A2UIStudio.js';
 import { DeploymentsDashboard } from './features/deployments/DeploymentsDashboard.js';
 import { AcceptanceRunnerModal } from './features/portal/AcceptanceRunnerModal.js';
+import { UseCaseComposerModal } from './features/portal/UseCaseComposerModal.js';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState('apps');
   const [selectedAppSlug, setSelectedAppSlug] = useState<string | null>(null);
   const [isAcceptanceModalOpen, setIsAcceptanceModalOpen] = useState(false);
+  const [isUseCaseComposerOpen, setIsUseCaseComposerOpen] = useState(false);
 
   const handleSelectApp = (slug: string) => {
     setSelectedAppSlug(slug);
@@ -71,7 +73,12 @@ export function App() {
           }}
         />
         <main className="flex-1 overflow-y-auto bg-[#0B0F19]">
-          {currentTab === 'apps' && <AppCatalog onSelectApp={handleSelectApp} />}
+          {currentTab === 'apps' && (
+            <AppCatalog
+              onSelectApp={handleSelectApp}
+              onOpenUseCaseComposer={() => setIsUseCaseComposerOpen(true)}
+            />
+          )}
           {currentTab === 'app-detail' && selectedAppSlug && (
             <AppDetail
               appSlug={selectedAppSlug}
@@ -99,6 +106,12 @@ export function App() {
       <AcceptanceRunnerModal
         isOpen={isAcceptanceModalOpen}
         onClose={() => setIsAcceptanceModalOpen(false)}
+      />
+
+      {/* Use Case & Agent Composition Studio Modal */}
+      <UseCaseComposerModal
+        isOpen={isUseCaseComposerOpen}
+        onClose={() => setIsUseCaseComposerOpen(false)}
       />
     </div>
   );

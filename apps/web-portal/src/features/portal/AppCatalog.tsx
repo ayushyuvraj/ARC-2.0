@@ -3,9 +3,10 @@ import { ArrowRight, CheckCircle, ShieldCheck, Sparkles, Building, Play, Chevron
 
 interface AppCatalogProps {
   onSelectApp: (slug: string) => void;
+  onOpenUseCaseComposer?: () => void;
 }
 
-export const AppCatalog: React.FC<AppCatalogProps> = ({ onSelectApp }) => {
+export const AppCatalog: React.FC<AppCatalogProps> = ({ onSelectApp, onOpenUseCaseComposer }) => {
   const [apps, setApps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,9 +38,12 @@ export const AppCatalog: React.FC<AppCatalogProps> = ({ onSelectApp }) => {
           </p>
         </div>
 
-        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all">
+        <button
+          onClick={onOpenUseCaseComposer}
+          className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-indigo-500/20 transition-all"
+        >
           <Layers className="w-4 h-4" />
-          <span>Register New Application</span>
+          <span>Compose New Use Case & Agents</span>
         </button>
       </div>
 
