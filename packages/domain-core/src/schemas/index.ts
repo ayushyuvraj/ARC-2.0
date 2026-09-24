@@ -177,10 +177,64 @@ export const ResumeRunSchema = z.object({
   modifications: z.record(z.unknown()).optional()
 });
 
+export const A2UICardPropsSchema = z.object({
+  title: z.string(),
+  status: z.enum(['INFO', 'SUCCESS', 'WARNING', 'DANGER']).default('INFO'),
+  metrics: z.array(z.object({
+    label: z.string(),
+    value: z.union([z.string(), z.number()])
+  })).default([])
+});
+
+export const A2UIComparisonPanelPropsSchema = z.object({
+  title: z.string(),
+  leftEntity: z.object({
+    title: z.string(),
+    fields: z.record(z.union([z.string(), z.number()]))
+  }),
+  rightEntity: z.object({
+    title: z.string(),
+    fields: z.record(z.union([z.string(), z.number()]))
+  }),
+  discrepancies: z.array(z.object({
+    field: z.string(),
+    reason: z.string(),
+    severity: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional()
+  })).default([])
+});
+
+export const A2UIEvidencePanelPropsSchema = z.object({
+  title: z.string(),
+  policyName: z.string(),
+  recommendation: z.string(),
+  confidenceScore: z.number().min(0).max(1).default(0.95),
+  clauses: z.array(z.object({
+    clauseId: z.string(),
+    text: z.string()
+  })).default([])
+});
+
+export const A2UIApprovalPanelPropsSchema = z.object({
+  actions: z.array(z.object({
+    id: z.string(),
+    label: z.string(),
+    variant: z.enum(['PRIMARY', 'DANGER', 'SECONDARY'])
+  })),
+  requireComment: z.boolean().default(true),
+  resumeToken: z.string().optional()
+});
+
 export const A2UIComponentSchema = z.object({
   type: z.enum(['Card', 'Table', 'ComparisonPanel', 'EvidencePanel', 'ApprovalPanel', 'Form', 'Chart', 'Timeline', 'DataGrid']),
   id: z.string().optional(),
   props: z.record(z.unknown())
+});
+
+export const A2UISurfaceSchema = z.object({
+  surfaceId: z.string(),
+  title: z.string(),
+  description: z.string().optional(),
+  components: z.array(A2UIComponentSchema)
 });
 
 export const ImpactAnalysisRequestSchema = z.object({

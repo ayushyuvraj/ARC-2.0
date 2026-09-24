@@ -18,7 +18,8 @@ import {
   BarChart3,
   ShieldAlert,
   Network,
-  Settings
+  Settings,
+  Layers
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -42,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
         { id: 'workflows', label: 'Workflows', icon: GitFork },
         { id: 'agents', label: 'Agents', icon: Bot },
         { id: 'a2a', label: 'A2A Fabric', icon: Radio },
+        { id: 'a2ui', label: 'A2UI Studio', icon: Layers },
         { id: 'orchestrators', label: 'Orchestrators', icon: Cpu }
       ]
     },

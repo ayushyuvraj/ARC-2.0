@@ -11,6 +11,7 @@ import { RunExplorer } from './features/runs/RunExplorer.js';
 import { GovernanceDashboard } from './features/governance/GovernanceDashboard.js';
 import { EvaluationDashboard } from './features/evaluation/EvaluationDashboard.js';
 import { A2ADashboard } from './features/a2a/A2ADashboard.js';
+import { A2UIStudio } from './features/a2ui/A2UIStudio.js';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState('apps');
@@ -82,6 +83,7 @@ export function App() {
           {currentTab === 'governance' && <GovernanceDashboard />}
           {currentTab === 'evaluations' && <EvaluationDashboard />}
           {currentTab === 'a2a' && <A2ADashboard />}
+          {currentTab === 'a2ui' && <A2UIStudio />}
         </main>
       </div>
     </div>
