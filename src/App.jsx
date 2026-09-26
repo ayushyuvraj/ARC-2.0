@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useNodesState, useEdgesState, MarkerType } from '@xyflow/react';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import Canvas from './components/Canvas';
-import Palette from './components/Palette';
 import Inspector from './components/Inspector';
 import MakeUseCaseModal from './components/MakeUseCaseModal';
 import MeetingSimulator from './components/MeetingSimulator';
@@ -448,9 +448,9 @@ export default function App() {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-[#F5F6F8] text-[#0B0F19] overflow-hidden select-none">
-      {/* Platform Header */}
-      <Header
+    <div className="w-screen h-screen flex bg-[#F5F6F8] text-[#0B0F19] overflow-hidden select-none">
+      {/* Unified Left Collapsible Sidebar */}
+      <Sidebar
         activeUseCase={activeUseCase}
         viewMode={viewMode}
         setViewMode={setViewMode}
@@ -464,91 +464,98 @@ export default function App() {
           setApiSettingsTab('google');
           setIsApiSettingsOpen(true);
         }}
+        onAddNode={handleAddNode}
       />
 
-      {/* Main Workspace Body */}
-      <main className="flex-1 flex overflow-hidden relative">
-        {viewMode === 'canvas' && (
-          <>
-            {/* Left Component Palette (10 Segregated Pillars) */}
-            <Palette onAddNode={handleAddNode} />
+      {/* Main Right Area: Top Header + View Workspace */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        <Header
+          viewMode={viewMode}
+          activeUseCase={activeUseCase}
+          hasApiKey={hasApiKey}
+          configuredCount={configuredCount}
+        />
 
-            {/* Center Canvas with Strict Socket Connections */}
-            <div className="flex-1 h-full relative">
-              <Canvas
-                nodes={nodes}
-                setNodes={setNodes}
-                onNodesChange={onNodesChange}
-                edges={edges}
-                setEdges={setEdges}
-                onEdgesChange={onEdgesChange}
-                onSelectNode={(node) => setSelectedNode(node)}
-                invalidConnectionAlert={invalidConnectionAlert}
-                setInvalidConnectionAlert={setInvalidConnectionAlert}
+        <main className="flex-1 flex overflow-hidden relative">
+          {viewMode === 'canvas' && (
+            <>
+              {/* Center Canvas with Strict Socket Connections */}
+              <div className="flex-1 h-full relative">
+                <Canvas
+                  nodes={nodes}
+                  setNodes={setNodes}
+                  onNodesChange={onNodesChange}
+                  edges={edges}
+                  setEdges={setEdges}
+                  onEdgesChange={onEdgesChange}
+                  onSelectNode={(node) => setSelectedNode(node)}
+                  invalidConnectionAlert={invalidConnectionAlert}
+                  setInvalidConnectionAlert={setInvalidConnectionAlert}
+                />
+              </div>
+
+              {/* Right Inspector */}
+              <Inspector
+                selectedNode={selectedNode}
+                agentConfig={activeUseCase.agent}
+                onUpdateAgentConfig={handleUpdateAgentConfig}
+                onUpdateNodeData={handleUpdateNodeData}
+                onDeleteNode={handleDeleteNode}
+                onClose={() => setSelectedNode(null)}
+                onOpenApiSettings={(providerId) => {
+                  setApiSettingsTab(providerId || 'google');
+                  setIsApiSettingsOpen(true);
+                }}
               />
-            </div>
+            </>
+          )}
 
-            {/* Right Inspector */}
-            <Inspector
-              selectedNode={selectedNode}
-              agentConfig={activeUseCase.agent}
-              onUpdateAgentConfig={handleUpdateAgentConfig}
-              onUpdateNodeData={handleUpdateNodeData}
-              onDeleteNode={handleDeleteNode}
-              onClose={() => setSelectedNode(null)}
-              onOpenApiSettings={(providerId) => {
-                setApiSettingsTab(providerId || 'google');
-                setIsApiSettingsOpen(true);
-              }}
+          {viewMode === 'simulator' && (
+            <MeetingSimulator
+              activeUseCase={activeUseCase}
+              nodes={nodes}
+              edges={edges}
+              onAddToolToCanvas={handleAddToolToCanvas}
             />
-          </>
-        )}
+          )}
 
-        {viewMode === 'simulator' && (
-          <MeetingSimulator
-            activeUseCase={activeUseCase}
-            nodes={nodes}
-            edges={edges}
-            onAddToolToCanvas={handleAddToolToCanvas}
-          />
-        )}
+          {viewMode === 'evaluation' && (
+            <EvaluationView
+              activeUseCase={activeUseCase}
+              nodes={nodes}
+              thresholds={thresholds}
+              setThresholds={setThresholds}
+              evaluationResult={evaluationResult}
+              setEvaluationResult={setEvaluationResult}
+            />
+          )}
 
-        {viewMode === 'evaluation' && (
-          <EvaluationView
-            activeUseCase={activeUseCase}
-            nodes={nodes}
-            thresholds={thresholds}
-            setThresholds={setThresholds}
-            evaluationResult={evaluationResult}
-            setEvaluationResult={setEvaluationResult}
-          />
-        )}
+          {viewMode === 'code' && (
+            <CodeExportView
+              activeUseCase={activeUseCase}
+              nodes={nodes}
+            />
+          )}
 
-        {viewMode === 'code' && (
-          <CodeExportView
-            activeUseCase={activeUseCase}
-            nodes={nodes}
-          />
-        )}
+          {viewMode === 'audit' && (
+            <AuditExplorerView
+              activeUseCase={activeUseCase}
+            />
+          )}
 
-        {viewMode === 'audit' && (
-          <AuditExplorerView
-            activeUseCase={activeUseCase}
-          />
-        )}
+          {viewMode === 'observability' && (
+            <ObservabilityView
+              activeUseCase={activeUseCase}
+            />
+          )}
 
-        {viewMode === 'observability' && (
-          <ObservabilityView
-            activeUseCase={activeUseCase}
-          />
-        )}
-
-        {viewMode === 'catalog' && (
-          <PillarCatalogView
-            onSelectPillar={() => setViewMode('canvas')}
-          />
-        )}
-      </main>
+          {viewMode === 'catalog' && (
+            <PillarCatalogView
+              onSelectPillar={() => setViewMode('canvas')}
+            />
+          )}
+        </main>
+      </div>
 
       {/* Make Use Case Modal */}
       <MakeUseCaseModal
