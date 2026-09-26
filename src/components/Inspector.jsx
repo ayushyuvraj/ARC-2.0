@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Bot, 
   Settings2, 
@@ -11,7 +11,9 @@ import {
   AlertCircle,
   ExternalLink,
   Sliders,
-  Activity
+  Activity,
+  PanelRightClose,
+  PanelRightOpen
 } from 'lucide-react';
 import { PILLARS } from '../constants/pillars';
 import { PROVIDERS, getProviderCredential } from '../services/llmService';
@@ -26,22 +28,52 @@ export default function Inspector({
   onOpenApiSettings
 }) {
   const [customModelMode, setCustomModelMode] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (selectedNode) {
+      setIsCollapsed(false);
+    }
+  }, [selectedNode?.id]);
+
+  if (isCollapsed) {
+    return (
+      <button
+        onClick={() => setIsCollapsed(false)}
+        className="btn-tactile absolute top-4 right-5 z-20 flex items-center gap-2 px-3 py-2 bg-[#FFFFFF] hover:bg-[#F8F9FB] text-[#00338D] border border-[#CBD5E1] hover:border-[#00338D] shadow-[0_4px_16px_rgba(0,30,80,0.1)] transition-all font-mono text-xs font-bold rounded-none select-none"
+        title="Open Inspector Panel"
+      >
+        <PanelRightOpen className="w-4 h-4 text-[#00338D]" />
+        <span>{selectedNode ? 'Inspect Block' : 'Studio HUD'}</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-[#009A44] beacon-live" />
+      </button>
+    );
+  }
 
   if (!selectedNode) {
     return (
       <aside className="w-88 h-full bg-[#FFFFFF] border-l border-[#CBD5E1] p-5 flex flex-col justify-between shrink-0 overflow-y-auto select-none shadow-sm">
         <div className="space-y-5">
           {/* Header */}
-          <div className="border-b border-[#E0E0E0] pb-3">
-            <div className="flex items-center gap-2 mb-1">
-              <Activity className="w-4 h-4 text-[#00338D]" />
-              <h3 className="text-xs font-bold text-[#0B0F19] tracking-tight uppercase font-mono">
-                Studio Architecture HUD
-              </h3>
+          <div className="border-b border-[#E0E0E0] pb-3 flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Activity className="w-4 h-4 text-[#00338D]" />
+                <h3 className="text-xs font-bold text-[#0B0F19] tracking-tight uppercase font-mono">
+                  Studio Architecture HUD
+                </h3>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Live topology health, socket allocation, and system telemetry.
+              </p>
             </div>
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Live topology health, socket allocation, and system telemetry.
-            </p>
+            <button
+              onClick={() => setIsCollapsed(true)}
+              className="btn-tactile p-1 text-slate-400 hover:text-[#00338D] hover:bg-[#E6EDF7] border border-transparent hover:border-[#CBD5E1] transition-colors ml-2 shrink-0"
+              title="Collapse Right Panel"
+            >
+              <PanelRightClose className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Graph Health Metric Cards */}
@@ -187,8 +219,16 @@ export default function Inspector({
             </button>
           )}
           <button
+            onClick={() => setIsCollapsed(true)}
+            className="btn-tactile w-7 h-7 hover:bg-[#E0E0E0] text-slate-400 hover:text-[#0B0F19] flex items-center justify-center transition-colors"
+            title="Collapse Panel"
+          >
+            <PanelRightClose className="w-3.5 h-3.5" />
+          </button>
+          <button
             onClick={onClose}
             className="btn-tactile w-7 h-7 hover:bg-[#E0E0E0] text-slate-400 hover:text-[#0B0F19] flex items-center justify-center transition-colors"
+            title="Close node inspector"
           >
             <X className="w-4 h-4" />
           </button>
