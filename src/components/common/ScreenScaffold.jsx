@@ -5,7 +5,7 @@ import { DESIGN_CLASSES } from '../../constants/designTokens';
  * ScreenScaffold
  * Standard enterprise screen wrapper enforcing the KEAOS Design System (src/design.md).
  * 
- * Future screens should wrap their contents in this scaffold to ensure:
+ * Enforces:
  * - 0px angular border-radius consistency
  * - Unified header hierarchy with eyebrow and status pill
  * - Standardized CTA action slots
@@ -14,7 +14,7 @@ import { DESIGN_CLASSES } from '../../constants/designTokens';
  * @param {string} title - Screen main title
  * @param {string} eyebrow - Uppercase category eyebrow label
  * @param {string} statusText - Text inside the header status pill
- * @param {'active'|'pending'|'alert'|'brand'} statusType - Visual pill color
+ * @param {'active'|'pending'|'alert'|'brand'|'dark'} statusType - Visual pill color
  * @param {React.ReactNode} actions - Optional button elements on the top-right
  * @param {React.ReactNode} children - Screen body contents
  */
@@ -31,22 +31,23 @@ export default function ScreenScaffold({
       case 'active': return DESIGN_CLASSES.statusPillActive;
       case 'pending': return DESIGN_CLASSES.statusPillPending;
       case 'alert': return DESIGN_CLASSES.statusPillAlert;
+      case 'dark': return DESIGN_CLASSES.statusPillDark;
       case 'brand':
       default: return DESIGN_CLASSES.statusPillBrand;
     }
   };
 
   return (
-    <div className="flex-1 h-full bg-[#F5F6F8] flex flex-col overflow-hidden">
+    <div className="flex-1 h-full bg-[#F8F9FB] flex flex-col overflow-hidden select-none">
       {/* Top Utility Header Bar (design.md Section 6.1) */}
-      <div className="h-14 px-6 border-b border-[#E0E0E0] bg-[#FFFFFF] flex items-center justify-between shrink-0 shadow-sm">
+      <div className="h-14 px-6 border-b border-[#CBD5E1] bg-[#FFFFFF] flex items-center justify-between shrink-0 shadow-[0_2px_8px_rgba(0,30,80,0.04)]">
         <div className="flex items-center gap-3">
-          <div className="w-2 h-5 bg-[#00338D]" />
+          <div className="w-2 h-6 bg-[#00338D] shadow-inner" />
           <div>
             <span className={DESIGN_CLASSES.eyebrow}>
               {eyebrow}
             </span>
-            <h2 className="text-xs font-bold text-[#0B0F19] tracking-wide">
+            <h2 className="text-sm font-bold text-[#0B0F19] tracking-tight">
               {title}
             </h2>
           </div>

@@ -8,7 +8,9 @@ import {
   Download, 
   CheckCircle2, 
   Search,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Check
 } from 'lucide-react';
 import ScreenScaffold from '../common/ScreenScaffold';
 import { DESIGN_CLASSES } from '../../constants/designTokens';
@@ -16,10 +18,11 @@ import { DESIGN_CLASSES } from '../../constants/designTokens';
 /**
  * AuditExplorerView
  * Cryptographic Audit Trail & Governance Screen
- * Adheres strictly to src/design.md (0px angular cards, full pill status badges, brand palette).
+ * Adheres strictly to src/design.md with elevated craft polish.
  */
 export default function AuditExplorerView({ activeUseCase }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [copiedId, setCopiedId] = useState(null);
   
   // Real cryptographic audit log records
   const [auditLogs] = useState([
@@ -67,10 +70,16 @@ export default function AuditExplorerView({ activeUseCase }) {
     log.eventType.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const copyHash = (id, hash) => {
+    navigator.clipboard.writeText(hash);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
   return (
     <ScreenScaffold
       title="Cryptographic Audit Registry & Compliance Ledger"
-      eyebrow="PILLAR: AUDIT & GOVERNANCE"
+      eyebrow="PILLAR: CRYPTOGRAPHIC AUDIT & COMPLIANCE"
       statusText="SHA-256 IMMUTABLE"
       statusType="active"
       actions={
@@ -83,80 +92,80 @@ export default function AuditExplorerView({ activeUseCase }) {
         </button>
       }
     >
-      <div className="space-y-6">
-        {/* Top Metric Cards (Angular 0px) */}
+      <div className="space-y-6 select-none">
+        {/* Top Metric Cards (Angular 0px with Taxonomy Top Border) */}
         <div className="grid grid-cols-4 gap-4">
-          <div className={DESIGN_CLASSES.card + ' p-4'}>
-            <span className="text-[10px] font-mono uppercase text-[#666666] font-bold block mb-1">
+          <div className="bg-[#FFFFFF] border border-[#CBD5E1] p-4 shadow-sm border-t-3 border-t-[#009A44]">
+            <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block mb-1">
               Active Ledger Integrity
             </span>
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-[#009A44]" />
-              <span className="text-xl font-bold text-[#0B0F19]">100% Verified</span>
+              <span className="text-xl font-bold text-[#0B0F19] tracking-tight">100% Verified</span>
             </div>
-            <span className="text-[11px] text-[#666666] mt-1 block">Zero hash collisions or tampering</span>
+            <span className="text-[11px] text-slate-500 mt-1 block">Zero hash collisions or tampering</span>
           </div>
 
-          <div className={DESIGN_CLASSES.card + ' p-4'}>
-            <span className="text-[10px] font-mono uppercase text-[#666666] font-bold block mb-1">
+          <div className="bg-[#FFFFFF] border border-[#CBD5E1] p-4 shadow-sm border-t-3 border-t-[#00338D]">
+            <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block mb-1">
               Hashing Algorithm
             </span>
             <div className="flex items-center gap-2">
               <Hash className="w-5 h-5 text-[#00338D]" />
-              <span className="text-xl font-bold text-[#0B0F19]">W3C SHA-256</span>
+              <span className="text-xl font-bold text-[#0B0F19] tracking-tight">W3C SHA-256</span>
             </div>
-            <span className="text-[11px] text-[#666666] mt-1 block">Cryptographic WebCrypto API</span>
+            <span className="text-[11px] text-slate-500 mt-1 block">Standard WebCrypto API</span>
           </div>
 
-          <div className={DESIGN_CLASSES.card + ' p-4'}>
-            <span className="text-[10px] font-mono uppercase text-[#666666] font-bold block mb-1">
+          <div className="bg-[#FFFFFF] border border-[#CBD5E1] p-4 shadow-sm border-t-3 border-t-[#EAAA00]">
+            <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block mb-1">
               PII Redactions Enforced
             </span>
             <div className="flex items-center gap-2">
               <Lock className="w-5 h-5 text-[#EAAA00]" />
-              <span className="text-xl font-bold text-[#0B0F19]">3 Redacted</span>
+              <span className="text-xl font-bold text-[#0B0F19] tracking-tight">3 Redacted</span>
             </div>
-            <span className="text-[11px] text-[#666666] mt-1 block">Masked financial compensation</span>
+            <span className="text-[11px] text-slate-500 mt-1 block">Masked financial compensation</span>
           </div>
 
-          <div className={DESIGN_CLASSES.card + ' p-4'}>
-            <span className="text-[10px] font-mono uppercase text-[#666666] font-bold block mb-1">
+          <div className="bg-[#FFFFFF] border border-[#CBD5E1] p-4 shadow-sm border-t-3 border-t-[#6D2077]">
+            <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block mb-1">
               Active Agent
             </span>
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-[#6D2077]" />
               <span className="text-sm font-bold text-[#0B0F19] truncate">{activeUseCase.name}</span>
             </div>
-            <span className="text-[11px] text-[#666666] mt-1 block">{activeUseCase.framework.name}</span>
+            <span className="text-[11px] text-slate-500 mt-1 block font-mono">{activeUseCase.framework.name}</span>
           </div>
         </div>
 
         {/* Audit Search Bar */}
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-[#666666] absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Search by Audit ID, SHA-256 hash substring, or event type..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={DESIGN_CLASSES.input + ' pl-9'}
+              className="w-full pl-9 pr-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
             />
           </div>
         </div>
 
         {/* Audit Trail Table */}
-        <div className={DESIGN_CLASSES.card + ' overflow-hidden'}>
-          <div className="p-4 bg-[#F5F6F8] border-b border-[#E0E0E0] flex items-center justify-between">
-            <h3 className={DESIGN_CLASSES.sectionTitle}>Immutable Cryptographic Event Logs</h3>
+        <div className="bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm overflow-hidden">
+          <div className="p-4 bg-[#F8F9FB] border-b border-[#E0E0E0] flex items-center justify-between">
+            <h3 className="text-sm font-bold text-[#0B0F19] tracking-tight">Immutable Cryptographic Event Logs</h3>
             <span className={DESIGN_CLASSES.statusPillBrand}>
               {filteredLogs.length} Events Logged
             </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#FFFFFF] border-b border-[#E0E0E0] text-[10px] font-bold uppercase text-[#666666] font-mono">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-[#F8F9FB] border-b border-[#E0E0E0] text-[10px] font-bold uppercase text-slate-600 font-mono tracking-wider">
                 <tr>
                   <th className="p-3">Audit ID</th>
                   <th className="p-3">Event Type</th>
@@ -167,21 +176,34 @@ export default function AuditExplorerView({ activeUseCase }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E0E0E0] bg-[#FFFFFF]">
-                {filteredLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-[#F5F6F8] transition-colors">
+                {filteredLogs.map((log, idx) => (
+                  <tr key={log.id} className={`hover:bg-[#F0F4F8] transition-colors ${idx % 2 === 1 ? 'bg-[#FAFAFC]' : 'bg-[#FFFFFF]'}`}>
                     <td className="p-3 font-mono font-bold text-[#00338D]">{log.id}</td>
                     <td className="p-3 font-bold text-[#0B0F19]">{log.eventType}</td>
-                    <td className="p-3 text-[#666666] font-mono text-[11px]">{new Date(log.timestamp).toLocaleString()}</td>
-                    <td className="p-3 font-mono text-[11px] text-[#0B0F19] max-w-xs truncate" title={log.sha256Hash}>
-                      {log.sha256Hash}
+                    <td className="p-3 text-slate-500 font-mono text-[11px]">{new Date(log.timestamp).toLocaleString()}</td>
+                    <td className="p-3 font-mono text-[11px] text-[#0B0F19] max-w-xs truncate">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate">{log.sha256Hash}</span>
+                        <button
+                          onClick={() => copyHash(log.id, log.sha256Hash)}
+                          className="btn-tactile text-slate-400 hover:text-[#00338D] shrink-0"
+                          title="Copy full SHA-256 hash"
+                        >
+                          {copiedId === log.id ? (
+                            <Check className="w-3.5 h-3.5 text-[#009A44]" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      <span className="text-[10px] font-mono px-2 py-0.5 bg-[#F5F6F8] border border-[#E0E0E0] text-[#0B0F19]">
+                      <span className="text-[10px] font-mono px-2 py-0.5 bg-[#F8F9FB] border border-[#CBD5E1] text-[#0B0F19] font-medium">
                         {log.complianceStandard}
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className={DESIGN_CLASSES.statusPillActive + ' inline-flex items-center gap-1'}>
+                      <span className={DESIGN_CLASSES.statusPillActive + ' inline-flex items-center gap-1 font-bold'}>
                         <CheckCircle2 className="w-3 h-3" />
                         <span>VERIFIED</span>
                       </span>

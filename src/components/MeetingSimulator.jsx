@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   Play, 
   Upload, 
@@ -114,34 +114,34 @@ export default function MeetingSimulator({
   };
 
   return (
-    <div className="flex-1 h-full bg-[#F5F6F8] flex overflow-hidden">
+    <div className="flex-1 h-full bg-[#F8F9FB] flex overflow-hidden select-none">
       {/* Left Column: Input Ingestion & Tool Management */}
-      <div className="w-[480px] h-full border-r border-[#E0E0E0] flex flex-col shrink-0 bg-[#FFFFFF] shadow-sm">
+      <div className="w-[480px] h-full border-r border-[#CBD5E1] flex flex-col shrink-0 bg-[#FFFFFF] shadow-[0_4px_16px_rgba(0,30,80,0.04)]">
         {/* Header */}
-        <div className="p-4 border-b border-[#E0E0E0] bg-[#F5F6F8]">
+        <div className="p-4 border-b border-[#E0E0E0] bg-[#F8F9FB]">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#00338D] font-['Univers',sans-serif]">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#00338D] font-mono">
               Input Ingestion Layer
             </span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20 font-bold">
               MULTIMODAL
             </span>
           </div>
-          <h3 className="text-sm font-bold text-[#0B0F19] tracking-wide">Meeting Ingestion Interface</h3>
-          <p className="text-xs text-[#666666] mt-0.5">
+          <h3 className="text-sm font-bold text-[#0B0F19] tracking-tight">Meeting Ingestion Interface</h3>
+          <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
             Upload audio recording, conversation document, or paste transcript text.
           </p>
         </div>
 
         {/* Input Selector Tabs (Angular 0px borders) */}
         <div className="p-4 pb-2 bg-[#FFFFFF]">
-          <div className="grid grid-cols-3 gap-1 bg-[#F5F6F8] p-1 border border-[#E0E0E0]">
+          <div className="grid grid-cols-3 gap-1 bg-[#F8F9FB] p-1 border border-[#CBD5E1]">
             <button
               onClick={() => setInputMode('mp3')}
-              className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all ${
+              className={`btn-tactile flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all rounded-none ${
                 inputMode === 'mp3'
-                  ? 'bg-[#00338D] text-white shadow-sm'
-                  : 'text-[#666666] hover:text-[#0B0F19]'
+                  ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#001E50]'
+                  : 'text-slate-600 hover:text-[#0B0F19]'
               }`}
             >
               <Music className="w-3.5 h-3.5" />
@@ -150,10 +150,10 @@ export default function MeetingSimulator({
 
             <button
               onClick={() => setInputMode('txt')}
-              className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all ${
+              className={`btn-tactile flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all rounded-none ${
                 inputMode === 'txt'
-                  ? 'bg-[#00338D] text-white shadow-sm'
-                  : 'text-[#666666] hover:text-[#0B0F19]'
+                  ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#001E50]'
+                  : 'text-slate-600 hover:text-[#0B0F19]'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -162,10 +162,10 @@ export default function MeetingSimulator({
 
             <button
               onClick={() => setInputMode('paste')}
-              className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all ${
+              className={`btn-tactile flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all rounded-none ${
                 inputMode === 'paste'
-                  ? 'bg-[#00338D] text-white shadow-sm'
-                  : 'text-[#666666] hover:text-[#0B0F19]'
+                  ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#001E50]'
+                  : 'text-slate-600 hover:text-[#0B0F19]'
               }`}
             >
               <Type className="w-3.5 h-3.5" />
@@ -178,7 +178,7 @@ export default function MeetingSimulator({
         <div className="p-4 flex-1 overflow-y-auto space-y-4 bg-[#FFFFFF]">
           {inputMode === 'mp3' && (
             <div className="space-y-3">
-              <div className="p-4 border-2 border-dashed border-[#00338D]/30 bg-[#F5F6F8] text-center">
+              <div className="p-4 border-2 border-dashed border-[#00338D]/30 bg-[#F8F9FB] text-center">
                 <input
                   type="file"
                   accept="audio/mp3,audio/wav,audio/m4a"
@@ -190,25 +190,25 @@ export default function MeetingSimulator({
                   htmlFor="mp3-upload-input"
                   className="cursor-pointer flex flex-col items-center justify-center"
                 >
-                  <div className="w-10 h-10 bg-[#E6EDF7] text-[#00338D] flex items-center justify-center mb-2">
+                  <div className="w-10 h-10 bg-[#E6EDF7] text-[#00338D] flex items-center justify-center mb-2 shadow-inner">
                     <Upload className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-bold text-[#0B0F19]">
+                  <span className="text-xs font-bold text-[#0B0F19] tracking-tight">
                     {mp3File ? mp3File.name : 'Upload MP3 Recording'}
                   </span>
-                  <span className="text-[11px] text-[#666666] mt-1">
+                  <span className="text-[11px] text-slate-500 mt-1 font-mono">
                     {mp3File ? `${mp3File.size} • ${mp3File.duration}` : 'Supports MP3, M4A, WAV up to 250MB'}
                   </span>
                 </label>
               </div>
 
               {/* Audio Waveform Player */}
-              <div className="p-3 bg-[#F5F6F8] border border-[#E0E0E0] space-y-2">
-                <div className="flex items-center justify-between text-xs text-[#666666]">
-                  <span className="font-mono font-bold text-[#00338D]">Whisper Audio Stream</span>
-                  <span className="font-mono text-[#00338D]">01:24 / 18:42</span>
+              <div className="p-3 bg-[#F8F9FB] border border-[#E0E0E0] space-y-2">
+                <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
+                  <span className="font-bold text-[#00338D]">Audio Ingestion Stream</span>
+                  <span className="text-[#00338D]">01:24 / 18:42</span>
                 </div>
-                <div className="flex items-center gap-1 h-8 px-2 bg-[#FFFFFF] border border-[#E0E0E0]">
+                <div className="flex items-center gap-1 h-8 px-2 bg-[#FFFFFF] border border-[#CBD5E1]">
                   {[40, 60, 30, 80, 95, 45, 70, 85, 30, 65, 90, 75, 50, 85, 40, 60, 90, 35, 70, 55, 80].map((h, i) => (
                     <div
                       key={i}
@@ -224,12 +224,12 @@ export default function MeetingSimulator({
               {/* Attach Ingestion Tool */}
               <div className="p-3 bg-[#E6EDF7] border border-[#00338D]/20 flex items-center justify-between">
                 <div>
-                  <h5 className="text-xs font-bold text-[#00338D]">Audio Ingest Tool</h5>
-                  <p className="text-[11px] text-[#333333]">Add Whisper MP3 transcription tool to visual canvas</p>
+                  <h5 className="text-xs font-bold text-[#00338D] tracking-tight">Audio Ingest Tool</h5>
+                  <p className="text-[11px] text-slate-700">Add Whisper MP3 transcription tool to visual canvas</p>
                 </div>
                 <button
                   onClick={() => onAddToolToCanvas('tool-audio-transcribe')}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold bg-[#00338D] hover:bg-[#005EB8] text-white transition-all shrink-0"
+                  className="btn-tactile flex items-center gap-1 px-3 py-1.5 text-xs font-bold bg-[#00338D] hover:bg-[#005EB8] text-white transition-all shrink-0 rounded-none shadow-sm"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Attach Tool</span>
@@ -240,7 +240,7 @@ export default function MeetingSimulator({
 
           {inputMode === 'txt' && (
             <div className="space-y-3">
-              <div className="p-4 border-2 border-dashed border-[#009A44]/30 bg-[#F5F6F8] text-center">
+              <div className="p-4 border-2 border-dashed border-[#009A44]/30 bg-[#F8F9FB] text-center">
                 <input
                   type="file"
                   accept=".txt,.vtt,.srt,.md"
@@ -252,13 +252,13 @@ export default function MeetingSimulator({
                   htmlFor="txt-upload-input"
                   className="cursor-pointer flex flex-col items-center justify-center"
                 >
-                  <div className="w-10 h-10 bg-[#E6F5EC] text-[#009A44] flex items-center justify-center mb-2">
+                  <div className="w-10 h-10 bg-[#E6F5EC] text-[#009A44] flex items-center justify-center mb-2 shadow-inner">
                     <FileText className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-bold text-[#0B0F19]">
+                  <span className="text-xs font-bold text-[#0B0F19] tracking-tight">
                     {txtFile ? txtFile.name : 'Upload Transcript Document'}
                   </span>
-                  <span className="text-[11px] text-[#666666] mt-1">
+                  <span className="text-[11px] text-slate-500 mt-1 font-mono">
                     {txtFile ? txtFile.size : 'Supports .txt, .vtt, .srt format'}
                   </span>
                 </label>
@@ -266,12 +266,12 @@ export default function MeetingSimulator({
 
               <div className="p-3 bg-[#E6F5EC] border border-[#009A44]/20 flex items-center justify-between">
                 <div>
-                  <h5 className="text-xs font-bold text-[#009A44]">Document Parser Tool</h5>
-                  <p className="text-[11px] text-[#333333]">Add TXT/VTT parser block to visual canvas</p>
+                  <h5 className="text-xs font-bold text-[#009A44] tracking-tight">Document Parser Tool</h5>
+                  <p className="text-[11px] text-slate-700">Add TXT/VTT parser block to visual canvas</p>
                 </div>
                 <button
                   onClick={() => onAddToolToCanvas('tool-doc-parser')}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold bg-[#009A44] hover:bg-[#007A36] text-white transition-all shrink-0"
+                  className="btn-tactile flex items-center gap-1 px-3 py-1.5 text-xs font-bold bg-[#009A44] hover:bg-[#007A36] text-white transition-all shrink-0 rounded-none shadow-sm"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Attach Tool</span>
@@ -283,21 +283,21 @@ export default function MeetingSimulator({
           {/* Transcript Text Box */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#0B0F19]">
+              <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#0B0F19] font-mono">
                 Meeting Transcript Text
               </label>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setTranscriptText(SAMPLE_MEETINGS[0].transcript)}
-                  className="text-[10px] px-2 py-0.5 bg-[#F5F6F8] hover:bg-[#E6EDF7] text-[#00338D] border border-[#E0E0E0] font-bold"
+                  className="btn-tactile text-[10px] px-2 py-0.5 bg-[#FFFFFF] hover:bg-[#E6EDF7] text-[#00338D] border border-[#CBD5E1] font-bold font-mono"
                 >
-                  Sample 1 (Strategy)
+                  Sample 1
                 </button>
                 <button
                   onClick={() => setTranscriptText(SAMPLE_MEETINGS[1].transcript)}
-                  className="text-[10px] px-2 py-0.5 bg-[#F5F6F8] hover:bg-[#E6EDF7] text-[#00338D] border border-[#E0E0E0] font-bold"
+                  className="btn-tactile text-[10px] px-2 py-0.5 bg-[#FFFFFF] hover:bg-[#E6EDF7] text-[#00338D] border border-[#CBD5E1] font-bold font-mono"
                 >
-                  Sample 2 (Postmortem)
+                  Sample 2
                 </button>
               </div>
             </div>
@@ -307,31 +307,31 @@ export default function MeetingSimulator({
               value={transcriptText}
               onChange={(e) => setTranscriptText(e.target.value)}
               placeholder="Paste raw conversation text here with timestamps or speaker tags..."
-              className="w-full p-3 bg-[#F5F6F8] border border-[#E0E0E0] text-xs text-[#0B0F19] leading-relaxed font-mono focus:outline-none focus:border-[#00338D] resize-none"
+              className="w-full p-3 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] leading-relaxed font-mono focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none resize-none transition-colors"
             />
-            <div className="flex items-center justify-between text-[11px] text-[#666666] mt-1 font-mono">
-              <span>{transcriptText.length} characters</span>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 mt-1 font-mono">
+              <span>{transcriptText.length} chars</span>
               <span>~{Math.round(transcriptText.length / 4)} tokens</span>
             </div>
           </div>
         </div>
 
         {/* Execution Button (Sharp 0px Primary CTA) */}
-        <div className="p-4 border-t border-[#E0E0E0] bg-[#F5F6F8]">
+        <div className="p-4 border-t border-[#E0E0E0] bg-[#F8F9FB]">
           <button
             onClick={handleRunSimulation}
             disabled={isRunning || !transcriptText.trim()}
-            className={`w-full py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+            className={`btn-tactile w-full py-3 text-xs font-bold uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-all rounded-none font-mono ${
               isRunning
                 ? 'bg-[#00338D]/60 text-white cursor-wait'
-                : 'bg-[#00338D] hover:bg-[#005EB8] text-white shadow-sm'
+                : 'bg-[#00338D] hover:bg-[#005EB8] text-white shadow-sm border-b-2 border-[#001E50]'
             }`}
           >
             <Play className={`w-4 h-4 ${isRunning ? 'animate-spin' : ''}`} />
             <span>
               {isRunning
                 ? `Synthesizing with ${activeUseCase.framework.name}...`
-                : `Run Meeting Intelligence Agent (${activeUseCase.framework.name})`}
+                : `Run Intelligence Agent (${activeUseCase.framework.name})`}
             </span>
           </button>
         </div>
@@ -341,9 +341,9 @@ export default function MeetingSimulator({
       <div className="flex-1 h-full overflow-y-auto p-6 space-y-6">
         {/* Step-by-Step Live Execution Pipeline */}
         {executionSteps.length > 0 && (
-          <div className="p-4 bg-[#FFFFFF] border border-[#E0E0E0] shadow-[0_4px_16px_rgba(0,0,0,0.08)] space-y-3">
+          <div className="p-4 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
             <div className="flex items-center justify-between border-b border-[#E0E0E0] pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#00338D] flex items-center gap-2 font-['Univers',sans-serif]">
+              <span className="text-xs font-bold uppercase tracking-[0.08em] text-[#00338D] flex items-center gap-2 font-mono">
                 <Activity className="w-4 h-4 text-[#00338D]" />
                 Architectural Node Execution Pipeline
               </span>
@@ -356,14 +356,14 @@ export default function MeetingSimulator({
               {executionSteps.map((step, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 bg-[#F5F6F8] border border-[#E0E0E0] text-xs"
+                  className="p-2.5 bg-[#F8F9FB] border border-[#CBD5E1] text-xs shadow-inner"
                 >
-                  <div className="flex items-center justify-between text-[10px] font-mono text-[#666666] mb-1">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 mb-1">
                     <span className="font-bold text-[#00338D]">Step {idx + 1}</span>
                     <span>{step.latencyMs}ms</span>
                   </div>
-                  <h5 className="font-bold text-[#0B0F19] truncate">{step.step}</h5>
-                  <p className="text-[11px] text-[#333333] mt-0.5 line-clamp-2">{step.detail}</p>
+                  <h5 className="font-bold text-[#0B0F19] truncate tracking-tight">{step.step}</h5>
+                  <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2 leading-relaxed">{step.detail}</p>
                 </div>
               ))}
             </div>
@@ -374,22 +374,22 @@ export default function MeetingSimulator({
         {simulationResult ? (
           <div className="space-y-6">
             {/* Spotlight / Dark Event Banner Card (from design.md: Deep Navy #001E50, text #FFFFFF) */}
-            <div className="p-5 bg-[#001E50] border-l-4 border-[#EAAA00] text-white flex items-center justify-between shadow-[0_4px_16px_rgba(0,0,0,0.12)]">
+            <div className="p-5 bg-[#001E50] border-l-4 border-[#EAAA00] text-white flex items-center justify-between shadow-[0_8px_24px_rgba(0,30,80,0.25)]">
               <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 bg-[#00338D] text-[#EAAA00] flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#00338D] text-[#EAAA00] flex items-center justify-center border border-[#0091DA]/30 shadow-inner">
                   <DollarSign className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#EAAA00] font-['Univers',sans-serif]">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#EAAA00] font-mono">
                     Financial Impact & ROI Analysis
                   </span>
-                  <h4 className="text-sm font-bold text-white mt-0.5">
+                  <h4 className="text-sm font-bold text-white mt-0.5 tracking-tight">
                     Compute Spend: ${simulationResult.economics.costUsd} • Advisory Value Saved: ${simulationResult.economics.humanValueSavedUsd}
                   </h4>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#EAAA00] text-[#001E50] font-bold">
+                <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#EAAA00] text-[#001E50] font-bold shadow-sm">
                   {simulationResult.economics.netRoiMultiplier}x ROI
                 </span>
                 <span className="block text-[11px] text-slate-300 mt-1 font-medium">
@@ -399,10 +399,10 @@ export default function MeetingSimulator({
             </div>
 
             {/* Executive Summary Card (Standard Insight Card: #FFFFFF, 1px solid #E0E0E0, 0px radius) */}
-            <div className="p-5 bg-[#FFFFFF] border border-[#E0E0E0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] space-y-3">
+            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
               <div className="flex items-center gap-2 border-b border-[#E0E0E0] pb-2">
                 <Sparkles className="w-4 h-4 text-[#009A44]" />
-                <h4 className="text-sm font-bold text-[#0B0F19] tracking-wide font-['Univers',sans-serif]">
+                <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">
                   Executive Synthesis & Key Takeaways
                 </h4>
               </div>
@@ -417,16 +417,16 @@ export default function MeetingSimulator({
             </div>
 
             {/* Key Decisions Register */}
-            <div className="p-5 bg-[#FFFFFF] border border-[#E0E0E0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] space-y-3">
+            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
               <div className="flex items-center gap-2 border-b border-[#E0E0E0] pb-2">
                 <CheckCircle2 className="w-4 h-4 text-[#00338D]" />
-                <h4 className="text-sm font-bold text-[#0B0F19] tracking-wide font-['Univers',sans-serif]">
+                <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">
                   Binding Decisions Register
                 </h4>
               </div>
               <div className="space-y-2">
                 {simulationResult.decisions.map((dec, i) => (
-                  <div key={i} className="p-3 bg-[#F5F6F8] border-l-3 border-[#00338D] text-xs text-[#0B0F19] font-medium">
+                  <div key={i} className="p-3 bg-[#F8F9FB] border-l-4 border-[#00338D] text-xs text-[#0B0F19] font-medium leading-relaxed">
                     {dec}
                   </div>
                 ))}
@@ -434,11 +434,11 @@ export default function MeetingSimulator({
             </div>
 
             {/* Structured Action Items Table */}
-            <div className="p-5 bg-[#FFFFFF] border border-[#E0E0E0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] space-y-3">
+            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
               <div className="flex items-center justify-between border-b border-[#E0E0E0] pb-2">
                 <div className="flex items-center gap-2">
                   <Layers className="w-4 h-4 text-[#00A3A6]" />
-                  <h4 className="text-sm font-bold text-[#0B0F19] tracking-wide font-['Univers',sans-serif]">
+                  <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">
                     Extracted Action Items & Accountabilities
                   </h4>
                 </div>
@@ -450,7 +450,7 @@ export default function MeetingSimulator({
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-[#E0E0E0] bg-[#F5F6F8] text-[#666666] text-[11px] uppercase tracking-wider font-bold">
+                    <tr className="border-b border-[#E0E0E0] bg-[#F8F9FB] text-slate-600 text-[10px] uppercase tracking-[0.08em] font-bold font-mono">
                       <th className="py-2.5 px-3">Assignee</th>
                       <th className="py-2.5 px-3">Action Task</th>
                       <th className="py-2.5 px-3">Deadline</th>
@@ -459,22 +459,22 @@ export default function MeetingSimulator({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E0E0E0]">
-                    {simulationResult.actionItems.map((item) => (
-                      <tr key={item.id} className="hover:bg-[#F5F6F8] transition-colors">
+                    {simulationResult.actionItems.map((item, idx) => (
+                      <tr key={item.id} className={`hover:bg-[#F0F4F8] transition-colors ${idx % 2 === 1 ? 'bg-[#FAFAFC]' : 'bg-[#FFFFFF]'}`}>
                         <td className="py-2.5 px-3 font-bold text-[#0B0F19] whitespace-nowrap">
                           {item.assignee}
                         </td>
-                        <td className="py-2.5 px-3 text-[#333333]">
+                        <td className="py-2.5 px-3 text-[#333333] leading-relaxed">
                           {item.task}
                         </td>
-                        <td className="py-2.5 px-3 text-[#666666] whitespace-nowrap font-mono text-[11px]">
+                        <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap font-mono text-[11px]">
                           {item.deadline}
                         </td>
                         <td className="py-2.5 px-3 whitespace-nowrap">
-                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                            item.priority === 'Critical' ? 'bg-[#F2E9F4] text-[#6D2077]' :
-                            item.priority === 'High' ? 'bg-[#FDF7E6] text-[#9E6D00]' :
-                            'bg-[#E6EDF7] text-[#00338D]'
+                          <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-full ${
+                            item.priority === 'Critical' ? 'bg-[#F2E9F4] text-[#6D2077] border border-[#6D2077]/30' :
+                            item.priority === 'High' ? 'bg-[#FDF7E6] text-[#9E6D00] border border-[#EAAA00]/30' :
+                            'bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20'
                           }`}>
                             {item.priority}
                           </span>
@@ -491,8 +491,8 @@ export default function MeetingSimulator({
 
             {/* PII & Audit Status */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-[#FFFFFF] border border-[#E0E0E0] shadow-sm space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6D2077] flex items-center gap-1.5 font-['Univers',sans-serif]">
+              <div className="p-4 bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6D2077] flex items-center gap-1.5 font-mono">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#6D2077]" />
                   Regulatory Policy Guard (PII)
                 </span>
@@ -503,23 +503,23 @@ export default function MeetingSimulator({
                 </p>
               </div>
 
-              <div className="p-4 bg-[#FFFFFF] border border-[#E0E0E0] shadow-sm space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#001E50] flex items-center gap-1.5 font-['Univers',sans-serif]">
+              <div className="p-4 bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#001E50] flex items-center gap-1.5 font-mono">
                   <Activity className="w-3.5 h-3.5 text-[#001E50]" />
                   Cryptographic Audit & Telemetry
                 </span>
-                <p className="text-xs font-mono text-[#333333] truncate">
+                <p className="text-xs font-mono text-slate-700 truncate">
                   Hash: {simulationResult.auditHash}
                 </p>
               </div>
             </div>
           </div>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center text-[#666666] p-12">
+          <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 p-12 select-none">
             <Play className="w-12 h-12 text-[#00338D]/30 mb-3" />
-            <h4 className="text-sm font-bold text-[#0B0F19]">Simulator Idle</h4>
-            <p className="text-xs text-[#666666] max-w-sm mt-1">
-              Select or upload a meeting transcript on the left, then click "Run Meeting Intelligence Agent" to observe execution traces.
+            <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">Simulator Idle</h4>
+            <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+              Select or upload a meeting transcript on the left, then click "Run Intelligence Agent" to execute live multi-LLM synthesis and inspect cryptographic traces.
             </p>
           </div>
         )}

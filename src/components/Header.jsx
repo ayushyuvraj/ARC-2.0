@@ -27,12 +27,22 @@ export default function Header({
   configuredCount,
   onOpenApiSettings
 }) {
+  const tabs = [
+    { id: 'canvas', label: 'Visual Canvas', icon: Layers },
+    { id: 'simulator', label: 'Meeting Simulator', icon: Play, pulse: true },
+    { id: 'evaluation', label: 'Evaluation & Gate', icon: FileCheck2, badge: evaluationPassed ? 'PASSED' : null },
+    { id: 'code', label: 'Export SDK', icon: Code2 },
+    { id: 'audit', label: 'Audit Ledger', icon: ShieldCheck },
+    { id: 'observability', label: 'Observability', icon: Activity },
+    { id: 'catalog', label: 'Pillars Catalog', icon: Layers }
+  ];
+
   return (
-    <header className="h-16 px-6 bg-[#001E50] border-b border-[#00338D] flex items-center justify-between shrink-0 z-30 shadow-md">
-      {/* Brand & Active Use Case */}
+    <header className="h-16 px-6 bg-[#001E50] border-b border-[#00338D] flex items-center justify-between shrink-0 z-30 shadow-[0_4px_20px_rgba(0,30,80,0.35)] select-none">
+      {/* Brand & Active Use Case Meta */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#00338D] border border-[#0091DA] flex items-center justify-center text-white">
+          <div className="w-9 h-9 bg-[#00338D] border border-[#0091DA]/40 flex items-center justify-center text-white shadow-inner">
             <Bot className="w-5 h-5" />
           </div>
           <div>
@@ -40,25 +50,25 @@ export default function Header({
               <span className="font-bold tracking-tight text-white text-base font-['Univers',sans-serif]">
                 KEAOS
               </span>
-              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#005EB8] text-white">
-                ENTERPRISE
+              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full bg-[#005EB8] text-white border border-[#0091DA]/30">
+                STUDIO
               </span>
             </div>
-            <p className="text-[11px] text-slate-300 font-medium">Enterprise Agent Studio</p>
+            <p className="text-[11px] text-slate-300 font-medium tracking-wide">Enterprise Agent Studio</p>
           </div>
         </div>
 
-        <div className="h-8 w-px bg-white/20" />
+        <div className="h-8 w-px bg-white/15" />
 
         {/* Current Use Case Info */}
         <div className="flex items-center gap-2.5">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-300">
+            <span className="text-[9px] uppercase font-bold tracking-[0.1em] text-slate-400 font-mono">
               Active Specification
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-white tracking-wide">{activeUseCase.name}</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full font-mono bg-[#00338D] text-slate-100 border border-[#0091DA]/50 font-medium">
+              <span className="text-sm font-semibold text-white tracking-tight">{activeUseCase.name}</span>
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full font-mono bg-[#00338D] text-slate-100 border border-[#0091DA]/40 font-medium shadow-sm">
                 {activeUseCase.framework.name}
               </span>
             </div>
@@ -67,125 +77,63 @@ export default function Header({
       </div>
 
       {/* Navigation View Modes */}
-      <div className="flex items-center bg-[#001438] p-1 border border-[#00338D]">
-        <button
-          onClick={() => setViewMode('canvas')}
-          className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold transition-all ${
-            viewMode === 'canvas'
-              ? 'bg-[#00338D] text-white shadow-sm'
-              : 'text-slate-300 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Layers className="w-4 h-4" />
-          <span>Visual Canvas</span>
-        </button>
-
-        <button
-          onClick={() => setViewMode('simulator')}
-          className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold transition-all ${
-            viewMode === 'simulator'
-              ? 'bg-[#00338D] text-white shadow-sm'
-              : 'text-slate-300 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Play className="w-4 h-4" />
-          <span>Meeting Simulator</span>
-          <span className="w-2 h-2 rounded-full bg-[#00A3A6] animate-pulse" />
-        </button>
-
-        <button
-          onClick={() => setViewMode('evaluation')}
-          className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold transition-all ${
-            viewMode === 'evaluation'
-              ? 'bg-[#00338D] text-white shadow-sm'
-              : 'text-slate-300 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <FileCheck2 className="w-4 h-4" />
-          <span>Evaluation & Gate</span>
-          {evaluationPassed && (
-            <span className="text-[10px] font-bold px-1.5 rounded-full bg-[#009A44] text-white">
-              PASSED
-            </span>
-          )}
-        </button>
-
-        <button
-          onClick={() => setViewMode('code')}
-          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold transition-all ${
-            viewMode === 'code'
-              ? 'bg-[#00338D] text-white shadow-sm'
-              : 'text-slate-300 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Code2 className="w-4 h-4" />
-          <span>Export SDK</span>
-        </button>
-
-        <button
-          onClick={() => setViewMode('audit')}
-          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold transition-all ${
-            viewMode === 'audit'
-              ? 'bg-[#00338D] text-white shadow-sm'
-              : 'text-slate-300 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4" />
-          <span>Audit Ledger</span>
-        </button>
-
-        <button
-          onClick={() => setViewMode('observability')}
-          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold transition-all ${
-            viewMode === 'observability'
-              ? 'bg-[#00338D] text-white shadow-sm'
-              : 'text-slate-300 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Activity className="w-4 h-4" />
-          <span>Observability</span>
-        </button>
-
-        <button
-          onClick={() => setViewMode('catalog')}
-          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold transition-all ${
-            viewMode === 'catalog'
-              ? 'bg-[#00338D] text-white shadow-sm'
-              : 'text-slate-300 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Layers className="w-4 h-4" />
-          <span>Pillars Catalog</span>
-        </button>
-      </div>
+      <nav className="flex items-center bg-[#001438] p-0.5 border border-[#00338D]/80 shadow-inner">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = viewMode === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setViewMode(tab.id)}
+              className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-none transition-all duration-150 relative ${
+                isActive
+                  ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#0091DA]'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.06] border-b-2 border-transparent'
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+              <span>{tab.label}</span>
+              {tab.pulse && !isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00A3A6] beacon-live" />
+              )}
+              {tab.badge && (
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-[#009A44] text-white">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <button
           onClick={onOpenApiSettings}
-          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold border transition-all ${
+          className={`btn-tactile flex items-center gap-2 px-3 py-1.5 text-xs font-semibold border rounded-none shadow-sm ${
             hasApiKey
-              ? 'bg-[#009A44]/20 border-[#009A44] text-[#E6F5EC]'
-              : 'bg-[#EAAA00]/20 border-[#EAAA00] text-[#FDF7E6]'
+              ? 'bg-[#009A44]/15 border-[#009A44] text-[#E6F5EC] hover:bg-[#009A44]/25'
+              : 'bg-[#EAAA00]/15 border-[#EAAA00] text-[#FDF7E6] hover:bg-[#EAAA00]/25'
           }`}
           title="Configure real LLM providers (Google, Anthropic, OpenAI, Ollama, OpenRouter)"
         >
+          <span className={`w-2 h-2 rounded-full ${hasApiKey ? 'bg-[#009A44] beacon-live' : 'bg-[#EAAA00]'}`} />
           <Key className="w-3.5 h-3.5" />
-          <span>{hasApiKey ? `LLM APIs: ${configuredCount || 1} Active` : 'Configure LLM APIs'}</span>
+          <span className="font-mono text-[11px] font-semibold">{hasApiKey ? `LLMs: ${configuredCount || 1} Active` : 'Set LLM APIs'}</span>
         </button>
 
         <button
           onClick={onResetTemplate}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-200 border border-white/20 hover:bg-white/10 transition-colors"
+          className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-200 border border-white/20 hover:bg-white/10 rounded-none transition-colors"
           title="Reset back to pilot configuration"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
+          <RotateCcw className="w-3.5 h-3.5 text-slate-300" />
           <span>Reset Pilot</span>
         </button>
 
         <button
           onClick={onOpenMakeModal}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-[#005EB8] hover:bg-[#00338D] text-white transition-all shadow-sm"
+          className="btn-tactile flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold bg-[#005EB8] hover:bg-[#00478F] text-white rounded-none shadow-sm border-b-2 border-[#001E50]"
         >
           <Plus className="w-4 h-4" />
           <span>Make Use Case</span>
@@ -193,10 +141,10 @@ export default function Header({
 
         <button
           onClick={onDeployClick}
-          className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all ${
+          className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-none shadow-sm transition-all ${
             evaluationPassed
-              ? 'bg-[#009A44] hover:bg-[#007A36] text-white cursor-pointer shadow-sm'
-              : 'bg-white/10 text-slate-400 border border-white/15 cursor-not-allowed'
+              ? 'bg-[#009A44] hover:bg-[#007A36] text-white cursor-pointer border-b-2 border-[#004D22]'
+              : 'bg-white/10 text-slate-400 border border-white/15 cursor-not-allowed opacity-80'
           }`}
           title={evaluationPassed ? 'Deploy to Production' : 'Evaluation benchmark must pass threshold before deployment'}
         >

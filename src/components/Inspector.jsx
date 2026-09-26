@@ -28,11 +28,11 @@ export default function Inspector({
 
   if (!selectedNode) {
     return (
-      <aside className="w-80 h-full bg-[#FFFFFF] border-l border-[#E0E0E0] p-5 flex flex-col items-center justify-center text-center text-[#666666] shrink-0">
-        <Settings2 className="w-10 h-10 mb-3 text-[#00338D]/40" />
-        <h4 className="text-sm font-bold text-[#0B0F19]">No Block Selected</h4>
-        <p className="text-xs text-[#666666] mt-1 max-w-[200px]">
-          Click on the Core Agent or any attached block to inspect and customize its settings.
+      <aside className="w-80 h-full bg-[#FFFFFF] border-l border-[#E0E0E0] p-6 flex flex-col items-center justify-center text-center text-slate-500 shrink-0 select-none">
+        <Settings2 className="w-10 h-10 mb-3 text-[#00338D]/30" />
+        <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">No Block Selected</h4>
+        <p className="text-xs text-slate-500 mt-1 max-w-[200px] leading-relaxed">
+          Select the Core Orchestrator or any attached pillar block to inspect and customize its parameters.
         </p>
       </aside>
     );
@@ -80,11 +80,11 @@ export default function Inspector({
   };
 
   return (
-    <aside className="w-88 h-full bg-[#FFFFFF] border-l border-[#E0E0E0] flex flex-col shrink-0 overflow-hidden shadow-sm">
+    <aside className="w-88 h-full bg-[#FFFFFF] border-l border-[#E0E0E0] flex flex-col shrink-0 overflow-hidden shadow-sm select-none">
       {/* Header */}
-      <div className="p-4 border-b border-[#E0E0E0] bg-[#F5F6F8] flex items-center justify-between">
+      <div className="p-4 border-b border-[#E0E0E0] bg-[#F8F9FB] flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-[#00338D] text-white flex items-center justify-center">
+          <div className="w-8 h-8 bg-[#00338D] text-white flex items-center justify-center shadow-inner">
             {isAgent ? (
               <Bot className="w-4 h-4 text-white" />
             ) : isModel ? (
@@ -94,10 +94,10 @@ export default function Inspector({
             )}
           </div>
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#00338D] block font-['Univers',sans-serif]">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#00338D] block font-mono">
               {isAgent ? 'Core Agent Inspector' : isModel ? 'Foundation Model Spec' : `${nodeData.pillarType?.toUpperCase()} Specifications`}
             </span>
-            <h4 className="text-xs font-bold text-[#0B0F19] truncate max-w-[190px]">
+            <h4 className="text-xs font-bold text-[#0B0F19] truncate max-w-[190px] tracking-tight">
               {nodeData.name}
             </h4>
           </div>
@@ -107,7 +107,7 @@ export default function Inspector({
           {!isAgent && (
             <button
               onClick={() => onDeleteNode(selectedNode.id)}
-              className="w-7 h-7 hover:bg-[#F2E9F4] text-[#666666] hover:text-[#6D2077] flex items-center justify-center transition-colors"
+              className="btn-tactile w-7 h-7 hover:bg-[#F2E9F4] text-slate-400 hover:text-[#6D2077] flex items-center justify-center transition-colors"
               title="Delete block"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -115,7 +115,7 @@ export default function Inspector({
           )}
           <button
             onClick={onClose}
-            className="w-7 h-7 hover:bg-[#E0E0E0] text-[#666666] hover:text-[#0B0F19] flex items-center justify-center transition-colors"
+            className="btn-tactile w-7 h-7 hover:bg-[#E0E0E0] text-slate-400 hover:text-[#0B0F19] flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -123,13 +123,13 @@ export default function Inspector({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-[#FFFFFF]">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#FFFFFF]">
         {isAgent ? (
           <>
             {/* System Prompt Customizer */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#0B0F19]">
+                <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#0B0F19] font-mono">
                   System Instruction Prompt
                 </label>
                 <span className="text-[10px] font-mono text-[#00338D] font-bold">Persona</span>
@@ -139,16 +139,16 @@ export default function Inspector({
                 value={agentConfig.prompt}
                 onChange={(e) => onUpdateAgentConfig({ prompt: e.target.value })}
                 placeholder="Provide prompt as to what we want the agent to do..."
-                className="w-full p-3 bg-[#F5F6F8] border border-[#E0E0E0] text-xs text-[#0B0F19] leading-relaxed focus:outline-none focus:border-[#00338D] resize-none font-mono"
+                className="w-full p-3 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] leading-relaxed focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none resize-none font-mono transition-colors"
               />
-              <p className="text-[11px] text-[#666666] mt-1">
+              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                 Authoritative instructions governing output schema, analytical rigor, and task assignments.
               </p>
             </div>
 
             {/* Quick Template Tokens */}
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#0B0F19] block mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#0B0F19] block mb-1.5 font-mono">
                 Dynamic Injection Tokens
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -156,7 +156,7 @@ export default function Inspector({
                   <button
                     key={tag}
                     onClick={() => onUpdateAgentConfig({ prompt: agentConfig.prompt + ` ${tag}` })}
-                    className="text-[10px] font-mono px-2 py-1 bg-[#E6EDF7] hover:bg-[#00338D] text-[#00338D] hover:text-white border border-[#00338D]/30 transition-colors font-semibold"
+                    className="btn-tactile text-[10px] font-mono px-2 py-1 bg-[#E6EDF7] hover:bg-[#00338D] text-[#00338D] hover:text-white border border-[#00338D]/30 transition-colors font-semibold"
                     title="Click to insert token into prompt"
                   >
                     + {tag}
@@ -166,7 +166,7 @@ export default function Inspector({
             </div>
 
             {/* Hyperparameters */}
-            <div className="space-y-4 pt-2 border-t border-[#E0E0E0]">
+            <div className="space-y-4 pt-3 border-t border-[#E0E0E0]">
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-bold text-[#0B0F19]">Temperature</span>
@@ -181,7 +181,7 @@ export default function Inspector({
                   onChange={(e) => onUpdateAgentConfig({ temperature: parseFloat(e.target.value) })}
                   className="w-full accent-[#00338D]"
                 />
-                <div className="flex justify-between text-[10px] text-[#666666] mt-0.5 font-medium">
+                <div className="flex justify-between text-[10px] text-slate-500 mt-0.5 font-mono">
                   <span>Deterministic (0.0)</span>
                   <span>Creative (1.0)</span>
                 </div>
@@ -210,7 +210,7 @@ export default function Inspector({
             {/* Provider Selector */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#0B0F19]">
+                <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#0B0F19] font-mono">
                   LLM Provider
                 </label>
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold flex items-center gap-1 ${
@@ -240,17 +240,17 @@ export default function Inspector({
                     <button
                       key={pId}
                       onClick={() => handleProviderSelect(pId)}
-                      className={`px-3 py-2 text-left text-xs font-bold border transition-all flex items-center justify-between ${
+                      className={`btn-tactile px-3 py-2 text-left text-xs font-bold border transition-all flex items-center justify-between rounded-none ${
                         isSelected
-                          ? 'border-[#00338D] bg-[#E6EDF7] text-[#00338D]'
-                          : 'border-[#E0E0E0] bg-[#F5F6F8] text-[#0B0F19] hover:bg-[#FFFFFF]'
+                          ? 'border-[#00338D] bg-[#E6EDF7] text-[#00338D] shadow-sm'
+                          : 'border-[#CBD5E1] bg-[#FFFFFF] text-[#0B0F19] hover:bg-[#F8F9FB]'
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-[#00338D]' : 'bg-[#CCCCCC]'}`} />
+                        <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-[#00338D] beacon-live' : 'bg-[#CCCCCC]'}`} />
                         <span>{def.name}</span>
                       </div>
-                      <span className="text-[10px] font-mono text-[#666666]">
+                      <span className="text-[10px] font-mono text-slate-500">
                         {isConfigured ? '● Active' : def.isLocal ? '● Local' : '○ Not set'}
                       </span>
                     </button>
@@ -262,7 +262,7 @@ export default function Inspector({
             {/* Model ID Selection */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#0B0F19]">
+                <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#0B0F19] font-mono">
                   Model Identifier
                 </label>
                 <button
@@ -279,13 +279,13 @@ export default function Inspector({
                   value={currentModelId}
                   onChange={(e) => handleModelIdSelect(e.target.value)}
                   placeholder="e.g. meta-llama/llama-3.3-70b-instruct"
-                  className="w-full px-3 py-2 bg-[#F5F6F8] border border-[#E0E0E0] text-xs font-mono text-[#0B0F19] focus:outline-none focus:border-[#00338D]"
+                  className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs font-mono text-[#0B0F19] focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
                 />
               ) : (
                 <select
                   value={currentModelId}
                   onChange={(e) => handleModelIdSelect(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#F5F6F8] border border-[#E0E0E0] text-xs font-bold text-[#0B0F19] focus:outline-none focus:border-[#00338D]"
+                  className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs font-bold text-[#0B0F19] focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
                 >
                   {providerDef.models.map((m) => (
                     <option key={m} value={m}>
@@ -307,7 +307,7 @@ export default function Inspector({
                   Runs directly on your computer hardware. 100% private, zero token costs, air-gapped compliance.
                 </p>
                 <div>
-                  <label className="text-[10px] font-mono text-[#666666] block mb-1">
+                  <label className="text-[10px] font-mono text-slate-600 block mb-1">
                     Ollama Base URL
                   </label>
                   <input
@@ -318,7 +318,7 @@ export default function Inspector({
                         config: { ...nodeData.config, baseUrl: e.target.value }
                       });
                     }}
-                    className="w-full px-2.5 py-1.5 bg-[#FFFFFF] border border-[#E0E0E0] text-xs font-mono text-[#0B0F19] focus:outline-none focus:border-[#00338D]"
+                    className="w-full px-2.5 py-1.5 bg-[#FFFFFF] border border-[#CBD5E1] text-xs font-mono text-[#0B0F19] focus:outline-none focus:border-[#00338D] rounded-none"
                   />
                 </div>
               </div>
@@ -328,7 +328,7 @@ export default function Inspector({
             <div>
               <button
                 onClick={() => onOpenApiSettings && onOpenApiSettings(currentProvider)}
-                className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold bg-[#00338D] text-white hover:bg-[#005EB8] transition-colors shadow-sm"
+                className="btn-tactile w-full flex items-center justify-center gap-2 py-2 text-xs font-bold bg-[#00338D] text-white hover:bg-[#005EB8] rounded-none transition-colors shadow-sm border-b-2 border-[#001E50]"
               >
                 <Key className="w-3.5 h-3.5" />
                 <span>Configure {providerDef.name} Credentials</span>
@@ -336,8 +336,8 @@ export default function Inspector({
             </div>
 
             {/* Hyperparameters */}
-            <div className="space-y-3 pt-2 border-t border-[#E0E0E0]">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#0B0F19] block">
+            <div className="space-y-3 pt-3 border-t border-[#E0E0E0]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#0B0F19] block font-mono">
                 Model Hyperparameters
               </span>
 
@@ -387,8 +387,8 @@ export default function Inspector({
             </div>
 
             {/* Provider Capability Overview */}
-            <div className="p-3 bg-[#F5F6F8] border border-[#E0E0E0] text-[11px] text-[#666666] leading-relaxed">
-              <span className="font-bold text-[#0B0F19] block mb-1">Provider Capabilities:</span>
+            <div className="p-3 bg-[#F8F9FB] border border-[#E0E0E0] text-[11px] text-slate-600 leading-relaxed">
+              <span className="font-bold text-[#0B0F19] block mb-1 font-mono">Provider Capabilities:</span>
               {currentProvider === 'google' && 'Native multimodal audio ingestion (MP3), 1M-2M context window, fast JSON schema generation.'}
               {currentProvider === 'anthropic' && 'State-of-the-art analytical reasoning, nuanced long-form output, structured artifacts.'}
               {currentProvider === 'openai' && 'Flagship GPT-4o reasoning, strict JSON schema mode, widespread enterprise SDK compatibility.'}
@@ -400,10 +400,10 @@ export default function Inspector({
           /* Generic Inspector for other Pillars */
           <div className="space-y-4">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#666666] block mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500 block mb-1 font-mono">
                 Pillar Category
               </span>
-              <div className="p-2.5 bg-[#F5F6F8] border border-[#E0E0E0] flex items-center justify-between">
+              <div className="p-2.5 bg-[#F8F9FB] border border-[#E0E0E0] flex items-center justify-between">
                 <span className="text-xs font-bold text-[#0B0F19] capitalize">{nodeData.pillarType}</span>
                 <span className="text-[10px] font-mono px-2 py-0.5 bg-[#FFFFFF] text-[#00338D] border border-[#00338D]/20 font-bold">
                   Socket: {pillarDef?.socketId}
@@ -412,37 +412,37 @@ export default function Inspector({
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#0B0F19] block mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#0B0F19] block mb-1.5 font-mono">
                 Block Display Name
               </label>
               <input
                 type="text"
                 value={nodeData.name}
                 onChange={(e) => onUpdateNodeData(selectedNode.id, { name: e.target.value })}
-                className="w-full px-3 py-1.5 bg-[#F5F6F8] border border-[#E0E0E0] text-xs text-[#0B0F19] focus:outline-none focus:border-[#00338D]"
+                className="w-full px-3 py-1.5 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#0B0F19] block mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#0B0F19] block mb-1.5 font-mono">
                 Description
               </label>
               <textarea
                 rows={3}
                 value={nodeData.description}
                 onChange={(e) => onUpdateNodeData(selectedNode.id, { description: e.target.value })}
-                className="w-full p-2.5 bg-[#F5F6F8] border border-[#E0E0E0] text-xs text-[#0B0F19] leading-relaxed focus:outline-none focus:border-[#00338D] resize-none"
+                className="w-full p-2.5 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] leading-relaxed focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none resize-none transition-colors"
               />
             </div>
 
             {nodeData.config && Object.keys(nodeData.config).length > 0 && (
-              <div className="space-y-3 pt-2 border-t border-[#E0E0E0]">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#0B0F19] block">
+              <div className="space-y-3 pt-3 border-t border-[#E0E0E0]">
+                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#0B0F19] block font-mono">
                   Configuration Properties
                 </span>
                 {Object.entries(nodeData.config).map(([key, val]) => (
                   <div key={key}>
-                    <label className="text-[11px] font-mono text-[#666666] block mb-1">
+                    <label className="text-[10px] font-mono text-slate-500 block mb-1">
                       {key}
                     </label>
                     <input
@@ -452,7 +452,7 @@ export default function Inspector({
                         const newConfig = { ...nodeData.config, [key]: e.target.value };
                         onUpdateNodeData(selectedNode.id, { config: newConfig });
                       }}
-                      className="w-full px-2.5 py-1.5 bg-[#F5F6F8] border border-[#E0E0E0] text-xs text-[#0B0F19] font-mono focus:outline-none focus:border-[#00338D]"
+                      className="w-full px-2.5 py-1.5 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] font-mono focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
                     />
                   </div>
                 ))}

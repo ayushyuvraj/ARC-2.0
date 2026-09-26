@@ -53,33 +53,33 @@ export default function Palette({ onAddNode }) {
   };
 
   return (
-    <aside className="w-80 h-full bg-[#FFFFFF] border-r border-[#E0E0E0] flex flex-col shrink-0 overflow-hidden shadow-sm">
+    <aside className="w-80 h-full bg-[#FFFFFF] border-r border-[#E0E0E0] flex flex-col shrink-0 overflow-hidden shadow-sm select-none">
       {/* Header */}
-      <div className="p-4 border-b border-[#E0E0E0] bg-[#F5F6F8]">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#00338D] font-['Univers',sans-serif]">
+      <div className="p-4 border-b border-[#E0E0E0] bg-[#F8F9FB]">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#00338D] font-mono">
             Component Taxonomy
           </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20 font-semibold">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20 font-bold">
             10 PILLARS
           </span>
         </div>
 
         {/* Search */}
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-[#666666] absolute left-3 top-2.5" />
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Search skills, MCP, tools..."
+            placeholder="Filter skills, MCP, models, tools..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#0B0F19] placeholder-[#666666] focus:outline-none focus:border-[#00338D]"
+            className="w-full pl-9 pr-3 py-1.5 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] placeholder-slate-400 focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
           />
         </div>
       </div>
 
       {/* Accordion Categories */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-[#F5F6F8]">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-[#F8F9FB]">
         {Object.entries(PILLARS).map(([pillarKey, pillar]) => {
           const Icon = PILLAR_ICONS[pillarKey] || Wrench;
           const isOpen = openCategories[pillarKey];
@@ -92,13 +92,13 @@ export default function Palette({ onAddNode }) {
           if (search && filteredItems.length === 0) return null;
 
           return (
-            <div key={pillarKey} className="border border-[#E0E0E0] bg-[#FFFFFF] overflow-hidden">
+            <div key={pillarKey} className="border border-[#CBD5E1] bg-[#FFFFFF] overflow-hidden shadow-sm transition-all">
               {/* Category Header */}
               <button
                 onClick={() => toggleCategory(pillarKey)}
                 className="w-full px-3 py-2.5 flex items-center justify-between hover:bg-[#F5F6F8] transition-colors text-left border-b border-transparent"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <div
                     className="w-5 h-5 flex items-center justify-center shrink-0 border"
                     style={{ 
@@ -109,19 +109,19 @@ export default function Palette({ onAddNode }) {
                   >
                     <Icon className="w-3 h-3" />
                   </div>
-                  <span className="text-xs font-bold text-[#0B0F19] tracking-wide">{pillar.label}</span>
-                  <span className="text-[10px] font-mono text-[#666666]">({pillar.items.length})</span>
+                  <span className="text-xs font-bold text-[#0B0F19] tracking-tight">{pillar.label}</span>
+                  <span className="text-[10px] font-mono text-slate-400">({pillar.items.length})</span>
                 </div>
                 {isOpen ? (
-                  <ChevronDown className="w-3.5 h-3.5 text-[#666666]" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
                 ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-[#666666]" />
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                 )}
               </button>
 
               {/* Items List */}
               {isOpen && (
-                <div className="p-2 space-y-1.5 border-t border-[#E0E0E0] bg-[#FAFAFA]">
+                <div className="p-2 space-y-1.5 border-t border-[#E0E0E0] bg-[#FAFAFC]">
                   {filteredItems.map((item) => {
                     let ItemIcon = Icon;
                     if (item.id === 'tool-audio-transcribe') ItemIcon = Mic;
@@ -131,20 +131,20 @@ export default function Palette({ onAddNode }) {
                     return (
                       <div
                         key={item.id}
-                        className="group p-2.5 border border-[#E0E0E0] bg-[#FFFFFF] hover:border-[#00338D] transition-all flex items-start justify-between gap-2 shadow-[0_2px_4px_rgba(0,0,0,0.02)]"
+                        className="group p-2.5 border border-[#E0E0E0] bg-[#FFFFFF] hover:border-[#00338D] hover:translate-x-0.5 transition-all duration-150 flex items-start justify-between gap-2 shadow-[0_2px_4px_rgba(0,30,80,0.02)] hover:shadow-[0_4px_8px_rgba(0,30,80,0.08)]"
                       >
                         <div className="flex-1 overflow-hidden">
                           <div className="flex items-center gap-1.5">
                             <ItemIcon className="w-3.5 h-3.5 shrink-0" style={{ color: pillar.color }} />
-                            <h5 className="text-xs font-bold text-[#0B0F19] truncate">{item.name}</h5>
+                            <h5 className="text-xs font-bold text-[#0B0F19] truncate tracking-tight">{item.name}</h5>
                           </div>
-                          <p className="text-[11px] text-[#333333] mt-1 line-clamp-2 leading-relaxed">
+                          <p className="text-[11px] text-[#475569] mt-1 line-clamp-2 leading-relaxed">
                             {item.description}
                           </p>
                           <div className="mt-1.5 flex items-center gap-1.5">
                             <span
-                              className="text-[9px] font-mono px-1.5 py-0.2 uppercase font-semibold"
-                              style={{ backgroundColor: pillar.bgColor, color: pillar.color }}
+                              className="text-[9px] font-mono px-1.5 py-0.5 uppercase font-bold border"
+                              style={{ backgroundColor: pillar.bgColor, color: pillar.color, borderColor: `${pillar.color}30` }}
                             >
                               Socket: {pillar.socketId}
                             </span>
@@ -153,7 +153,7 @@ export default function Palette({ onAddNode }) {
 
                         <button
                           onClick={() => onAddNode(pillarKey, item)}
-                          className="w-6 h-6 bg-[#00338D] hover:bg-[#005EB8] text-white flex items-center justify-center transition-all shrink-0 mt-0.5"
+                          className="btn-tactile w-6 h-6 bg-[#00338D] hover:bg-[#005EB8] text-white flex items-center justify-center transition-all shrink-0 mt-0.5 border border-[#001E50] shadow-sm"
                           title="Add block to canvas"
                         >
                           <Plus className="w-3.5 h-3.5" />

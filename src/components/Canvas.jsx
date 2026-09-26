@@ -69,12 +69,12 @@ export default function Canvas({
           {
             ...params,
             animated: true,
-            style: { stroke: pillarDef.color, strokeWidth: 2 },
+            style: { stroke: pillarDef.color, strokeWidth: 2.5 },
             markerEnd: {
               type: MarkerType.ArrowClosed,
               color: pillarDef.color,
-              width: 12,
-              height: 12
+              width: 14,
+              height: 14
             }
           },
           eds
@@ -86,39 +86,39 @@ export default function Canvas({
   );
 
   return (
-    <div className="relative w-full h-full bg-[#F5F6F8] overflow-hidden">
+    <div className="relative w-full h-full bg-[#F8F9FB] overflow-hidden select-none">
       {/* Visual Socket Compatibility Bar (Top Banner) */}
-      <div className="absolute top-4 left-6 z-10 flex items-center gap-3 px-4 py-2 bg-[#FFFFFF] border border-[#E0E0E0] shadow-[0_4px_16px_rgba(0,0,0,0.08)] pointer-events-auto">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#00338D] flex items-center gap-1.5 font-['Univers',sans-serif]">
+      <div className="absolute top-4 left-6 z-10 flex items-center gap-3.5 px-4 py-2 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.08)] pointer-events-auto">
+        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#00338D] flex items-center gap-1.5 font-mono">
           <Info className="w-3.5 h-3.5 text-[#00338D]" />
-          Strict Socket Enforcer:
+          Socket Enforcer:
         </span>
         <div className="flex items-center gap-3 text-[10px] font-mono">
-          <span className="flex items-center gap-1 font-bold text-[#00338D]">
+          <span className="flex items-center gap-1.5 font-bold text-[#00338D]">
             <span className="w-2 h-2 bg-[#00338D]" />
             Model
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#009A44]">
+          <span className="flex items-center gap-1.5 font-bold text-[#009A44]">
             <span className="w-2 h-2 bg-[#009A44]" />
             Skills
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#00A3A6]">
+          <span className="flex items-center gap-1.5 font-bold text-[#00A3A6]">
             <span className="w-2 h-2 bg-[#00A3A6]" />
             MCP
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#005EB8]">
+          <span className="flex items-center gap-1.5 font-bold text-[#005EB8]">
             <span className="w-2 h-2 bg-[#005EB8]" />
             Tools
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#EAAA00]">
+          <span className="flex items-center gap-1.5 font-bold text-[#9E6D00]">
             <span className="w-2 h-2 bg-[#EAAA00]" />
             Gateway
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#483698]">
+          <span className="flex items-center gap-1.5 font-bold text-[#483698]">
             <span className="w-2 h-2 bg-[#483698]" />
             Memory
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#6D2077]">
+          <span className="flex items-center gap-1.5 font-bold text-[#6D2077]">
             <span className="w-2 h-2 bg-[#6D2077]" />
             Policies
           </span>
@@ -127,7 +127,7 @@ export default function Canvas({
 
       {/* Invalid Connection Toast Alert */}
       {invalidConnectionAlert && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-5 py-3.5 bg-[#001E50] border-l-4 border-[#6D2077] shadow-[0_8px_24px_rgba(0,0,0,0.2)] text-white">
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3.5 px-5 py-3.5 bg-[#001E50] border-l-4 border-[#6D2077] shadow-[0_12px_32px_rgba(0,30,80,0.35)] text-white">
           <ShieldAlert className="w-5 h-5 text-[#EAAA00] shrink-0" />
           <div className="text-xs">
             <span className="font-bold text-white tracking-wide">Incompatible Socket Rejection: </span>
@@ -140,7 +140,7 @@ export default function Canvas({
           </div>
           <button
             onClick={() => setInvalidConnectionAlert(null)}
-            className="text-xs px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white transition-colors ml-2 font-bold"
+            className="btn-tactile text-xs px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white transition-colors ml-3 font-bold"
           >
             Dismiss
           </button>
@@ -163,15 +163,15 @@ export default function Canvas({
         maxZoom={1.6}
         defaultEdgeOptions={{ animated: true }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#CBD5E1" />
-        <Controls className="!bg-[#FFFFFF] !border-[#E0E0E0] !fill-[#00338D] [&>button]:!bg-[#FFFFFF] [&>button]:!border-[#E0E0E0] [&>button]:!text-[#00338D] hover:[&>button]:!bg-[#F5F6F8]" />
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} color="#CBD5E1" />
+        <Controls className="!bg-[#FFFFFF] !border-[#CBD5E1] !fill-[#00338D] [&>button]:!bg-[#FFFFFF] [&>button]:!border-[#E0E0E0] [&>button]:!text-[#00338D] hover:[&>button]:!bg-[#F5F6F8] !shadow-sm" />
         <MiniMap
           nodeColor={(n) => {
             if (n.type === 'agentCore') return '#00338D';
             return PILLARS[n.data?.pillarType]?.color || '#005EB8';
           }}
-          maskColor="rgba(245, 246, 248, 0.75)"
-          className="!bg-[#FFFFFF] !border-[#E0E0E0] shadow-sm"
+          maskColor="rgba(248, 249, 251, 0.75)"
+          className="!bg-[#FFFFFF] !border-[#CBD5E1] !shadow-sm"
         />
       </ReactFlow>
     </div>

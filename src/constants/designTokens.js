@@ -1,14 +1,16 @@
 /**
  * KEAOS DESIGN TOKENS
- * Direct JavaScript implementation of the design specification in src/design.md
+ * Authoritative JavaScript tokens and helper classes adhering strictly to src/design.md
+ * Enhanced with Emil Kowalski & Taste design engineering craft principles.
  * 
  * Rules for all screens and components:
- * 1. Geometry: Angular 0px border-radius for all containers, cards, inputs, and primary buttons.
+ * 1. Geometry: Angular 0px border-radius for all structural containers, cards, inputs, and buttons.
  * 2. Pills: 9999px border-radius strictly for taxonomy badges, status indicators, and action chips.
  * 3. Color Hierarchy:
  *    - Deep Navy (#001E50): Primary navigation bar and high-contrast dark surfaces.
  *    - Brand Blue (#00338D): Primary CTAs, active states, active tab borders.
  *    - Medium Blue (#005EB8): Hover states on interactive elements.
+ *    - Pacific Blue (#0091DA): Secondary accents, focus outlines, progress indicators.
  *    - Subtle Surface (#F5F6F8): App workspace background, zebra stripes.
  *    - Pure White (#FFFFFF): Primary card surfaces.
  * 4. Strict Anonymity: No proprietary corporate or consulting firm names allowed anywhere.
@@ -77,37 +79,39 @@ export const DESIGN_TOKENS = {
   // Elevation & Shadows (Section 5 of design.md)
   shadows: {
     flat: 'none',
-    cardHover: '0 4px 16px rgba(0, 0, 0, 0.08)',
-    modal: '0 8px 32px rgba(0, 0, 0, 0.20)'
+    cardHover: '0 4px 16px rgba(0, 30, 80, 0.08)',
+    modal: '0 12px 36px rgba(0, 30, 80, 0.25)'
   }
 };
 
 /**
  * Standard Tailwind CSS class strings adhering strictly to design.md
- * Future screens and components should use these helper classes directly.
+ * Enhanced with tactile responses and high-contrast institutional hierarchy.
  */
 export const DESIGN_CLASSES = {
   // Container & Card Classes
   card: 'bg-[#FFFFFF] border border-[#E0E0E0] rounded-none shadow-none',
-  cardHover: 'transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:border-[#00338D]',
+  cardHover: 'transition-all duration-150 hover:shadow-[0_4px_16px_rgba(0,30,80,0.08)] hover:border-[#00338D]',
   
   // Headers & Subheaders
-  screenHeader: 'bg-[#001E50] border-b border-[#00338D] text-white px-6 py-4 flex items-center justify-between',
-  sectionTitle: 'text-sm font-bold text-[#0B0F19] tracking-wide',
-  eyebrow: 'text-[10px] font-bold uppercase tracking-wider text-[#00338D] font-mono',
+  screenHeader: 'bg-[#001E50] border-b border-[#00338D] text-white px-6 py-4 flex items-center justify-between shadow-sm',
+  sectionTitle: 'text-sm font-bold text-[#0B0F19] tracking-tight',
+  eyebrow: 'text-[10px] font-bold uppercase tracking-[0.08em] text-[#00338D] font-mono',
   
-  // Buttons (Angular 0px)
-  buttonPrimary: 'px-4 py-2 text-xs font-bold bg-[#00338D] text-white hover:bg-[#005EB8] rounded-none transition-colors shadow-sm',
-  buttonSecondary: 'px-4 py-2 text-xs font-bold bg-[#FFFFFF] text-[#00338D] border border-[#00338D] hover:bg-[#F5F6F8] rounded-none transition-colors',
-  buttonDanger: 'px-4 py-2 text-xs font-bold bg-[#6D2077] text-white hover:bg-[#470A68] rounded-none transition-colors',
+  // Buttons (Angular 0px with tactile press)
+  buttonPrimary: 'px-4 py-2 text-xs font-bold bg-[#00338D] text-white hover:bg-[#005EB8] active:scale-[0.98] rounded-none transition-all duration-150 shadow-sm border-b-2 border-[#001E50] focus:outline-none focus:ring-2 focus:ring-[#0091DA]',
+  buttonSecondary: 'px-4 py-2 text-xs font-bold bg-[#FFFFFF] text-[#00338D] border border-[#00338D] hover:bg-[#F5F6F8] active:scale-[0.98] rounded-none transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#0091DA]',
+  buttonDanger: 'px-4 py-2 text-xs font-bold bg-[#6D2077] text-white hover:bg-[#470A68] active:scale-[0.98] rounded-none transition-all duration-150 shadow-sm',
+  buttonTertiary: 'px-3 py-1.5 text-xs font-semibold text-[#00338D] hover:bg-[#E6EDF7] active:scale-[0.98] rounded-none transition-all duration-150',
 
   // Status & Taxonomy Pills (9999px Full Pill)
   statusPillActive: 'px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#E6F5EC] text-[#009A44] border border-[#009A44]/30',
   statusPillPending: 'px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#FEF6E6] text-[#EAAA00] border border-[#EAAA00]/30',
   statusPillAlert: 'px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#F2E9F4] text-[#6D2077] border border-[#6D2077]/30',
   statusPillBrand: 'px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20',
+  statusPillDark: 'px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#0B0F19] text-[#94A3B8] border border-[#334155]',
 
   // Form Controls
-  input: 'w-full px-3 py-2 bg-[#F5F6F8] border border-[#E0E0E0] text-xs text-[#0B0F19] rounded-none focus:outline-none focus:border-[#00338D]',
-  textarea: 'w-full p-3 bg-[#F5F6F8] border border-[#E0E0E0] text-xs text-[#0B0F19] rounded-none focus:outline-none focus:border-[#00338D] resize-none'
+  input: 'w-full px-3 py-2 bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#0B0F19] rounded-none focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] transition-colors',
+  textarea: 'w-full p-3 bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#0B0F19] rounded-none focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] resize-none transition-colors'
 };

@@ -30,14 +30,14 @@
   /* Typography Stacks */
   --font-display: "Univers", "Helvetica Neue", Arial, sans-serif;
   --font-body: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  --font-mono: "Consolas", "Monaco", monospace;
+  --font-mono: "Consolas", "Monaco", "Courier New", monospace;
 
   /* Layout & Geometry */
   --radius-sharp: 0px;
   --radius-pill: 9999px;
 
   /* Shadows & Motion */
-  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 4px 16px rgba(0, 30, 80, 0.08);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-quick: 150ms;
 }
@@ -51,6 +51,7 @@ body {
   overflow: hidden;
   user-select: none;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -58,6 +59,25 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Tabular numbers for hashes, metrics, and timestamps */
+.tabular-nums {
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+/* Institutional Tactile Interactive Feedback */
+.btn-tactile {
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-tactile:active {
+  transform: scale(0.98);
+}
+
+/* Institutional Focus Ring */
+.focus-institutional:focus-visible {
+  outline: 2px solid var(--brand-blue-light) !important;
+  outline-offset: 1px !important;
 }
 
 /* ReactFlow Canvas Institutional Styling */
@@ -68,20 +88,20 @@ body {
 .react-flow__handle {
   width: 10px !important;
   height: 10px !important;
-  border-radius: 0px !important; /* Sharp institutional handles */
+  border-radius: 0px !important; /* Sharp institutional handles per design.md */
   border: 2px solid #001E50 !important;
-  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .react-flow__handle:hover {
-  transform: scale(1.4);
+  transform: scale(1.35);
   box-shadow: 0 0 8px currentColor;
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: #F0F2F5;
@@ -106,4 +126,20 @@ body {
 
 .socket-compatible {
   animation: socket-pulse 1.5s infinite;
+}
+
+/* Beacon breathing animation for operational telemetry */
+@keyframes beacon-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
+.beacon-live {
+  animation: beacon-pulse 2s infinite ease-in-out;
 }

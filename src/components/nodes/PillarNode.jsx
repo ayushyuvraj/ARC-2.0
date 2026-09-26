@@ -50,8 +50,10 @@ export default function PillarNode({ id, data, selected }) {
 
   return (
     <div
-      className={`relative w-[230px] bg-[#FFFFFF] border transition-all duration-150 shadow-[0_4px_16px_rgba(0,0,0,0.08)] ${
-        selected ? 'ring-2 ring-[#00338D]/30 border-[#00338D]' : 'border-[#E0E0E0] hover:border-[#00338D]'
+      className={`relative w-[240px] bg-[#FFFFFF] border transition-all duration-150 select-none ${
+        selected
+          ? 'ring-2 ring-[#0091DA] border-[#00338D] shadow-[0_8px_24px_rgba(0,30,80,0.16)] -translate-y-0.5'
+          : 'border-[#CBD5E1] hover:border-[#00338D] shadow-[0_4px_16px_rgba(0,30,80,0.06)] hover:shadow-[0_6px_20px_rgba(0,30,80,0.12)]'
       }`}
       style={{
         borderTop: `3px solid ${pillarDef.color}`
@@ -59,32 +61,32 @@ export default function PillarNode({ id, data, selected }) {
     >
       {/* Node Header */}
       <div className="p-3 border-b border-[#E0E0E0] flex items-center justify-between bg-[#FFFFFF]">
-        <div className="flex items-center gap-2 overflow-hidden">
+        <div className="flex items-center gap-2.5 overflow-hidden">
           <div
-            className="w-6 h-6 flex items-center justify-center shrink-0 border"
+            className="w-7 h-7 flex items-center justify-center shrink-0 border shadow-inner"
             style={{ 
               backgroundColor: pillarDef.bgColor, 
               color: pillarDef.color,
               borderColor: `${pillarDef.color}40`
             }}
           >
-            <IconComponent className="w-3.5 h-3.5" />
+            <IconComponent className="w-4 h-4" />
           </div>
           <div className="overflow-hidden">
             <span
-              className="text-[10px] font-bold tracking-wider uppercase block font-['Univers',sans-serif]"
+              className="text-[9px] font-bold tracking-[0.08em] uppercase block font-mono"
               style={{ color: pillarDef.color }}
             >
               {pillarDef.badge}
             </span>
-            <h4 className="text-xs font-bold text-[#0B0F19] truncate leading-tight">{name}</h4>
+            <h4 className="text-xs font-bold text-[#0B0F19] truncate leading-tight tracking-tight">{name}</h4>
           </div>
         </div>
 
         {onDelete && (
           <button
             onClick={() => onDelete(id)}
-            className="w-5 h-5 hover:bg-[#F5F6F8] text-[#666666] hover:text-[#0B0F19] flex items-center justify-center transition-colors"
+            className="btn-tactile w-5 h-5 hover:bg-[#F5F6F8] text-[#94A3B8] hover:text-[#0B0F19] flex items-center justify-center transition-colors"
             title="Remove block"
           >
             <X className="w-3.5 h-3.5" />
@@ -99,10 +101,10 @@ export default function PillarNode({ id, data, selected }) {
         </p>
 
         {config && Object.keys(config).length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-1">
+          <div className="flex flex-wrap gap-1 pt-1 border-t border-[#F0F2F5]">
             {Object.entries(config).slice(0, 2).map(([k, v]) => (
-              <span key={k} className="text-[9px] font-mono px-1.5 py-0.5 bg-[#F5F6F8] text-[#333333] border border-[#E0E0E0] truncate max-w-[190px]">
-                {k}: {String(v)}
+              <span key={k} className="text-[9px] font-mono px-1.5 py-0.5 bg-[#F8F9FB] text-[#333333] border border-[#E0E0E0] truncate max-w-[200px]">
+                <strong className="text-slate-500 font-semibold">{k}:</strong> {String(v)}
               </span>
             ))}
           </div>
