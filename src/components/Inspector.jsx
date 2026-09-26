@@ -306,7 +306,7 @@ export default function Inspector({
               </div>
 
               <div className="grid grid-cols-1 gap-1.5">
-                {Object.entries(PROVIDERS).map(([pId, def]) => {
+                {Object.entries(PROVIDERS).filter(([_, def]) => !def.disabled).map(([pId, def]) => {
                   const isSelected = currentProvider === pId;
                   const isConfigured = Boolean(getProviderCredential(pId));
                   return (

@@ -43,7 +43,8 @@ export const PROVIDERS = {
     models: ['llama3.3', 'mistral', 'deepseek-r1', 'qwen2.5:14b'],
     docsUrl: 'https://ollama.com',
     placeholder: 'http://localhost:11434',
-    isLocal: true
+    isLocal: true,
+    disabled: true
   },
   openrouter: {
     id: 'openrouter',
@@ -67,7 +68,7 @@ export const PROVIDERS = {
  */
 export function getProviderCredential(providerId) {
   const provider = PROVIDERS[providerId];
-  if (!provider) return null;
+  if (!provider || provider.disabled) return null;
 
   // 1. Check Vite Environment Variable
   const envVal = import.meta.env[provider.envKey];
@@ -81,11 +82,6 @@ export function getProviderCredential(providerId) {
   if (providerId === 'google') {
     const legacy = localStorage.getItem('keaos_gemini_api_key');
     if (legacy && legacy.trim().length > 0) return legacy.trim();
-  }
-
-  // Default for Ollama
-  if (providerId === 'ollama') {
-    return 'http://localhost:11434';
   }
 
   return null;
@@ -111,8 +107,9 @@ export function saveProviderCredential(providerId, value) {
 export function getAllConfiguredProviders() {
   const configured = [];
   for (const [id, def] of Object.entries(PROVIDERS)) {
+    if (def.disabled) continue;
     const cred = getProviderCredential(id);
-    if (cred && (id !== 'ollama' || cred !== 'http://localhost:11434' || localStorage.getItem(def.storageKey))) {
+    if (cred) {
       configured.push(id);
     }
   }

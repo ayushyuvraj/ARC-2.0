@@ -11,10 +11,16 @@ export default function ApiSettingsModal({ isOpen, onClose, onKeyUpdated, initia
 
   useEffect(() => {
     if (isOpen) {
-      if (initialTab) setActiveTab(initialTab);
+      if (initialTab && PROVIDERS[initialTab] && !PROVIDERS[initialTab].disabled) {
+        setActiveTab(initialTab);
+      } else {
+        setActiveTab('google');
+      }
       const initialCreds = {};
       Object.keys(PROVIDERS).forEach((pId) => {
-        initialCreds[pId] = getProviderCredential(pId) || '';
+        if (!PROVIDERS[pId].disabled) {
+          initialCreds[pId] = getProviderCredential(pId) || '';
+        }
       });
       setCredentials(initialCreds);
       setTestResults({});
@@ -23,7 +29,7 @@ export default function ApiSettingsModal({ isOpen, onClose, onKeyUpdated, initia
 
   if (!isOpen) return null;
 
-  const currentDef = PROVIDERS[activeTab];
+  const currentDef = PROVIDERS[activeTab] || PROVIDERS.google;
 
   const handleTestConnection = async (pId) => {
     setTestingProvider(pId);
@@ -86,7 +92,7 @@ export default function ApiSettingsModal({ isOpen, onClose, onKeyUpdated, initia
 
         {/* Provider Tabs */}
         <div className="flex border-b border-[#E0E0E0] bg-[#F8F9FB] px-6 pt-2 gap-1 overflow-x-auto">
-          {Object.entries(PROVIDERS).map(([pId, def]) => {
+          {Object.entries(PROVIDERS).filter(([_, def]) => !def.disabled).map(([pId, def]) => {
             const hasCred = Boolean(credentials[pId] && credentials[pId].trim().length > 0);
             return (
               <button
