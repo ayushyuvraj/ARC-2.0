@@ -25,7 +25,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'agent-core',
       type: 'agentCore',
-      position: { x: 540, y: 200 },
+      position: { x: 540, y: 130 },
       data: {
         name: 'Meeting Intelligence Agent',
         framework,
@@ -47,7 +47,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-model-1',
       type: 'pillar',
-      position: { x: 60, y: 40 },
+      position: { x: 60, y: 10 },
       data: {
         pillarType: 'model',
         name: 'Gemini 2.0 Flash',
@@ -58,7 +58,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-tool-1',
       type: 'pillar',
-      position: { x: 60, y: 220 },
+      position: { x: 60, y: 190 },
       data: {
         pillarType: 'tools',
         toolId: 'tool-audio-transcribe',
@@ -70,7 +70,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-gateway-1',
       type: 'pillar',
-      position: { x: 60, y: 400 },
+      position: { x: 60, y: 370 },
       data: {
         pillarType: 'gateway',
         name: 'Ingress Rate Limiter',
@@ -81,7 +81,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-memory-1',
       type: 'pillar',
-      position: { x: 60, y: 580 },
+      position: { x: 60, y: 550 },
       data: {
         pillarType: 'memory',
         name: 'Episodic Sync Memory',
@@ -93,7 +93,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-skill-1',
       type: 'pillar',
-      position: { x: 1060, y: 30 },
+      position: { x: 1060, y: 10 },
       data: {
         pillarType: 'skills',
         name: 'Executive Summarizer',
@@ -104,7 +104,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-skill-2',
       type: 'pillar',
-      position: { x: 1060, y: 210 },
+      position: { x: 1060, y: 190 },
       data: {
         pillarType: 'skills',
         name: 'Action Item Extractor',
@@ -115,7 +115,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-mcp-1',
       type: 'pillar',
-      position: { x: 1060, y: 390 },
+      position: { x: 1060, y: 370 },
       data: {
         pillarType: 'mcp',
         name: 'Google Calendar MCP',
@@ -126,7 +126,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-policy-1',
       type: 'pillar',
-      position: { x: 1060, y: 570 },
+      position: { x: 1060, y: 550 },
       data: {
         pillarType: 'policies',
         name: 'PII & Confidentiality Redactor',
@@ -137,7 +137,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-audit-1',
       type: 'pillar',
-      position: { x: 1060, y: 750 },
+      position: { x: 1060, y: 730 },
       data: {
         pillarType: 'audit',
         name: 'Cryptographic Audit Trail',
@@ -149,7 +149,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-obs-1',
       type: 'pillar',
-      position: { x: 440, y: 740 },
+      position: { x: 440, y: 670 },
       data: {
         pillarType: 'observability',
         name: 'OpenTelemetry Trace Collector',
@@ -160,7 +160,7 @@ function getInitialNodesAndEdges(framework = FRAMEWORKS[0]) {
     {
       id: 'node-roi-1',
       type: 'pillar',
-      position: { x: 740, y: 740 },
+      position: { x: 740, y: 670 },
       data: {
         pillarType: 'cost_benefit',
         name: 'ROI & Time-Saved Calculator',

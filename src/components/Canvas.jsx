@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -6,7 +6,8 @@ import {
   Background,
   BackgroundVariant,
   addEdge,
-  MarkerType
+  MarkerType,
+  ReactFlowProvider
 } from '@xyflow/react';
 import AgentCoreNode from './nodes/AgentCoreNode';
 import PillarNode from './nodes/PillarNode';
@@ -21,10 +22,13 @@ import {
   GitFork, 
   Database, 
   ShieldCheck, 
+  ShieldAlert,
   Fingerprint, 
   Activity, 
   Coins,
   Plus,
+  Minus,
+  Maximize,
   Search,
   X,
   Layers,
@@ -33,11 +37,11 @@ import {
   Type,
   Sun,
   Moon,
-  ChevronRight,
-  Sparkle,
   ArrowUp,
   PanelRightOpen,
-  PanelRightClose
+  PanelRightClose,
+  Map,
+  GripVertical
 } from 'lucide-react';
 
 const nodeTypes = {
@@ -58,7 +62,22 @@ const PILLAR_ICONS = {
   cost_benefit: Coins
 };
 
-export default function Canvas({
+// Order matching attached Screenshot 1: Model, Skills, MCP, Gateway, Memory, Policies, Audit, Observability, ROI, Tools
+const PILLAR_ORDER = [
+  'model',
+  'skills',
+  'mcp',
+  'gateway',
+  'memory',
+  'policies',
+  'audit',
+  'observability',
+  'cost_benefit',
+  'tools'
+];
+
+
+function CanvasInner({
   nodes,
   setNodes,
   onNodesChange,
@@ -77,9 +96,53 @@ export default function Canvas({
   const [canvasSearch, setCanvasSearch] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark canvas matching Stitch SS
   const [quickPrompt, setQuickPrompt] = useState('');
+  const [isEnforcerActive, setIsEnforcerActive] = useState(true); // Socket enforcer toggle state
+  const [showMiniMap, setShowMiniMap] = useState(true); // Summary Map toggle state
+  const [miniMapPos, setMiniMapPos] = useState({ x: 0, y: 0 }); // Offset for draggable summary map
+  const [isDraggingMiniMap, setIsDraggingMiniMap] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0, initialX: 0, initialY: 0 });
+  const [rfInstance, setRfInstance] = useState(null);
+
+  // Drag handler for summary map header
+  const handleMouseDownMiniMap = (e) => {
+    setIsDraggingMiniMap(true);
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      initialX: miniMapPos.x,
+      initialY: miniMapPos.y
+    };
+  };
+
+  useEffect(() => {
+    if (!isDraggingMiniMap) return;
+
+    const handleMouseMove = (e) => {
+      const dx = e.clientX - dragStartRef.current.x;
+      const dy = e.clientY - dragStartRef.current.y;
+      setMiniMapPos({
+        x: dragStartRef.current.initialX + dx,
+        y: dragStartRef.current.initialY + dy
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDraggingMiniMap(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDraggingMiniMap]);
 
   const isValidConnection = useCallback(
     (connection) => {
+      // If socket enforcer is toggled off manually, allow connection freely
+      if (!isEnforcerActive) return true;
+
       const { source, target, targetHandle } = connection;
       const sourceNode = nodes.find(n => n.id === source);
       const targetNode = nodes.find(n => n.id === target);
@@ -105,7 +168,7 @@ export default function Canvas({
 
       return false;
     },
-    [nodes, setInvalidConnectionAlert]
+    [nodes, isEnforcerActive, setInvalidConnectionAlert]
   );
 
   const onConnect = useCallback(
@@ -152,127 +215,65 @@ export default function Canvas({
 
   const activePillarDef = selectedPillarKey ? PILLARS[selectedPillarKey] : null;
 
+  // Dynamically map theme state into nodes so all nodes update live on canvas
+  const nodesWithTheme = React.useMemo(() => {
+    return nodes.map(n => ({
+      ...n,
+      data: {
+        ...n.data,
+        isDarkMode
+      }
+    }));
+  }, [nodes, isDarkMode]);
+
   return (
     <div className={`relative w-full h-full overflow-hidden select-none transition-colors duration-200 ${
-      isDarkMode ? 'bg-[#10131A] text-white' : 'bg-[#F5F6F8] text-[#0B0F19]'
+      isDarkMode ? 'bg-[#0D111A] text-white' : 'bg-[#F5F6F8] text-[#0B0F19]'
     }`}>
-      {/* Top Left: Socket Enforcer HUD Bar */}
-      <div className={`absolute top-4 left-6 z-10 flex items-center gap-4 px-4 py-2 border shadow-lg pointer-events-auto transition-colors ${
-        isDarkMode 
-          ? 'bg-[#181D28]/95 border-[#2B354B] text-slate-200 backdrop-blur-md' 
-          : 'bg-[#FFFFFF]/95 border-[#CBD5E1] text-[#0B0F19] backdrop-blur-md'
-      }`}>
-        <div className={`flex items-center gap-2 border-r pr-3 ${isDarkMode ? 'border-white/10' : 'border-[#E0E0E0]'}`}>
-          <Info className="w-3.5 h-3.5 text-[#0091DA]" />
-          <span className="text-[10px] font-bold uppercase tracking-widest font-mono text-[#0091DA]">
-            Socket Enforcer:
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3 text-[10px] font-mono">
-          <span className="flex items-center gap-1 font-bold text-[#0091DA]">
-            <Brain className="w-3 h-3 text-[#0091DA]" />
-            Model
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#009A44]">
-            <Sparkles className="w-3 h-3 text-[#009A44]" />
-            Skills
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#00A3A6]">
-            <Server className="w-3 h-3 text-[#00A3A6]" />
-            MCP
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#005EB8]">
-            <Wrench className="w-3 h-3 text-[#005EB8]" />
-            Tools
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#EAAA00]">
-            <GitFork className="w-3 h-3 text-[#EAAA00]" />
-            Gateway
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#483698]">
-            <Database className="w-3 h-3 text-[#483698]" />
-            Memory
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#6D2077]">
-            <ShieldCheck className="w-3 h-3 text-[#6D2077]" />
-            Policies
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#0091DA]">
-            <Fingerprint className="w-3 h-3 text-[#0091DA]" />
-            Audit
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#00A3A6]">
-            <Activity className="w-3 h-3 text-[#00A3A6]" />
-            Telemetry
-          </span>
-          <span className="flex items-center gap-1 font-bold text-[#EAAA00]">
-            <Coins className="w-3 h-3 text-[#EAAA00]" />
-            ROI
-          </span>
-        </div>
-
-        <div className={`border-l pl-3 flex items-center gap-2 text-[10px] font-mono ${isDarkMode ? 'border-white/10 text-slate-400' : 'border-[#E0E0E0] text-slate-500'}`}>
-          <span className="font-bold text-[#0091DA]">{nodes.length}</span> Blocks
-          <span>•</span>
-          <span className="font-bold text-[#0091DA]">{edges.length}</span> Links
-        </div>
-      </div>
-
-      {/* Top Right: Light / Dark Mode Toggle & Inspector Control */}
-      <div className="absolute top-4 right-6 z-20 flex items-center gap-2">
+      {/* 3. COLLAPSED SOCKET ENFORCER SYMBOL BUTTON (Top-Left) */}
+      <div className="absolute top-4 left-6 z-20 group relative">
         <button
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className={`btn-tactile flex items-center gap-2 px-3 py-1.5 border shadow-md transition-all font-mono text-xs font-bold ${
-            isDarkMode
-              ? 'bg-[#181D28] hover:bg-[#202736] border-[#2B354B] text-amber-400'
-              : 'bg-[#FFFFFF] hover:bg-[#F8F9FB] border-[#CBD5E1] text-[#00338D]'
+          onClick={() => setIsEnforcerActive(!isEnforcerActive)}
+          className={`btn-tactile w-10 h-10 flex items-center justify-center border shadow-lg transition-all ${
+            isEnforcerActive
+              ? isDarkMode
+                ? 'bg-[#00338D] border-[#0091DA] text-white'
+                : 'bg-[#001E50] border-[#00338D] text-white'
+              : isDarkMode
+                ? 'bg-[#181D28] border-[#2B354B] text-slate-400 hover:text-white'
+                : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400 hover:text-[#0B0F19]'
           }`}
-          title={isDarkMode ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+          title="Socket Enforcer"
         >
-          {isDarkMode ? (
-            <>
-              <Sun className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-white text-[11px]">Light</span>
-            </>
+          {isEnforcerActive ? (
+            <ShieldCheck className="w-5 h-5 text-[#0091DA]" />
           ) : (
-            <>
-              <Moon className="w-3.5 h-3.5 text-[#00338D]" />
-              <span className="text-[#00338D] text-[11px]">Dark</span>
-            </>
+            <ShieldAlert className="w-5 h-5 text-[#EAAA00]" />
           )}
         </button>
 
-        {setIsInspectorOpen && (
-          <button
-            onClick={() => setIsInspectorOpen(!isInspectorOpen)}
-            className={`btn-tactile flex items-center gap-2 px-3 py-1.5 border shadow-md transition-all font-mono text-xs font-bold ${
-              isDarkMode
-                ? isInspectorOpen
-                  ? 'bg-[#00338D] border-[#0091DA] text-white'
-                  : 'bg-[#181D28] hover:bg-[#202736] border-[#2B354B] text-slate-300'
-                : isInspectorOpen
-                  ? 'bg-[#00338D] border-[#00338D] text-white'
-                  : 'bg-[#FFFFFF] hover:bg-[#F8F9FB] border-[#CBD5E1] text-[#00338D]'
-            }`}
-            title={isInspectorOpen ? 'Collapse Inspector' : 'Open Inspector Panel'}
-          >
-            {isInspectorOpen ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
-            <span>{selectedNode ? 'Inspect Block' : 'Studio HUD'}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#009A44] beacon-live" />
-          </button>
-        )}
+        {/* Hover Tooltip displaying Socket Enforcer Status */}
+        <div className={`absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold whitespace-nowrap shadow-xl border pointer-events-none z-30 animate-in fade-in slide-in-from-left-1 duration-150 ${
+          isDarkMode
+            ? 'bg-[#001438] text-white border-[#00338D]'
+            : 'bg-[#001E50] text-white border-[#00338D]'
+        }`}>
+          <span className={`w-2 h-2 rounded-full ${isEnforcerActive ? 'bg-[#009A44] beacon-live' : 'bg-[#EAAA00]'}`} />
+          <span>Socket Enforcer: {isEnforcerActive ? 'STRICT ENFORCED' : 'BYPASSED'}</span>
+          <span className="text-[10px] text-slate-300 font-normal">(Click to {isEnforcerActive ? 'bypass' : 'enforce'})</span>
+        </div>
       </div>
 
-      {/* LEFT FLOATING VERTICAL TOOLBAR: 10 Pillars Icon-Only Dock (matching Stitch SS right toolbar) */}
+      {/* 1. LEFT 10-PILLARS FLOATING PANEL (Matching Attached SS 1) */}
       <div className="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex items-start gap-3">
-        {/* The 10 Pillar Icon Buttons (Pure Icons - No text normally) */}
-        <div className={`flex flex-col items-center gap-1 p-1.5 border shadow-2xl backdrop-blur-md transition-colors ${
+        {/* Sleek Vertical Icon Panel matching Attached SS 1 */}
+        <div className={`flex flex-col items-center gap-3.5 p-2 border shadow-2xl backdrop-blur-md transition-colors w-13 ${
           isDarkMode 
             ? 'bg-[#181D28]/95 border-[#2B354B] shadow-[0_12px_40px_rgba(0,0,0,0.6)]' 
             : 'bg-[#FFFFFF]/95 border-[#CBD5E1] shadow-[0_12px_40px_rgba(0,30,80,0.12)]'
         }`}>
-          {Object.entries(PILLARS).map(([pillarKey, pillar]) => {
+          {PILLAR_ORDER.map((pillarKey) => {
+            const pillar = PILLARS[pillarKey];
             const Icon = PILLAR_ICONS[pillarKey] || Layers;
             const isSelected = selectedPillarKey === pillarKey;
 
@@ -280,25 +281,21 @@ export default function Canvas({
               <div key={pillarKey} className="relative group">
                 <button
                   onClick={() => handlePillarClick(pillarKey)}
-                  className={`btn-tactile w-10 h-10 flex items-center justify-center transition-all border ${
+                  className={`btn-tactile w-9 h-9 flex items-center justify-center transition-all border ${
                     isSelected
                       ? 'border-[#0091DA] bg-[#0091DA]/20 text-white shadow-md'
                       : isDarkMode
                         ? 'border-transparent text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/15'
                         : 'border-transparent text-slate-600 hover:text-[#00338D] hover:bg-[#F0F4FA] hover:border-[#CBD5E1]'
                   }`}
-                  style={{
-                    borderLeft: isSelected ? `3px solid ${pillar.color}` : undefined
-                  }}
-                  title={pillar.label}
                 >
                   <Icon 
-                    className="w-4 h-4 transition-transform group-hover:scale-110" 
-                    style={{ color: isSelected ? '#0091DA' : pillar.color }} 
+                    className="w-5 h-5 transition-transform group-hover:scale-110" 
+                    style={{ color: pillar.color }} 
                   />
                 </button>
 
-                {/* Text ONLY upon hover tooltip (right side of icon) */}
+                {/* Tooltip ONLY upon hover (right side of icon) */}
                 <div className={`absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-2 px-2.5 py-1.5 text-xs font-mono font-bold whitespace-nowrap shadow-xl border pointer-events-none z-30 animate-in fade-in slide-in-from-left-1 duration-100 ${
                   isDarkMode 
                     ? 'bg-[#001438] text-white border-[#00338D]' 
@@ -313,7 +310,7 @@ export default function Canvas({
           })}
         </div>
 
-        {/* Respective Box upon Click (Floating Popover Box directly next to clicked pillar) */}
+        {/* Respective Popover Box upon Click */}
         {selectedPillarKey && activePillarDef && (
           <div 
             className={`w-[440px] border shadow-2xl animate-in fade-in slide-in-from-left-2 duration-150 z-30 overflow-hidden ${
@@ -426,6 +423,79 @@ export default function Canvas({
         )}
       </div>
 
+      {/* 2. RIGHT BOTTOM HORIZONTAL CONTROL PANEL (+, -, FitView, Theme Toggle, Map Toggle, Studio HUD) */}
+      <div className="absolute bottom-6 right-6 z-20 flex flex-row items-center">
+        <div className={`flex flex-row items-center border shadow-2xl backdrop-blur-md overflow-hidden ${
+          isDarkMode 
+            ? 'bg-[#181D28]/95 border-[#2B354B] text-[#0091DA] divide-x divide-[#2B354B]' 
+            : 'bg-[#FFFFFF]/95 border-[#CBD5E1] text-[#00338D] divide-x divide-[#CBD5E1]'
+        }`}>
+          {/* 1. Zoom In (+) */}
+          <button
+            onClick={() => rfInstance?.zoomIn()}
+            className="w-10 h-10 flex items-center justify-center hover:bg-[#F0F4FA] dark:hover:bg-white/10 transition-colors"
+            title="Zoom In (+)"
+          >
+            <Plus className="w-4 h-4 font-bold" />
+          </button>
+
+          {/* 2. Zoom Out (-) */}
+          <button
+            onClick={() => rfInstance?.zoomOut()}
+            className="w-10 h-10 flex items-center justify-center hover:bg-[#F0F4FA] dark:hover:bg-white/10 transition-colors"
+            title="Zoom Out (-)"
+          >
+            <Minus className="w-4 h-4 font-bold" />
+          </button>
+
+          {/* 3. Fit View ([  ]) */}
+          <button
+            onClick={() => rfInstance?.setViewport({ x: 70, y: 15, zoom: 0.85 })}
+            className="w-10 h-10 flex items-center justify-center hover:bg-[#F0F4FA] dark:hover:bg-white/10 transition-colors"
+            title="Fit View"
+          >
+            <Maximize className="w-4 h-4" />
+          </button>
+
+          {/* 4. Light / Dark Theme Toggle */}
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="w-10 h-10 flex items-center justify-center hover:bg-[#F0F4FA] dark:hover:bg-white/10 transition-colors text-amber-500"
+            title={isDarkMode ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+          >
+            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#00338D]" strokeWidth={2.5} />}
+          </button>
+
+          {/* 5. Summary Map Toggle Button */}
+          <button
+            onClick={() => setShowMiniMap(!showMiniMap)}
+            className={`w-10 h-10 flex items-center justify-center transition-colors ${
+              showMiniMap 
+                ? 'bg-[#00338D]/20 text-[#0091DA]' 
+                : 'hover:bg-[#F0F4FA] dark:hover:bg-white/10 text-slate-400'
+            }`}
+            title={showMiniMap ? 'Hide Summary Map' : 'Show Summary Map'}
+          >
+            <Map className="w-4 h-4" />
+          </button>
+
+          {/* 6. Studio HUD & Inspector Toggle */}
+          {setIsInspectorOpen && (
+            <button
+              onClick={() => setIsInspectorOpen(!isInspectorOpen)}
+              className={`w-10 h-10 flex items-center justify-center transition-colors ${
+                isInspectorOpen 
+                  ? 'bg-[#00338D] text-white' 
+                  : 'hover:bg-[#F0F4FA] dark:hover:bg-white/10 text-[#00338D] dark:text-slate-300'
+              }`}
+              title={isInspectorOpen ? 'Collapse Studio HUD / Inspector' : 'Open Studio HUD / Inspector'}
+            >
+              {isInspectorOpen ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" strokeWidth={2.5} />}
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Incompatible Socket Alert Modal / Toast */}
       {invalidConnectionAlert && (
         <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 px-6 py-3.5 bg-[#001E50] border-l-4 border-[#6D2077] shadow-[0_16px_40px_rgba(0,30,80,0.5)] text-white animate-in slide-in-from-top-3 duration-150">
@@ -486,13 +556,67 @@ export default function Canvas({
         </div>
       </div>
 
+      {/* 3. MOVABLE SUMMARY MAP PANEL WITH CURSOR DRAGGING */}
+      {showMiniMap && (
+        <div 
+          className="absolute z-20 animate-in fade-in zoom-in-95 duration-150"
+          style={{ 
+            bottom: `${80 - miniMapPos.y}px`, 
+            right: `${24 - miniMapPos.x}px` 
+          }}
+        >
+          <div className={`border shadow-2xl backdrop-blur-md overflow-hidden w-64 ${
+            isDarkMode 
+              ? 'bg-[#181D28]/95 border-[#2B354B] text-white' 
+              : 'bg-[#FFFFFF]/95 border-[#CBD5E1] text-[#0B0F19]'
+          }`}>
+            {/* Draggable Header Handle */}
+            <div 
+              onMouseDown={handleMouseDownMiniMap}
+              className={`px-3 py-1.5 flex items-center justify-between border-b cursor-grab active:cursor-grabbing select-none ${
+                isDarkMode ? 'bg-[#10141E] border-[#2B354B]' : 'bg-[#F0F4FA] border-[#CBD5E1]'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold tracking-tight">
+                <GripVertical className="w-3.5 h-3.5 text-slate-400" />
+                <Map className="w-3.5 h-3.5 text-[#0091DA]" />
+                <span>SUMMARY MAP</span>
+              </div>
+              <button
+                onClick={() => setShowMiniMap(false)}
+                className="btn-tactile p-0.5 text-slate-400 hover:text-white transition-colors"
+                title="Close Summary Map"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Canvas Summary Map Preview */}
+            <div className="h-36 relative bg-opacity-40">
+              <MiniMap
+                nodeColor={(n) => {
+                  if (n.type === 'agentCore') return '#00338D';
+                  return PILLARS[n.data?.pillarType]?.color || '#005EB8';
+                }}
+                maskColor={isDarkMode ? 'rgba(16, 19, 26, 0.75)' : 'rgba(245, 246, 248, 0.75)'}
+                className="!m-0 !w-full !h-full !relative !top-0 !left-0 !border-0"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ReactFlow Workspace with Stitch Dot Grid */}
       <ReactFlow
-        nodes={nodes}
+        nodes={nodesWithTheme}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onInit={(instance) => {
+          setRfInstance(instance);
+          instance.setViewport({ x: 70, y: 15, zoom: 0.85 });
+        }}
         onNodeClick={(_, node) => onSelectNode(node)}
         onPaneClick={() => {
           onSelectNode(null);
@@ -500,7 +624,6 @@ export default function Canvas({
         }}
         nodeTypes={nodeTypes}
         isValidConnection={isValidConnection}
-        fitView
         minZoom={0.25}
         maxZoom={1.75}
         defaultEdgeOptions={{ animated: true }}
@@ -509,24 +632,20 @@ export default function Canvas({
           variant={BackgroundVariant.Dots} 
           gap={24} 
           size={1.5} 
-          color={isDarkMode ? '#2D3548' : '#CBD5E1'} 
-        />
-        <Controls className={`!shadow-lg ${
-          isDarkMode 
-            ? '!bg-[#181D28] !border-[#2B354B] !fill-slate-300 [&>button]:!bg-[#181D28] [&>button]:!border-[#2B354B] [&>button]:!text-slate-300 hover:[&>button]:!bg-[#202738]' 
-            : '!bg-[#FFFFFF] !border-[#CBD5E1] !fill-[#00338D] [&>button]:!bg-[#FFFFFF] [&>button]:!border-[#CBD5E1] [&>button]:!text-[#00338D] hover:[&>button]:!bg-[#F5F6F8]'
-        }`} />
-        <MiniMap
-          nodeColor={(n) => {
-            if (n.type === 'agentCore') return '#00338D';
-            return PILLARS[n.data?.pillarType]?.color || '#005EB8';
-          }}
-          maskColor={isDarkMode ? 'rgba(16, 19, 26, 0.85)' : 'rgba(245, 246, 248, 0.85)'}
-          className={`!shadow-lg !bottom-24 !right-6 ${
-            isDarkMode ? '!bg-[#181D28] !border-[#2B354B]' : '!bg-[#FFFFFF] !border-[#CBD5E1]'
-          }`}
+          color={isDarkMode ? '#2B354B' : '#94A3B8'} 
+          style={{ backgroundColor: isDarkMode ? '#0D111A' : '#F5F6F8' }}
         />
       </ReactFlow>
     </div>
   );
 }
+
+export default function Canvas(props) {
+  return (
+    <ReactFlowProvider>
+      <CanvasInner {...props} />
+    </ReactFlowProvider>
+  );
+}
+
+

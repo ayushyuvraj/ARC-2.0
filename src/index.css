@@ -82,7 +82,7 @@ body {
 
 /* ReactFlow Canvas Institutional Styling */
 .react-flow__background {
-  background-color: #F8F9FB !important;
+  /* Dynamic canvas background handled by Canvas component theme */
 }
 
 .react-flow__handle {

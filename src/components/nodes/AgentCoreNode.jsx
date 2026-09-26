@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export default function AgentCoreNode({ data, selected }) {
-  const { name, framework, prompt, temperature, topP, attachedCounts } = data;
+  const { name, framework, prompt, temperature, topP, attachedCounts, isDarkMode } = data;
 
   const totalConnected = Object.values(attachedCounts || {}).reduce(
     (acc, val) => acc + (typeof val === 'number' ? val : val ? 1 : 0), 
@@ -25,10 +25,14 @@ export default function AgentCoreNode({ data, selected }) {
 
   return (
     <div
-      className={`relative w-[460px] bg-[#FFFFFF] border select-none transition-all duration-200 ${
+      className={`relative w-[460px] border select-none transition-all duration-200 ${
+        isDarkMode
+          ? 'bg-[#141824] border-[#2B354B] text-white shadow-[0_16px_40px_rgba(0,0,0,0.5)]'
+          : 'bg-[#FFFFFF] border-[#CBD5E1] text-[#0B0F19] shadow-[0_8px_30px_rgba(0,30,80,0.08)]'
+      } ${
         selected
-          ? 'border-[#00338D] ring-2 ring-[#0091DA] shadow-[0_16px_40px_rgba(0,30,80,0.22)]'
-          : 'border-[#CBD5E1] hover:border-[#00338D] shadow-[0_8px_30px_rgba(0,30,80,0.08)]'
+          ? 'border-[#0091DA] ring-2 ring-[#0091DA]'
+          : isDarkMode ? 'hover:border-[#0091DA]' : 'hover:border-[#00338D]'
       }`}
     >
       {/* 1. Command Header */}
@@ -60,8 +64,10 @@ export default function AgentCoreNode({ data, selected }) {
       </div>
 
       {/* 2. Embedded Directive Console */}
-      <div className="p-4 bg-[#FFFFFF] space-y-4">
-        <div className="bg-[#0B0F19] border border-[#1E293B] p-3 shadow-inner">
+      <div className={`p-4 space-y-4 transition-colors ${isDarkMode ? 'bg-[#141824]' : 'bg-[#FFFFFF]'}`}>
+        <div className={`border p-3 shadow-inner transition-colors ${
+          isDarkMode ? 'bg-[#0B0F19] border-[#1E293B]' : 'bg-[#0B0F19] border-[#1E293B]'
+        }`}>
           <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 pb-2 mb-2 border-b border-[#1E293B]">
             <div className="flex items-center gap-1.5 text-slate-300">
               <Terminal className="w-3.5 h-3.5 text-[#0091DA]" />
@@ -79,10 +85,16 @@ export default function AgentCoreNode({ data, selected }) {
         </div>
 
         {/* 3. Architectural Sockets Port Bay */}
-        <div className="border border-[#CBD5E1] bg-[#F8F9FB] p-3">
-          <div className="flex items-center justify-between text-xs font-bold text-[#0B0F19] mb-3 pb-2 border-b border-[#E0E0E0]">
+        <div className={`border p-3 transition-colors ${
+          isDarkMode ? 'border-[#2B354B] bg-[#181D2A]' : 'border-[#CBD5E1] bg-[#F8F9FB]'
+        }`}>
+          <div className={`flex items-center justify-between text-xs font-bold mb-3 pb-2 border-b ${
+            isDarkMode ? 'text-white border-[#2B354B]' : 'text-[#0B0F19] border-[#E0E0E0]'
+          }`}>
             <span className="tracking-tight">Architectural Socket Matrix</span>
-            <span className="text-[#00338D] text-[10px] font-mono px-2 py-0.5 bg-[#E6EDF7] border border-[#00338D]/20 rounded-full font-bold">
+            <span className={`text-[10px] font-mono px-2 py-0.5 border rounded-full font-bold ${
+              isDarkMode ? 'bg-[#00338D]/40 text-[#0091DA] border-[#0091DA]/30' : 'bg-[#E6EDF7] text-[#00338D] border-[#00338D]/20'
+            }`}>
               {totalConnected} / 10 Connected
             </span>
           </div>
@@ -93,8 +105,8 @@ export default function AgentCoreNode({ data, selected }) {
               {/* Model Socket Row */}
               <div className={`p-2 border flex items-center justify-between transition-colors relative ${
                 attachedCounts?.model 
-                  ? 'bg-[#E6EDF7] border-[#00338D] text-[#00338D]' 
-                  : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
+                  ? isDarkMode ? 'bg-[#00338D]/40 border-[#0091DA] text-white' : 'bg-[#E6EDF7] border-[#00338D] text-[#00338D]' 
+                  : isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-400' : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <Brain className="w-3.5 h-3.5 shrink-0 text-[#00338D]" />
@@ -113,8 +125,8 @@ export default function AgentCoreNode({ data, selected }) {
               {/* Tools Socket Row */}
               <div className={`p-2 border flex items-center justify-between transition-colors relative ${
                 attachedCounts?.tools > 0 
-                  ? 'bg-[#E6EFF8] border-[#005EB8] text-[#005EB8]' 
-                  : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
+                  ? isDarkMode ? 'bg-[#005EB8]/30 border-[#0091DA] text-white' : 'bg-[#E6EFF8] border-[#005EB8] text-[#005EB8]' 
+                  : isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-400' : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <Wrench className="w-3.5 h-3.5 shrink-0 text-[#005EB8]" />
@@ -133,8 +145,8 @@ export default function AgentCoreNode({ data, selected }) {
               {/* Gateway Socket Row */}
               <div className={`p-2 border flex items-center justify-between transition-colors relative ${
                 attachedCounts?.gateway 
-                  ? 'bg-[#FDF7E6] border-[#EAAA00] text-[#9E6D00]' 
-                  : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
+                  ? isDarkMode ? 'bg-[#EAAA00]/20 border-[#EAAA00] text-amber-300' : 'bg-[#FDF7E6] border-[#EAAA00] text-[#9E6D00]' 
+                  : isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-400' : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <GitFork className="w-3.5 h-3.5 shrink-0 text-[#EAAA00]" />
@@ -153,8 +165,8 @@ export default function AgentCoreNode({ data, selected }) {
               {/* Memory Socket Row */}
               <div className={`p-2 border flex items-center justify-between transition-colors relative ${
                 attachedCounts?.memory 
-                  ? 'bg-[#EFEBF5] border-[#483698] text-[#483698]' 
-                  : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
+                  ? isDarkMode ? 'bg-[#483698]/30 border-[#483698] text-purple-200' : 'bg-[#EFEBF5] border-[#483698] text-[#483698]' 
+                  : isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-400' : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <Database className="w-3.5 h-3.5 shrink-0 text-[#483698]" />
@@ -176,8 +188,8 @@ export default function AgentCoreNode({ data, selected }) {
               {/* Skills Socket Row */}
               <div className={`p-2 border flex items-center justify-between transition-colors relative ${
                 attachedCounts?.skills > 0 
-                  ? 'bg-[#E6F5EC] border-[#009A44] text-[#009A44]' 
-                  : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
+                  ? isDarkMode ? 'bg-[#009A44]/20 border-[#009A44] text-emerald-300' : 'bg-[#E6F5EC] border-[#009A44] text-[#009A44]' 
+                  : isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-400' : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 shrink-0 text-[#009A44]" />
@@ -196,8 +208,8 @@ export default function AgentCoreNode({ data, selected }) {
               {/* MCP Socket Row */}
               <div className={`p-2 border flex items-center justify-between transition-colors relative ${
                 attachedCounts?.mcp > 0 
-                  ? 'bg-[#E6F6F6] border-[#00A3A6] text-[#00A3A6]' 
-                  : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
+                  ? isDarkMode ? 'bg-[#00A3A6]/20 border-[#00A3A6] text-teal-300' : 'bg-[#E6F6F6] border-[#00A3A6] text-[#00A3A6]' 
+                  : isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-400' : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <Server className="w-3.5 h-3.5 shrink-0 text-[#00A3A6]" />
@@ -216,8 +228,8 @@ export default function AgentCoreNode({ data, selected }) {
               {/* Policies Socket Row */}
               <div className={`p-2 border flex items-center justify-between transition-colors relative ${
                 attachedCounts?.policies > 0 
-                  ? 'bg-[#F2E9F4] border-[#6D2077] text-[#6D2077]' 
-                  : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
+                  ? isDarkMode ? 'bg-[#6D2077]/30 border-[#6D2077] text-pink-200' : 'bg-[#F2E9F4] border-[#6D2077] text-[#6D2077]' 
+                  : isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-400' : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-[#6D2077]" />
@@ -234,9 +246,11 @@ export default function AgentCoreNode({ data, selected }) {
               </div>
 
               {/* Audit Socket Row */}
-              <div className="p-2 border border-[#001E50] bg-[#001E50]/5 text-[#001E50] flex items-center justify-between relative">
+              <div className={`p-2 border flex items-center justify-between relative transition-colors ${
+                isDarkMode ? 'border-[#00338D] bg-[#001E50]/40 text-slate-200' : 'border-[#001E50] bg-[#001E50]/5 text-[#001E50]'
+              }`}>
                 <div className="flex items-center gap-2">
-                  <Fingerprint className="w-3.5 h-3.5 shrink-0 text-[#001E50]" />
+                  <Fingerprint className="w-3.5 h-3.5 shrink-0 text-[#0091DA]" />
                   <span className="font-bold text-[11px]">Audit Ledger</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">SHA-256</span>
@@ -254,7 +268,9 @@ export default function AgentCoreNode({ data, selected }) {
       </div>
 
       {/* Bottom Observability & Cost-Benefit Handles */}
-      <div className="px-5 py-2.5 bg-[#F8F9FB] border-t border-[#E0E0E0] flex items-center justify-between text-[11px] font-mono font-bold text-slate-600 relative">
+      <div className={`px-5 py-2.5 border-t flex items-center justify-between text-[11px] font-mono font-bold transition-colors ${
+        isDarkMode ? 'bg-[#10141E] border-[#2B354B] text-slate-300' : 'bg-[#F8F9FB] border-[#E0E0E0] text-slate-600'
+      }`}>
         <div className="flex items-center gap-2 relative">
           <Activity className="w-3.5 h-3.5 text-[#0091DA]" />
           <span>Observability Span</span>
