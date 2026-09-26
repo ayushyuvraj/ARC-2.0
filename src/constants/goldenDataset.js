@@ -2,7 +2,11 @@ export const DEFAULT_THRESHOLDS = {
   faithfulnessScore: 85, // %
   actionItemF1: 90, // %
   piiRedactionRate: 100, // %
-  maxLatencySeconds: 4.0 // s
+  maxLatencySeconds: 4.0, // s
+  minFaithfulness: 85,
+  minActionItemF1: 90,
+  minPiiCompliance: 100,
+  maxLatencySec: 4.0
 };
 
 export const INITIAL_GOLDEN_DATASET = [

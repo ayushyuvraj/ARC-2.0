@@ -9,10 +9,10 @@ import {
   CheckCircle2, 
   Lock, 
   Layers,
-  ChevronRight,
   Key,
   ShieldCheck,
-  Activity
+  Activity,
+  Cpu
 } from 'lucide-react';
 
 export default function Header({
@@ -34,41 +34,41 @@ export default function Header({
     { id: 'code', label: 'Export SDK', icon: Code2 },
     { id: 'audit', label: 'Audit Ledger', icon: ShieldCheck },
     { id: 'observability', label: 'Observability', icon: Activity },
-    { id: 'catalog', label: 'Pillars Catalog', icon: Layers }
+    { id: 'catalog', label: 'Pillars Catalog', icon: Cpu }
   ];
 
   return (
-    <header className="h-16 px-6 bg-[#001E50] border-b border-[#00338D] flex items-center justify-between shrink-0 z-30 shadow-[0_4px_20px_rgba(0,30,80,0.35)] select-none">
-      {/* Brand & Active Use Case Meta */}
+    <header className="h-16 px-6 bg-[#001E50] border-b-2 border-[#00338D] flex items-center justify-between shrink-0 z-30 shadow-[0_4px_24px_rgba(0,30,80,0.4)] select-none">
+      {/* Brand & Active Architecture Meta */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#00338D] border border-[#0091DA]/40 flex items-center justify-center text-white shadow-inner">
-            <Bot className="w-5 h-5" />
+          <div className="w-10 h-10 bg-[#00338D] border border-[#0091DA]/60 flex items-center justify-center text-white shadow-inner">
+            <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold tracking-tight text-white text-base font-['Univers',sans-serif]">
+              <span className="font-extrabold tracking-tight text-white text-lg font-['Univers',sans-serif]">
                 KEAOS
               </span>
-              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full bg-[#005EB8] text-white border border-[#0091DA]/30">
-                STUDIO
+              <span className="text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#005EB8] text-white border border-[#0091DA]/40">
+                STUDIO OS
               </span>
             </div>
-            <p className="text-[11px] text-slate-300 font-medium tracking-wide">Enterprise Agent Studio</p>
+            <p className="text-[11px] text-slate-300 font-medium tracking-wide">Enterprise Agent Operating Studio</p>
           </div>
         </div>
 
-        <div className="h-8 w-px bg-white/15" />
+        <div className="h-8 w-px bg-white/20" />
 
         {/* Current Use Case Info */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <div className="flex flex-col">
-            <span className="text-[9px] uppercase font-bold tracking-[0.1em] text-slate-400 font-mono">
+            <span className="text-[9px] uppercase font-bold tracking-widest text-slate-400 font-mono">
               Active Specification
             </span>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-white tracking-tight">{activeUseCase.name}</span>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full font-mono bg-[#00338D] text-slate-100 border border-[#0091DA]/40 font-medium shadow-sm">
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-sm font-bold text-white tracking-tight">{activeUseCase.name}</span>
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full font-mono bg-[#00338D] text-slate-100 border border-[#0091DA]/50 font-bold shadow-sm">
                 {activeUseCase.framework.name}
               </span>
             </div>
@@ -76,8 +76,8 @@ export default function Header({
         </div>
       </div>
 
-      {/* Navigation View Modes */}
-      <nav className="flex items-center bg-[#001438] p-0.5 border border-[#00338D]/80 shadow-inner">
+      {/* Navigation View Modes (Instrument Switcher) */}
+      <nav className="flex items-center bg-[#001438] p-1 border border-[#00338D] shadow-inner">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = viewMode === tab.id;
@@ -85,19 +85,19 @@ export default function Header({
             <button
               key={tab.id}
               onClick={() => setViewMode(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-none transition-all duration-150 relative ${
+              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-none transition-all duration-150 relative ${
                 isActive
                   ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#0091DA]'
-                  : 'text-slate-300 hover:text-white hover:bg-white/[0.06] border-b-2 border-transparent'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.08] border-b-2 border-transparent'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#0091DA]' : 'text-slate-400'}`} />
               <span>{tab.label}</span>
               {tab.pulse && !isActive && (
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00A3A6] beacon-live" />
               )}
               {tab.badge && (
-                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-[#009A44] text-white">
+                <span className="text-[9px] font-mono font-bold px-1.5 rounded-full bg-[#009A44] text-white shadow-sm">
                   {tab.badge}
                 </span>
               )}
@@ -106,20 +106,20 @@ export default function Header({
         })}
       </nav>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-2.5">
+      {/* Action Buttons Cluster */}
+      <div className="flex items-center gap-3">
         <button
           onClick={onOpenApiSettings}
-          className={`btn-tactile flex items-center gap-2 px-3 py-1.5 text-xs font-semibold border rounded-none shadow-sm ${
+          className={`btn-tactile flex items-center gap-2 px-3 py-1.5 text-xs font-bold border rounded-none shadow-sm ${
             hasApiKey
-              ? 'bg-[#009A44]/15 border-[#009A44] text-[#E6F5EC] hover:bg-[#009A44]/25'
-              : 'bg-[#EAAA00]/15 border-[#EAAA00] text-[#FDF7E6] hover:bg-[#EAAA00]/25'
+              ? 'bg-[#009A44]/20 border-[#009A44] text-[#E6F5EC] hover:bg-[#009A44]/30'
+              : 'bg-[#EAAA00]/20 border-[#EAAA00] text-[#FDF7E6] hover:bg-[#EAAA00]/30'
           }`}
           title="Configure real LLM providers (Google, Anthropic, OpenAI, Ollama, OpenRouter)"
         >
           <span className={`w-2 h-2 rounded-full ${hasApiKey ? 'bg-[#009A44] beacon-live' : 'bg-[#EAAA00]'}`} />
           <Key className="w-3.5 h-3.5" />
-          <span className="font-mono text-[11px] font-semibold">{hasApiKey ? `LLMs: ${configuredCount || 1} Active` : 'Set LLM APIs'}</span>
+          <span className="font-mono text-[11px] font-bold">{hasApiKey ? `LLMs: ${configuredCount || 1} Active` : 'Set LLM APIs'}</span>
         </button>
 
         <button
@@ -133,7 +133,7 @@ export default function Header({
 
         <button
           onClick={onOpenMakeModal}
-          className="btn-tactile flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold bg-[#005EB8] hover:bg-[#00478F] text-white rounded-none shadow-sm border-b-2 border-[#001E50]"
+          className="btn-tactile flex items-center gap-2 px-4 py-1.5 text-xs font-bold bg-[#005EB8] hover:bg-[#00478F] text-white rounded-none shadow-sm border-b-2 border-[#001E50]"
         >
           <Plus className="w-4 h-4" />
           <span>Make Use Case</span>
@@ -141,7 +141,7 @@ export default function Header({
 
         <button
           onClick={onDeployClick}
-          className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-none shadow-sm transition-all ${
+          className={`btn-tactile flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-none shadow-sm transition-all ${
             evaluationPassed
               ? 'bg-[#009A44] hover:bg-[#007A36] text-white cursor-pointer border-b-2 border-[#004D22]'
               : 'bg-white/10 text-slate-400 border border-white/15 cursor-not-allowed opacity-80'

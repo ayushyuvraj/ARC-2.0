@@ -16,7 +16,8 @@ import {
   ChevronRight,
   Mic,
   FileText,
-  Type
+  Type,
+  Plug
 } from 'lucide-react';
 import { PILLARS } from '../constants/pillars';
 
@@ -53,27 +54,27 @@ export default function Palette({ onAddNode }) {
   };
 
   return (
-    <aside className="w-80 h-full bg-[#FFFFFF] border-r border-[#E0E0E0] flex flex-col shrink-0 overflow-hidden shadow-sm select-none">
+    <aside className="w-84 h-full bg-[#FFFFFF] border-r border-[#CBD5E1] flex flex-col shrink-0 overflow-hidden shadow-sm select-none">
       {/* Header */}
       <div className="p-4 border-b border-[#E0E0E0] bg-[#F8F9FB]">
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#00338D] font-mono">
-            Component Taxonomy
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#00338D] font-mono">
+            Component Dock
           </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20 font-bold">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/30 font-bold">
             10 PILLARS
           </span>
         </div>
 
         {/* Search */}
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Filter skills, MCP, models, tools..."
+            placeholder="Search skills, MCP, tools, models..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] placeholder-slate-400 focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
+            className="w-full pl-9 pr-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] placeholder-slate-400 focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none transition-colors"
           />
         </div>
       </div>
@@ -92,36 +93,47 @@ export default function Palette({ onAddNode }) {
           if (search && filteredItems.length === 0) return null;
 
           return (
-            <div key={pillarKey} className="border border-[#CBD5E1] bg-[#FFFFFF] overflow-hidden shadow-sm transition-all">
+            <div 
+              key={pillarKey} 
+              className="border border-[#CBD5E1] bg-[#FFFFFF] overflow-hidden shadow-sm transition-all"
+              style={{ borderLeft: `3px solid ${pillar.color}` }}
+            >
               {/* Category Header */}
               <button
                 onClick={() => toggleCategory(pillarKey)}
-                className="w-full px-3 py-2.5 flex items-center justify-between hover:bg-[#F5F6F8] transition-colors text-left border-b border-transparent"
+                className="w-full px-3 py-2.5 flex items-center justify-between hover:bg-[#F5F6F8] transition-colors text-left"
               >
                 <div className="flex items-center gap-2.5">
                   <div
-                    className="w-5 h-5 flex items-center justify-center shrink-0 border"
+                    className="w-6 h-6 flex items-center justify-center shrink-0 shadow-inner"
                     style={{ 
                       backgroundColor: pillar.bgColor, 
                       color: pillar.color,
-                      borderColor: `${pillar.color}40`
+                      border: `1px solid ${pillar.color}40`
                     }}
                   >
-                    <Icon className="w-3 h-3" />
+                    <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs font-bold text-[#0B0F19] tracking-tight">{pillar.label}</span>
-                  <span className="text-[10px] font-mono text-slate-400">({pillar.items.length})</span>
+                  <div>
+                    <span className="text-xs font-bold text-[#0B0F19] tracking-tight block">{pillar.label}</span>
+                    <span className="text-[9px] font-mono text-slate-500">Port: {pillar.socketId}</span>
+                  </div>
                 </div>
-                {isOpen ? (
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
-                ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                )}
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 bg-[#F8F9FB] border border-[#CBD5E1] text-slate-600">
+                    {pillar.items.length}
+                  </span>
+                  {isOpen ? (
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                  ) : (
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                  )}
+                </div>
               </button>
 
               {/* Items List */}
               {isOpen && (
-                <div className="p-2 space-y-1.5 border-t border-[#E0E0E0] bg-[#FAFAFC]">
+                <div className="p-2 space-y-2 border-t border-[#E0E0E0] bg-[#FAFAFC]">
                   {filteredItems.map((item) => {
                     let ItemIcon = Icon;
                     if (item.id === 'tool-audio-transcribe') ItemIcon = Mic;
@@ -131,7 +143,7 @@ export default function Palette({ onAddNode }) {
                     return (
                       <div
                         key={item.id}
-                        className="group p-2.5 border border-[#E0E0E0] bg-[#FFFFFF] hover:border-[#00338D] hover:translate-x-0.5 transition-all duration-150 flex items-start justify-between gap-2 shadow-[0_2px_4px_rgba(0,30,80,0.02)] hover:shadow-[0_4px_8px_rgba(0,30,80,0.08)]"
+                        className="group p-2.5 border border-[#E0E0E0] bg-[#FFFFFF] hover:border-[#00338D] hover:translate-x-1 transition-all duration-150 flex items-start justify-between gap-2 shadow-[0_2px_4px_rgba(0,30,80,0.02)] hover:shadow-[0_4px_12px_rgba(0,30,80,0.08)]"
                       >
                         <div className="flex-1 overflow-hidden">
                           <div className="flex items-center gap-1.5">
@@ -141,22 +153,23 @@ export default function Palette({ onAddNode }) {
                           <p className="text-[11px] text-[#475569] mt-1 line-clamp-2 leading-relaxed">
                             {item.description}
                           </p>
-                          <div className="mt-1.5 flex items-center gap-1.5">
+                          <div className="mt-2 flex items-center gap-1.5">
                             <span
-                              className="text-[9px] font-mono px-1.5 py-0.5 uppercase font-bold border"
-                              style={{ backgroundColor: pillar.bgColor, color: pillar.color, borderColor: `${pillar.color}30` }}
+                              className="text-[9px] font-mono px-1.5 py-0.5 uppercase font-bold border flex items-center gap-1"
+                              style={{ backgroundColor: pillar.bgColor, color: pillar.color, borderColor: `${pillar.color}40` }}
                             >
-                              Socket: {pillar.socketId}
+                              <Plug className="w-2.5 h-2.5" />
+                              {pillar.socketId}
                             </span>
                           </div>
                         </div>
 
                         <button
                           onClick={() => onAddNode(pillarKey, item)}
-                          className="btn-tactile w-6 h-6 bg-[#00338D] hover:bg-[#005EB8] text-white flex items-center justify-center transition-all shrink-0 mt-0.5 border border-[#001E50] shadow-sm"
-                          title="Add block to canvas"
+                          className="btn-tactile w-7 h-7 bg-[#00338D] hover:bg-[#005EB8] text-white flex items-center justify-center transition-all shrink-0 mt-0.5 border border-[#001E50] shadow-sm"
+                          title="Add block to visual canvas"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-4 h-4" />
                         </button>
                       </div>
                     );

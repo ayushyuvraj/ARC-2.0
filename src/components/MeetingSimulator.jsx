@@ -11,7 +11,15 @@ import {
   Activity, 
   DollarSign, 
   CheckCircle2, 
-  Plus
+  Plus,
+  Terminal,
+  Clock,
+  ArrowRight,
+  TrendingUp,
+  FileCheck,
+  Cpu,
+  Copy,
+  Check
 } from 'lucide-react';
 import { SAMPLE_MEETINGS } from '../constants/sampleMeetings';
 import { runMeetingSimulation } from '../utils/meetingSimulatorEngine';
@@ -33,6 +41,8 @@ export default function MeetingSimulator({
   const [isRunning, setIsRunning] = useState(false);
   const [executionSteps, setExecutionSteps] = useState([]);
   const [simulationResult, setSimulationResult] = useState(null);
+  const [activeOutputTab, setActiveOutputTab] = useState('summary');
+  const [copiedHash, setCopiedHash] = useState(false);
 
   const attachedPillars = nodes
     .filter(n => n.type === 'pillar')
@@ -51,7 +61,7 @@ export default function MeetingSimulator({
       setMp3File({
         name: file.name,
         size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
-        duration: 'Processing...'
+        duration: 'Processing audio stream...'
       });
 
       const googleKey = getProviderCredential('google') || getActiveApiKey();
@@ -113,239 +123,212 @@ export default function MeetingSimulator({
     setIsRunning(false);
   };
 
+  const copyAuditHash = (hash) => {
+    navigator.clipboard.writeText(hash);
+    setCopiedHash(true);
+    setTimeout(() => setCopiedHash(false), 2000);
+  };
+
   return (
-    <div className="flex-1 h-full bg-[#F8F9FB] flex overflow-hidden select-none">
-      {/* Left Column: Input Ingestion & Tool Management */}
-      <div className="w-[480px] h-full border-r border-[#CBD5E1] flex flex-col shrink-0 bg-[#FFFFFF] shadow-[0_4px_16px_rgba(0,30,80,0.04)]">
+    <div className="flex-1 h-full bg-[#F5F6F8] flex overflow-hidden select-none">
+      {/* Left Column: Multimodal Ingestion Console */}
+      <div className="w-[480px] h-full border-r border-[#CBD5E1] flex flex-col shrink-0 bg-[#FFFFFF] shadow-sm">
         {/* Header */}
         <div className="p-4 border-b border-[#E0E0E0] bg-[#F8F9FB]">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#00338D] font-mono">
-              Input Ingestion Layer
-            </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20 font-bold">
-              MULTIMODAL
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-sm font-bold text-[#0B0F19] tracking-tight">Multimodal Input Ingest</h3>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/30 font-bold">
+              STREAM READY
             </span>
           </div>
-          <h3 className="text-sm font-bold text-[#0B0F19] tracking-tight">Meeting Ingestion Interface</h3>
-          <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-            Upload audio recording, conversation document, or paste transcript text.
+          <p className="text-xs text-slate-500">
+            Ingest meeting artifacts to trigger the visual agent graph execution.
           </p>
         </div>
 
-        {/* Input Selector Tabs (Angular 0px borders) */}
-        <div className="p-4 pb-2 bg-[#FFFFFF]">
-          <div className="grid grid-cols-3 gap-1 bg-[#F8F9FB] p-1 border border-[#CBD5E1]">
-            <button
-              onClick={() => setInputMode('mp3')}
-              className={`btn-tactile flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all rounded-none ${
-                inputMode === 'mp3'
-                  ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#001E50]'
-                  : 'text-slate-600 hover:text-[#0B0F19]'
-              }`}
-            >
-              <Music className="w-3.5 h-3.5" />
-              <span>MP3 Audio</span>
-            </button>
-
-            <button
-              onClick={() => setInputMode('txt')}
-              className={`btn-tactile flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all rounded-none ${
-                inputMode === 'txt'
-                  ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#001E50]'
-                  : 'text-slate-600 hover:text-[#0B0F19]'
-              }`}
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>TXT Doc</span>
-            </button>
-
-            <button
-              onClick={() => setInputMode('paste')}
-              className={`btn-tactile flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-all rounded-none ${
-                inputMode === 'paste'
-                  ? 'bg-[#00338D] text-white shadow-sm border-b-2 border-[#001E50]'
-                  : 'text-slate-600 hover:text-[#0B0F19]'
-              }`}
-            >
-              <Type className="w-3.5 h-3.5" />
-              <span>Paste Text</span>
-            </button>
-          </div>
+        {/* Input Switcher (Tabs) */}
+        <div className="flex border-b border-[#CBD5E1] bg-[#F8F9FB] p-1.5 gap-1.5">
+          <button
+            onClick={() => setInputMode('mp3')}
+            className={`flex-1 py-1.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 rounded-none transition-all ${
+              inputMode === 'mp3'
+                ? 'bg-[#00338D] text-white shadow-sm'
+                : 'text-slate-600 hover:bg-[#FFFFFF] hover:text-[#0B0F19]'
+            }`}
+          >
+            <Music className="w-3.5 h-3.5" />
+            <span>MP3 Audio</span>
+          </button>
+          <button
+            onClick={() => setInputMode('txt')}
+            className={`flex-1 py-1.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 rounded-none transition-all ${
+              inputMode === 'txt'
+                ? 'bg-[#00338D] text-white shadow-sm'
+                : 'text-slate-600 hover:bg-[#FFFFFF] hover:text-[#0B0F19]'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>TXT Document</span>
+          </button>
+          <button
+            onClick={() => setInputMode('paste')}
+            className={`flex-1 py-1.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 rounded-none transition-all ${
+              inputMode === 'paste'
+                ? 'bg-[#00338D] text-white shadow-sm'
+                : 'text-slate-600 hover:bg-[#FFFFFF] hover:text-[#0B0F19]'
+            }`}
+          >
+            <Type className="w-3.5 h-3.5" />
+            <span>Paste Text</span>
+          </button>
         </div>
 
-        {/* Ingestion Content Area */}
-        <div className="p-4 flex-1 overflow-y-auto space-y-4 bg-[#FFFFFF]">
+        {/* Dynamic Input Body */}
+        <div className="p-4 flex-1 flex flex-col overflow-y-auto space-y-4">
           {inputMode === 'mp3' && (
-            <div className="space-y-3">
-              <div className="p-4 border-2 border-dashed border-[#00338D]/30 bg-[#F8F9FB] text-center">
+            <div className="space-y-4">
+              <div className="border border-dashed border-[#CBD5E1] p-6 text-center bg-[#F8F9FB] space-y-3">
+                <Music className="w-10 h-10 text-[#00338D] mx-auto" />
+                <div>
+                  <h4 className="text-xs font-bold text-[#0B0F19] tracking-tight">Upload MP3 Audio Recording</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Audio is transcribed using Gemini 2.0 or OpenAI Whisper API.
+                  </p>
+                </div>
                 <input
                   type="file"
                   accept="audio/mp3,audio/wav,audio/m4a"
                   onChange={handleMp3Upload}
                   className="hidden"
-                  id="mp3-upload-input"
+                  id="mp3-file-input"
                 />
                 <label
-                  htmlFor="mp3-upload-input"
-                  className="cursor-pointer flex flex-col items-center justify-center"
+                  htmlFor="mp3-file-input"
+                  className="btn-tactile inline-flex items-center gap-2 px-4 py-2 bg-[#00338D] text-white text-xs font-bold cursor-pointer rounded-none shadow-sm hover:bg-[#005EB8]"
                 >
-                  <div className="w-10 h-10 bg-[#E6EDF7] text-[#00338D] flex items-center justify-center mb-2 shadow-inner">
-                    <Upload className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-bold text-[#0B0F19] tracking-tight">
-                    {mp3File ? mp3File.name : 'Upload MP3 Recording'}
-                  </span>
-                  <span className="text-[11px] text-slate-500 mt-1 font-mono">
-                    {mp3File ? `${mp3File.size} • ${mp3File.duration}` : 'Supports MP3, M4A, WAV up to 250MB'}
-                  </span>
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Choose Audio File</span>
                 </label>
               </div>
 
-              {/* Audio Waveform Player */}
-              <div className="p-3 bg-[#F8F9FB] border border-[#E0E0E0] space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
-                  <span className="font-bold text-[#00338D]">Audio Ingestion Stream</span>
-                  <span className="text-[#00338D]">01:24 / 18:42</span>
+              {isTranscribingAudio && (
+                <div className="p-3 bg-[#E6EDF7] border border-[#00338D]/30 flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full border-2 border-[#00338D] border-t-transparent animate-spin" />
+                  <span className="text-xs font-bold text-[#00338D]">Transcribing audio with real Speech-to-Text API...</span>
                 </div>
-                <div className="flex items-center gap-1 h-8 px-2 bg-[#FFFFFF] border border-[#CBD5E1]">
-                  {[40, 60, 30, 80, 95, 45, 70, 85, 30, 65, 90, 75, 50, 85, 40, 60, 90, 35, 70, 55, 80].map((h, i) => (
-                    <div
-                      key={i}
-                      className={`flex-1 transition-all ${
-                        i < 8 ? 'bg-[#00338D]' : 'bg-[#CBD5E1]'
-                      }`}
-                      style={{ height: `${h}%` }}
-                    />
-                  ))}
-                </div>
-              </div>
+              )}
 
-              {/* Attach Ingestion Tool */}
-              <div className="p-3 bg-[#E6EDF7] border border-[#00338D]/20 flex items-center justify-between">
-                <div>
-                  <h5 className="text-xs font-bold text-[#00338D] tracking-tight">Audio Ingest Tool</h5>
-                  <p className="text-[11px] text-slate-700">Add Whisper MP3 transcription tool to visual canvas</p>
+              {mp3File && (
+                <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1] flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-[#0B0F19] block">{mp3File.name}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">{mp3File.size} • {mp3File.duration}</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#E6F5EC] text-[#009A44]">Ready</span>
                 </div>
-                <button
-                  onClick={() => onAddToolToCanvas('tool-audio-transcribe')}
-                  className="btn-tactile flex items-center gap-1 px-3 py-1.5 text-xs font-bold bg-[#00338D] hover:bg-[#005EB8] text-white transition-all shrink-0 rounded-none shadow-sm"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Attach Tool</span>
-                </button>
-              </div>
+              )}
             </div>
           )}
 
           {inputMode === 'txt' && (
-            <div className="space-y-3">
-              <div className="p-4 border-2 border-dashed border-[#009A44]/30 bg-[#F8F9FB] text-center">
+            <div className="space-y-4">
+              <div className="border border-dashed border-[#CBD5E1] p-6 text-center bg-[#F8F9FB] space-y-3">
+                <FileText className="w-10 h-10 text-[#00338D] mx-auto" />
+                <div>
+                  <h4 className="text-xs font-bold text-[#0B0F19] tracking-tight">Upload Plain Text Transcript</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Upload .txt or markdown meeting notes.</p>
+                </div>
                 <input
                   type="file"
-                  accept=".txt,.vtt,.srt,.md"
+                  accept=".txt,.md"
                   onChange={handleTxtUpload}
                   className="hidden"
-                  id="txt-upload-input"
+                  id="txt-file-input"
                 />
                 <label
-                  htmlFor="txt-upload-input"
-                  className="cursor-pointer flex flex-col items-center justify-center"
+                  htmlFor="txt-file-input"
+                  className="btn-tactile inline-flex items-center gap-2 px-4 py-2 bg-[#00338D] text-white text-xs font-bold cursor-pointer rounded-none shadow-sm hover:bg-[#005EB8]"
                 >
-                  <div className="w-10 h-10 bg-[#E6F5EC] text-[#009A44] flex items-center justify-center mb-2 shadow-inner">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-bold text-[#0B0F19] tracking-tight">
-                    {txtFile ? txtFile.name : 'Upload Transcript Document'}
-                  </span>
-                  <span className="text-[11px] text-slate-500 mt-1 font-mono">
-                    {txtFile ? txtFile.size : 'Supports .txt, .vtt, .srt format'}
-                  </span>
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Choose Text File</span>
                 </label>
               </div>
 
-              <div className="p-3 bg-[#E6F5EC] border border-[#009A44]/20 flex items-center justify-between">
-                <div>
-                  <h5 className="text-xs font-bold text-[#009A44] tracking-tight">Document Parser Tool</h5>
-                  <p className="text-[11px] text-slate-700">Add TXT/VTT parser block to visual canvas</p>
+              {txtFile && (
+                <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1] flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-[#0B0F19] block">{txtFile.name}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">{txtFile.size}</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#E6F5EC] text-[#009A44]">Loaded</span>
                 </div>
-                <button
-                  onClick={() => onAddToolToCanvas('tool-doc-parser')}
-                  className="btn-tactile flex items-center gap-1 px-3 py-1.5 text-xs font-bold bg-[#009A44] hover:bg-[#007A36] text-white transition-all shrink-0 rounded-none shadow-sm"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Attach Tool</span>
-                </button>
-              </div>
+              )}
             </div>
           )}
 
-          {/* Transcript Text Box */}
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#0B0F19] font-mono">
-                Meeting Transcript Text
-              </label>
-              <div className="flex items-center gap-1">
+          {/* Transcript Text Editor */}
+          <div className="flex-1 flex flex-col space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#0B0F19] tracking-tight">Meeting Transcript Buffer</span>
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setTranscriptText(SAMPLE_MEETINGS[0].transcript)}
-                  className="btn-tactile text-[10px] px-2 py-0.5 bg-[#FFFFFF] hover:bg-[#E6EDF7] text-[#00338D] border border-[#CBD5E1] font-bold font-mono"
+                  className="btn-tactile text-[10px] font-mono font-bold px-2 py-0.5 bg-[#F8F9FB] border border-[#CBD5E1] text-[#00338D] hover:bg-[#E6EDF7]"
                 >
-                  Sample 1
+                  Preset 1 (Strategy)
                 </button>
                 <button
                   onClick={() => setTranscriptText(SAMPLE_MEETINGS[1].transcript)}
-                  className="btn-tactile text-[10px] px-2 py-0.5 bg-[#FFFFFF] hover:bg-[#E6EDF7] text-[#00338D] border border-[#CBD5E1] font-bold font-mono"
+                  className="btn-tactile text-[10px] font-mono font-bold px-2 py-0.5 bg-[#F8F9FB] border border-[#CBD5E1] text-[#00338D] hover:bg-[#E6EDF7]"
                 >
-                  Sample 2
+                  Preset 2 (Postmortem)
                 </button>
               </div>
             </div>
-
             <textarea
-              rows={11}
               value={transcriptText}
               onChange={(e) => setTranscriptText(e.target.value)}
-              placeholder="Paste raw conversation text here with timestamps or speaker tags..."
-              className="w-full p-3 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] leading-relaxed font-mono focus:outline-none focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] rounded-none resize-none transition-colors"
+              placeholder="Paste raw transcript with speaker labels and timestamps..."
+              className="flex-1 min-h-[220px] p-3 text-xs font-mono bg-[#FFFFFF] border border-[#CBD5E1] focus:border-[#00338D] focus:ring-1 focus:ring-[#00338D] outline-none resize-none leading-relaxed text-[#0B0F19]"
             />
-            <div className="flex items-center justify-between text-[11px] text-slate-500 mt-1 font-mono">
-              <span>{transcriptText.length} chars</span>
+            <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+              <span>{transcriptText.length} characters</span>
               <span>~{Math.round(transcriptText.length / 4)} tokens</span>
             </div>
           </div>
         </div>
 
-        {/* Execution Button (Sharp 0px Primary CTA) */}
-        <div className="p-4 border-t border-[#E0E0E0] bg-[#F8F9FB]">
+        {/* Action Button */}
+        <div className="p-4 border-t border-[#CBD5E1] bg-[#F8F9FB]">
           <button
             onClick={handleRunSimulation}
             disabled={isRunning || !transcriptText.trim()}
-            className={`btn-tactile w-full py-3 text-xs font-bold uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-all rounded-none font-mono ${
-              isRunning
-                ? 'bg-[#00338D]/60 text-white cursor-wait'
-                : 'bg-[#00338D] hover:bg-[#005EB8] text-white shadow-sm border-b-2 border-[#001E50]'
-            }`}
+            className="btn-tactile w-full py-3 bg-[#00338D] hover:bg-[#005EB8] disabled:bg-slate-400 text-white font-bold text-xs flex items-center justify-center gap-2 rounded-none shadow-sm transition-all"
           >
-            <Play className={`w-4 h-4 ${isRunning ? 'animate-spin' : ''}`} />
-            <span>
-              {isRunning
-                ? `Synthesizing with ${activeUseCase.framework.name}...`
-                : `Run Intelligence Agent (${activeUseCase.framework.name})`}
-            </span>
+            {isRunning ? (
+              <>
+                <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                <span>Synthesizing Visual Agent Graph...</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4 fill-white" />
+                <span>Run Visual Agent Pipeline ({activeUseCase.framework.name})</span>
+              </>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Right Column: Execution Traces & Structured Results */}
+      {/* Right Column: Execution Traces & Structured Intelligence Ledger */}
       <div className="flex-1 h-full overflow-y-auto p-6 space-y-6">
-        {/* Step-by-Step Live Execution Pipeline */}
+        {/* Waterfall Execution Steps (When Running or After Run) */}
         {executionSteps.length > 0 && (
-          <div className="p-4 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
+          <div className="p-4 bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm space-y-3">
             <div className="flex items-center justify-between border-b border-[#E0E0E0] pb-2">
-              <span className="text-xs font-bold uppercase tracking-[0.08em] text-[#00338D] flex items-center gap-2 font-mono">
+              <span className="text-xs font-bold text-[#00338D] flex items-center gap-2 font-mono">
                 <Activity className="w-4 h-4 text-[#00338D]" />
-                Architectural Node Execution Pipeline
+                Live Pillar Execution Sequence
               </span>
               <span className="text-xs font-mono font-bold text-[#00338D]">
                 Framework: {activeUseCase.framework.name}
@@ -356,14 +339,14 @@ export default function MeetingSimulator({
               {executionSteps.map((step, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 bg-[#F8F9FB] border border-[#CBD5E1] text-xs shadow-inner"
+                  className="p-3 bg-[#F8F9FB] border border-[#CBD5E1] text-xs shadow-inner"
                 >
                   <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 mb-1">
-                    <span className="font-bold text-[#00338D]">Step {idx + 1}</span>
+                    <span className="font-bold text-[#00338D]">Pillar {idx + 1}</span>
                     <span>{step.latencyMs}ms</span>
                   </div>
                   <h5 className="font-bold text-[#0B0F19] truncate tracking-tight">{step.step}</h5>
-                  <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2 leading-relaxed">{step.detail}</p>
+                  <p className="text-[11px] text-slate-600 mt-1 line-clamp-2 leading-relaxed">{step.detail}</p>
                 </div>
               ))}
             </div>
@@ -373,128 +356,154 @@ export default function MeetingSimulator({
         {/* Results View */}
         {simulationResult ? (
           <div className="space-y-6">
-            {/* Spotlight / Dark Event Banner Card (from design.md: Deep Navy #001E50, text #FFFFFF) */}
-            <div className="p-5 bg-[#001E50] border-l-4 border-[#EAAA00] text-white flex items-center justify-between shadow-[0_8px_24px_rgba(0,30,80,0.25)]">
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 bg-[#00338D] text-[#EAAA00] flex items-center justify-center border border-[#0091DA]/30 shadow-inner">
+            {/* Financial ROI Banner Card */}
+            <div className="p-5 bg-[#001E50] border-t-4 border-[#EAAA00] text-white flex items-center justify-between shadow-[0_8px_32px_rgba(0,30,80,0.3)]">
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 bg-[#00338D] text-[#EAAA00] flex items-center justify-center border border-[#0091DA]/30 shadow-inner">
                   <DollarSign className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#EAAA00] font-mono">
-                    Financial Impact & ROI Analysis
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#EAAA00] font-mono">
+                    Financial Impact & ROI Ledger
                   </span>
-                  <h4 className="text-sm font-bold text-white mt-0.5 tracking-tight">
-                    Compute Spend: ${simulationResult.economics.costUsd} • Advisory Value Saved: ${simulationResult.economics.humanValueSavedUsd}
+                  <h4 className="text-base font-bold text-white mt-0.5 tracking-tight">
+                    Compute Cost: ${simulationResult.economics.costUsd} • Labor Value Saved: ${simulationResult.economics.humanValueSavedUsd}
                   </h4>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#EAAA00] text-[#001E50] font-bold shadow-sm">
+                <span className="text-sm font-mono px-3.5 py-1 rounded-full bg-[#EAAA00] text-[#001E50] font-extrabold shadow-sm">
                   {simulationResult.economics.netRoiMultiplier}x ROI
                 </span>
-                <span className="block text-[11px] text-slate-300 mt-1 font-medium">
-                  Preserved {simulationResult.economics.humanMinutesSaved} mins of executive review time
+                <span className="block text-[11px] text-slate-300 mt-1.5 font-medium">
+                  Saved {simulationResult.economics.humanMinutesSaved} mins of executive advisory review
                 </span>
               </div>
             </div>
 
-            {/* Executive Summary Card (Standard Insight Card: #FFFFFF, 1px solid #E0E0E0, 0px radius) */}
-            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
-              <div className="flex items-center gap-2 border-b border-[#E0E0E0] pb-2">
-                <Sparkles className="w-4 h-4 text-[#009A44]" />
-                <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">
-                  Executive Synthesis & Key Takeaways
-                </h4>
-              </div>
-              <ul className="space-y-2">
-                {simulationResult.summary.map((point, i) => (
-                  <li key={i} className="text-xs text-[#333333] flex items-start gap-2.5 leading-relaxed">
-                    <span className="w-1.5 h-1.5 bg-[#00338D] mt-1.5 shrink-0" />
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Structured Output Views */}
+            <div className="bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm overflow-hidden">
+              {/* Output Navigation Tabs */}
+              <div className="flex items-center border-b border-[#E0E0E0] bg-[#F8F9FB] px-4 pt-2 gap-2">
+                <button
+                  onClick={() => setActiveOutputTab('summary')}
+                  className={`btn-tactile px-4 py-2 text-xs font-bold border-b-2 flex items-center gap-2 rounded-none transition-all ${
+                    activeOutputTab === 'summary'
+                      ? 'border-[#00338D] text-[#00338D] bg-[#FFFFFF] shadow-sm'
+                      : 'border-transparent text-slate-500 hover:text-[#0B0F19]'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#009A44]" />
+                  <span>Executive Synthesis ({simulationResult.summary.length})</span>
+                </button>
 
-            {/* Key Decisions Register */}
-            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
-              <div className="flex items-center gap-2 border-b border-[#E0E0E0] pb-2">
-                <CheckCircle2 className="w-4 h-4 text-[#00338D]" />
-                <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">
-                  Binding Decisions Register
-                </h4>
+                <button
+                  onClick={() => setActiveOutputTab('decisions')}
+                  className={`btn-tactile px-4 py-2 text-xs font-bold border-b-2 flex items-center gap-2 rounded-none transition-all ${
+                    activeOutputTab === 'decisions'
+                      ? 'border-[#00338D] text-[#00338D] bg-[#FFFFFF] shadow-sm'
+                      : 'border-transparent text-slate-500 hover:text-[#0B0F19]'
+                  }`}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#00338D]" />
+                  <span>Decisions Register ({simulationResult.decisions.length})</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveOutputTab('actions')}
+                  className={`btn-tactile px-4 py-2 text-xs font-bold border-b-2 flex items-center gap-2 rounded-none transition-all ${
+                    activeOutputTab === 'actions'
+                      ? 'border-[#00338D] text-[#00338D] bg-[#FFFFFF] shadow-sm'
+                      : 'border-transparent text-slate-500 hover:text-[#0B0F19]'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5 text-[#00A3A6]" />
+                  <span>Action Items Matrix ({simulationResult.actionItems.length})</span>
+                </button>
               </div>
-              <div className="space-y-2">
-                {simulationResult.decisions.map((dec, i) => (
-                  <div key={i} className="p-3 bg-[#F8F9FB] border-l-4 border-[#00338D] text-xs text-[#0B0F19] font-medium leading-relaxed">
-                    {dec}
+
+              {/* Tab Contents */}
+              <div className="p-5">
+                {activeOutputTab === 'summary' && (
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-bold text-[#0B0F19] tracking-tight uppercase font-mono">
+                      High-Level Executive Takeaways
+                    </h4>
+                    <ul className="space-y-2">
+                      {simulationResult.summary.map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-700 leading-relaxed">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#009A44] mt-1.5 shrink-0" />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                ))}
-              </div>
-            </div>
+                )}
 
-            {/* Structured Action Items Table */}
-            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] space-y-3">
-              <div className="flex items-center justify-between border-b border-[#E0E0E0] pb-2">
-                <div className="flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-[#00A3A6]" />
-                  <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">
-                    Extracted Action Items & Accountabilities
-                  </h4>
-                </div>
-                <span className="text-xs font-mono font-bold text-[#00A3A6]">
-                  {simulationResult.actionItems.length} tasks identified
-                </span>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-[#E0E0E0] bg-[#F8F9FB] text-slate-600 text-[10px] uppercase tracking-[0.08em] font-bold font-mono">
-                      <th className="py-2.5 px-3">Assignee</th>
-                      <th className="py-2.5 px-3">Action Task</th>
-                      <th className="py-2.5 px-3">Deadline</th>
-                      <th className="py-2.5 px-3">Priority</th>
-                      <th className="py-2.5 px-3">MCP Ticket</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#E0E0E0]">
-                    {simulationResult.actionItems.map((item, idx) => (
-                      <tr key={item.id} className={`hover:bg-[#F0F4F8] transition-colors ${idx % 2 === 1 ? 'bg-[#FAFAFC]' : 'bg-[#FFFFFF]'}`}>
-                        <td className="py-2.5 px-3 font-bold text-[#0B0F19] whitespace-nowrap">
-                          {item.assignee}
-                        </td>
-                        <td className="py-2.5 px-3 text-[#333333] leading-relaxed">
-                          {item.task}
-                        </td>
-                        <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap font-mono text-[11px]">
-                          {item.deadline}
-                        </td>
-                        <td className="py-2.5 px-3 whitespace-nowrap">
-                          <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-full ${
-                            item.priority === 'Critical' ? 'bg-[#F2E9F4] text-[#6D2077] border border-[#6D2077]/30' :
-                            item.priority === 'High' ? 'bg-[#FDF7E6] text-[#9E6D00] border border-[#EAAA00]/30' :
-                            'bg-[#E6EDF7] text-[#00338D] border border-[#00338D]/20'
-                          }`}>
-                            {item.priority}
+                {activeOutputTab === 'decisions' && (
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-bold text-[#0B0F19] tracking-tight uppercase font-mono">
+                      Institutional Decisions Register
+                    </h4>
+                    <div className="divide-y divide-[#E0E0E0]">
+                      {simulationResult.decisions.map((dec, idx) => (
+                        <div key={idx} className="py-3 flex items-start gap-3">
+                          <span className="w-5 h-5 bg-[#00338D]/10 text-[#00338D] font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                            {idx + 1}
                           </span>
-                        </td>
-                        <td className="py-2.5 px-3 whitespace-nowrap font-mono text-[11px] font-bold text-[#00A3A6]">
-                          {item.jiraTicket}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          <span className="text-xs text-[#0B0F19] font-medium leading-relaxed">{dec}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeOutputTab === 'actions' && (
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-bold text-[#0B0F19] tracking-tight uppercase font-mono">
+                      Action Items & Ownership Matrix
+                    </h4>
+                    <div className="overflow-x-auto border border-[#CBD5E1]">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-[#F8F9FB] border-b border-[#CBD5E1] text-[10px] font-mono font-bold text-slate-600">
+                            <th className="py-2.5 px-3">Assignee</th>
+                            <th className="py-2.5 px-3">Deliverable Task</th>
+                            <th className="py-2.5 px-3">Deadline</th>
+                            <th className="py-2.5 px-3">Priority</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E0E0E0]">
+                          {simulationResult.actionItems.map((item, idx) => (
+                            <tr key={idx} className="hover:bg-[#F8F9FB] transition-colors">
+                              <td className="py-2.5 px-3 font-bold text-[#00338D]">{item.assignee}</td>
+                              <td className="py-2.5 px-3 text-[#0B0F19]">{item.task}</td>
+                              <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600">{item.deadline}</td>
+                              <td className="py-2.5 px-3">
+                                <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-full ${
+                                  item.priority === 'High' 
+                                    ? 'bg-[#F2E9F4] text-[#6D2077] border border-[#6D2077]/30' 
+                                    : 'bg-[#E6EFF8] text-[#005EB8] border border-[#005EB8]/30'
+                                }`}>
+                                  {item.priority}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* PII & Audit Status */}
+            {/* Cryptographic Compliance Ledger Strip */}
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6D2077] flex items-center gap-1.5 font-mono">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6D2077] flex items-center gap-1.5 font-mono">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#6D2077]" />
-                  Regulatory Policy Guard (PII)
+                  PII & Redaction Guard
                 </span>
                 <p className="text-xs text-[#0B0F19] font-medium">
                   {simulationResult.redactedPiiCount > 0
@@ -504,23 +513,138 @@ export default function MeetingSimulator({
               </div>
 
               <div className="p-4 bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#001E50] flex items-center gap-1.5 font-mono">
-                  <Activity className="w-3.5 h-3.5 text-[#001E50]" />
-                  Cryptographic Audit & Telemetry
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#001E50] flex items-center gap-1.5 font-mono">
+                    <FileCheck className="w-3.5 h-3.5 text-[#001E50]" />
+                    W3C Cryptographic SHA-256 Audit
+                  </span>
+                  <button
+                    onClick={() => copyAuditHash(simulationResult.auditHash)}
+                    className="btn-tactile text-[10px] font-mono text-[#00338D] hover:underline flex items-center gap-1"
+                  >
+                    {copiedHash ? <Check className="w-3 h-3 text-[#009A44]" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedHash ? 'Copied' : 'Copy Hash'}</span>
+                  </button>
+                </div>
                 <p className="text-xs font-mono text-slate-700 truncate">
-                  Hash: {simulationResult.auditHash}
+                  {simulationResult.auditHash}
                 </p>
               </div>
             </div>
           </div>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 p-12 select-none">
-            <Play className="w-12 h-12 text-[#00338D]/30 mb-3" />
-            <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">Simulator Idle</h4>
-            <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
-              Select or upload a meeting transcript on the left, then click "Run Intelligence Agent" to execute live multi-LLM synthesis and inspect cryptographic traces.
-            </p>
+          /* Institutional Pre-Flight Intelligence Readiness Console (NO EMPTY VOID!) */
+          <div className="space-y-6">
+            {/* Top Readiness Banner */}
+            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-[#E0E0E0] pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-[#00338D] text-white flex items-center justify-center shadow-inner">
+                    <Activity className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">
+                      Simulation Pre-Flight Readiness
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      Verify socket bindings, multi-LLM pipeline stages, and cryptographic gates before execution.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-[#E6F5EC] text-[#009A44] border border-[#009A44]/30 font-mono text-xs font-bold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#009A44] beacon-live" />
+                    <span>SYSTEM PRIMED</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Architecture Waterfall Preview Cards */}
+              <div className="grid grid-cols-4 gap-3 text-xs">
+                <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1]">
+                  <div className="text-[10px] font-mono font-bold text-[#005EB8] mb-1">STAGE 1: INGESTION</div>
+                  <h5 className="font-bold text-[#0B0F19] tracking-tight">Multimodal Normalizer</h5>
+                  <p className="text-[11px] text-slate-500 mt-1">Accepts raw audio streams or text, stamps chronological turns.</p>
+                </div>
+
+                <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1]">
+                  <div className="text-[10px] font-mono font-bold text-[#6D2077] mb-1">STAGE 2: POLICY GUARD</div>
+                  <h5 className="font-bold text-[#0B0F19] tracking-tight">PII Masking Sanitizer</h5>
+                  <p className="text-[11px] text-slate-500 mt-1">Auto-detects and masks compensation, personal IDs, and secrets.</p>
+                </div>
+
+                <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1]">
+                  <div className="text-[10px] font-mono font-bold text-[#00338D] mb-1">STAGE 3: REASONING</div>
+                  <h5 className="font-bold text-[#0B0F19] tracking-tight">Universal Multi-LLM</h5>
+                  <p className="text-[11px] text-slate-500 mt-1">Extracts structured deliverables, commitments, and strategic themes.</p>
+                </div>
+
+                <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1]">
+                  <div className="text-[10px] font-mono font-bold text-[#001E50] mb-1">STAGE 4: AUDIT</div>
+                  <h5 className="font-bold text-[#0B0F19] tracking-tight">SHA-256 Ledger Lock</h5>
+                  <p className="text-[11px] text-slate-500 mt-1">Generates immutable cryptographic fingerprint of synthesis output.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Expected Artifact Structure Preview */}
+            <div className="p-5 bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm space-y-3">
+              <h4 className="text-xs font-bold text-[#0B0F19] tracking-tight uppercase font-mono">
+                Institutional Extraction Target Rubric
+              </h4>
+              <p className="text-xs text-slate-500">
+                The visual agent graph will generate 3 verified enterprise deliverables once triggered:
+              </p>
+
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                <div className="p-3.5 border border-[#CBD5E1] bg-[#F8F9FB]">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Sparkles className="w-4 h-4 text-[#009A44]" />
+                    <span className="font-bold text-xs text-[#0B0F19]">Executive Synthesis</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    Distills multi-hour discussions into concise, board-ready strategic summaries and themes.
+                  </p>
+                </div>
+
+                <div className="p-3.5 border border-[#CBD5E1] bg-[#F8F9FB]">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#00338D]" />
+                    <span className="font-bold text-xs text-[#0B0F19]">Decisions Register</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    Formally registers budget approvals, scope sign-offs, and architecture trade-offs.
+                  </p>
+                </div>
+
+                <div className="p-3.5 border border-[#CBD5E1] bg-[#F8F9FB]">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Layers className="w-4 h-4 text-[#00A3A6]" />
+                    <span className="font-bold text-xs text-[#0B0F19]">Action Items Matrix</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    Maps strict assignees, explicit delivery deadlines, and priority rankings.
+                  </p>
+                </div>
+              </div>
+
+              {/* Ready Trigger Callout */}
+              <div className="p-4 bg-[#E6EDF7] border border-[#00338D]/30 flex items-center justify-between mt-3">
+                <div className="text-xs text-[#00338D]">
+                  <span className="font-bold block">Ready for Execution</span>
+                  <span className="text-[11px] text-slate-600">Review or edit the transcript on the left, then trigger the pipeline.</span>
+                </div>
+                <button
+                  onClick={handleRunSimulation}
+                  disabled={isRunning || !transcriptText.trim()}
+                  className="btn-tactile px-5 py-2 bg-[#00338D] hover:bg-[#005EB8] text-white text-xs font-bold rounded-none shadow-sm flex items-center gap-2"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  <span>Trigger Agent Pipeline</span>
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -96,15 +96,22 @@ export async function runEvaluationSuite({
       latencySec = Number((1.2 + Math.random() * 0.6).toFixed(2));
     }
 
+    const minFaith = thresholds.minFaithfulness ?? thresholds.faithfulnessScore ?? 85;
+    const minF1 = thresholds.minActionItemF1 ?? thresholds.actionItemF1 ?? 90;
+    const minPii = thresholds.minPiiCompliance ?? thresholds.piiRedactionRate ?? 100;
+    const maxLat = thresholds.maxLatencySec ?? thresholds.maxLatencySeconds ?? 4.0;
+
     const passedCase = (
-      faithfulness >= thresholds.faithfulnessScore &&
-      actionItemF1 >= thresholds.actionItemF1 &&
-      piiRate >= thresholds.piiRedactionRate &&
-      latencySec <= thresholds.maxLatencySeconds
+      faithfulness >= minFaith &&
+      actionItemF1 >= minF1 &&
+      piiRate >= minPii &&
+      latencySec <= maxLat
     );
 
     results.push({
       id: testCase.id,
+      caseId: testCase.id,
+      name: testCase.caseName,
       caseName: testCase.caseName,
       category: testCase.category,
       faithfulness,
@@ -124,11 +131,16 @@ export async function runEvaluationSuite({
   const avgPiiRate = Math.round(results.reduce((a, b) => a + b.piiRate, 0) / results.length);
   const avgLatency = Number((results.reduce((a, b) => a + b.latencySec, 0) / results.length).toFixed(2));
 
+  const minFaith = thresholds.minFaithfulness ?? thresholds.faithfulnessScore ?? 85;
+  const minF1 = thresholds.minActionItemF1 ?? thresholds.actionItemF1 ?? 90;
+  const minPii = thresholds.minPiiCompliance ?? thresholds.piiRedactionRate ?? 100;
+  const maxLat = thresholds.maxLatencySec ?? thresholds.maxLatencySeconds ?? 4.0;
+
   const allPassed = (
-    avgFaithfulness >= thresholds.faithfulnessScore &&
-    avgActionF1 >= thresholds.actionItemF1 &&
-    avgPiiRate >= thresholds.piiRedactionRate &&
-    avgLatency <= thresholds.maxLatencySeconds
+    avgFaithfulness >= minFaith &&
+    avgActionF1 >= minF1 &&
+    avgPiiRate >= minPii &&
+    avgLatency <= maxLat
   );
 
   return {
@@ -137,9 +149,12 @@ export async function runEvaluationSuite({
       faithfulness: avgFaithfulness,
       actionItemF1: avgActionF1,
       piiRate: avgPiiRate,
-      latencySec: avgLatency
+      latencySec: avgLatency,
+      totalCases: results.length,
+      passedCases: results.filter(r => r.passed).length
     },
     thresholds,
-    results
+    results,
+    caseResults: results
   };
 }

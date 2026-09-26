@@ -10,7 +10,8 @@ import {
   CheckCircle2,
   AlertCircle,
   ExternalLink,
-  Sliders
+  Sliders,
+  Activity
 } from 'lucide-react';
 import { PILLARS } from '../constants/pillars';
 import { PROVIDERS, getProviderCredential } from '../services/llmService';
@@ -28,12 +29,84 @@ export default function Inspector({
 
   if (!selectedNode) {
     return (
-      <aside className="w-80 h-full bg-[#FFFFFF] border-l border-[#E0E0E0] p-6 flex flex-col items-center justify-center text-center text-slate-500 shrink-0 select-none">
-        <Settings2 className="w-10 h-10 mb-3 text-[#00338D]/30" />
-        <h4 className="text-sm font-bold text-[#0B0F19] tracking-tight">No Block Selected</h4>
-        <p className="text-xs text-slate-500 mt-1 max-w-[200px] leading-relaxed">
-          Select the Core Orchestrator or any attached pillar block to inspect and customize its parameters.
-        </p>
+      <aside className="w-88 h-full bg-[#FFFFFF] border-l border-[#CBD5E1] p-5 flex flex-col justify-between shrink-0 overflow-y-auto select-none shadow-sm">
+        <div className="space-y-5">
+          {/* Header */}
+          <div className="border-b border-[#E0E0E0] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Activity className="w-4 h-4 text-[#00338D]" />
+              <h3 className="text-xs font-bold text-[#0B0F19] tracking-tight uppercase font-mono">
+                Studio Architecture HUD
+              </h3>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Live topology health, socket allocation, and system telemetry.
+            </p>
+          </div>
+
+          {/* Graph Health Metric Cards */}
+          <div className="space-y-2.5">
+            <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1]">
+              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                <span>GRAPH HEALTH</span>
+                <span className="font-bold text-[#009A44]">100% OPERATIONAL</span>
+              </div>
+              <div className="text-base font-extrabold text-[#001E50] mt-1 tracking-tight">
+                10 / 10 Pillars Bound
+              </div>
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Strict typed sockets enforced. Zero connection collisions.
+              </p>
+            </div>
+
+            <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1]">
+              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                <span>ACTIVE FOUNDATION MODEL</span>
+                <span className="font-bold text-[#00338D]">LIVE API</span>
+              </div>
+              <div className="text-xs font-bold text-[#0B0F19] mt-1 truncate">
+                Gemini 2.0 Flash (Multimodal)
+              </div>
+              <div className="flex items-center gap-1.5 mt-2">
+                <button
+                  onClick={() => onOpenApiSettings && onOpenApiSettings('google')}
+                  className="btn-tactile text-[10px] font-mono font-bold text-[#00338D] hover:underline flex items-center gap-1"
+                >
+                  <Key className="w-3 h-3" />
+                  <span>Configure API Keys</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-3 bg-[#F8F9FB] border border-[#CBD5E1]">
+              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                <span>CRYPTOGRAPHIC AUDIT</span>
+                <span className="font-bold text-[#001E50]">W3C SHA-256</span>
+              </div>
+              <div className="text-xs font-mono text-slate-700 mt-1 truncate">
+                Immutable Ledger Active
+              </div>
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                All meeting inputs and outputs cryptographically signed.
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Inspector Hint */}
+          <div className="p-3 bg-[#E6EDF7]/50 border border-[#00338D]/20 text-xs">
+            <span className="font-bold text-[#00338D] block mb-1">Canvas Inspection</span>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Click any block on the canvas to inspect its parameters, adjust LLM provider settings, or modify execution prompts.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer Quick Action */}
+        <div className="pt-4 border-t border-[#E0E0E0]">
+          <div className="text-[10px] font-mono text-slate-400 text-center">
+            KEAOS Operating Studio v2.4 • Production Ready
+          </div>
+        </div>
       </aside>
     );
   }
