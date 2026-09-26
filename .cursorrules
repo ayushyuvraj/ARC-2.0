@@ -1,0 +1,27 @@
+# KEAOS Cursor Rules & AI Agent Directives
+
+You are assisting with development on KEAOS (Enterprise Agent Operating Studio).
+Read `AGENTS.md` and `src/design.md` for full specifications.
+
+## 1. Design System Rules (src/design.md)
+- Geometry: Angular 0px border-radius (`rounded-none`) for all containers, cards, dialogs, inputs, and buttons.
+- Full Pill: 9999px border-radius (`rounded-full`) ONLY for status badges and action chips.
+- Header: Deep Navy `#001E50` with `#00338D` bottom border.
+- Primary CTA: Royal Brand Blue `#00338D` (`hover:bg-[#005EB8]`).
+- App Background: Subtle surface gray `#F5F6F8`.
+- Card Background: Pure white `#FFFFFF` with `#E0E0E0` border.
+- Screens: Use `ScreenScaffold` (`src/components/common/ScreenScaffold.jsx`) and `DESIGN_CLASSES` (`src/constants/designTokens.js`).
+
+## 2. Multi-LLM & Zero-Simulation Mandate
+- Never hardcode a single LLM provider.
+- Always use `synthesizeMeetingUniversal` and `PROVIDERS` from `src/services/llmService.js`.
+- Support Google GenAI, Anthropic Claude, OpenAI GPT-4o, Ollama local, and OpenRouter gateway.
+- Ensure fallback to deterministic structured output when API credentials are not provided.
+
+## 3. Strict Anonymity Constraint
+- NEVER mention any corporate consulting firm or specific enterprise company name anywhere in code, comments, UI, or docs.
+- The platform brand is strictly "KEAOS | Enterprise Agent Operating Studio".
+
+## 4. Socket Enforcement on Visual Canvas
+- Sockets are strictly typed: `model-in`, `skill-in`, `mcp-in`, `tools-in`, `gateway-in`, `memory-in`, `policies-in`, `audit-in`, `observability-in`, `cost-benefit-in`.
+- Never allow cross-socket connections (e.g. Memory to Model).

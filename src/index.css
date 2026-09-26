@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+:root {
+  /* Institutional Brand Primary Colors */
+  --brand-blue: #00338D;
+  --brand-blue-hover: #005EB8;
+  --brand-blue-light: #0091DA;
+  --brand-navy-deep: #001E50;
+
+  /* Industry & Pillar Taxonomy Colors */
+  --taxonomy-amber: #EAAA00;
+  --taxonomy-magenta: #6D2077;
+  --taxonomy-purple: #470A68;
+  --taxonomy-green: #009A44;
+  --taxonomy-teal: #00A3A6;
+  --taxonomy-violet: #483698;
+
+  /* Neutrals & Surfaces */
+  --surface-bg: #FFFFFF;
+  --surface-subtle: #F5F6F8;
+  --surface-dark: #0B0F19;
+  --surface-card: #FFFFFF;
+  --text-primary: #0B0F19;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  --border-subtle: #E0E0E0;
+  --border-strong: #1E1E1E;
+
+  /* Typography Stacks */
+  --font-display: "Univers", "Helvetica Neue", Arial, sans-serif;
+  --font-body: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --font-mono: "Consolas", "Monaco", monospace;
+
+  /* Layout & Geometry */
+  --radius-sharp: 0px;
+  --radius-pill: 9999px;
+
+  /* Shadows & Motion */
+  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-quick: 150ms;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--surface-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ReactFlow Canvas Institutional Styling */
+.react-flow__background {
+  background-color: #F8F9FB !important;
+}
+
+.react-flow__handle {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 0px !important; /* Sharp institutional handles */
+  border: 2px solid #001E50 !important;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.4);
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F0F2F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Strict Socket Pulse */
+@keyframes socket-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 51, 141, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(0, 51, 141, 0);
+  }
+}
+
+.socket-compatible {
+  animation: socket-pulse 1.5s infinite;
+}
