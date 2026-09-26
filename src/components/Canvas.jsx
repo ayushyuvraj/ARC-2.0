@@ -27,12 +27,17 @@ import {
   Plus,
   Search,
   X,
-  ChevronUp,
-  ChevronDown,
   Layers,
   Mic,
   FileText,
-  Type
+  Type,
+  Sun,
+  Moon,
+  ChevronRight,
+  Sparkle,
+  ArrowUp,
+  PanelRightOpen,
+  PanelRightClose
 } from 'lucide-react';
 
 const nodeTypes = {
@@ -63,11 +68,15 @@ export default function Canvas({
   onSelectNode,
   invalidConnectionAlert,
   setInvalidConnectionAlert,
-  onAddNode
+  onAddNode,
+  isInspectorOpen,
+  setIsInspectorOpen,
+  selectedNode
 }) {
   const [selectedPillarKey, setSelectedPillarKey] = useState(null);
-  const [isDockExpanded, setIsDockExpanded] = useState(true);
   const [canvasSearch, setCanvasSearch] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark canvas matching Stitch SS
+  const [quickPrompt, setQuickPrompt] = useState('');
 
   const isValidConnection = useCallback(
     (connection) => {
@@ -144,19 +153,25 @@ export default function Canvas({
   const activePillarDef = selectedPillarKey ? PILLARS[selectedPillarKey] : null;
 
   return (
-    <div className="relative w-full h-full bg-[#F5F6F8] overflow-hidden select-none">
-      {/* Top Institutional Socket Enforcer HUD Bar */}
-      <div className="absolute top-4 left-6 z-10 flex items-center gap-4 px-4 py-2 bg-[#FFFFFF] border border-[#CBD5E1] shadow-[0_4px_16px_rgba(0,30,80,0.06)] pointer-events-auto">
-        <div className="flex items-center gap-2 border-r border-[#E0E0E0] pr-3">
-          <Info className="w-3.5 h-3.5 text-[#00338D]" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#00338D] font-mono">
+    <div className={`relative w-full h-full overflow-hidden select-none transition-colors duration-200 ${
+      isDarkMode ? 'bg-[#10131A] text-white' : 'bg-[#F5F6F8] text-[#0B0F19]'
+    }`}>
+      {/* Top Left: Socket Enforcer HUD Bar */}
+      <div className={`absolute top-4 left-6 z-10 flex items-center gap-4 px-4 py-2 border shadow-lg pointer-events-auto transition-colors ${
+        isDarkMode 
+          ? 'bg-[#181D28]/95 border-[#2B354B] text-slate-200 backdrop-blur-md' 
+          : 'bg-[#FFFFFF]/95 border-[#CBD5E1] text-[#0B0F19] backdrop-blur-md'
+      }`}>
+        <div className={`flex items-center gap-2 border-r pr-3 ${isDarkMode ? 'border-white/10' : 'border-[#E0E0E0]'}`}>
+          <Info className="w-3.5 h-3.5 text-[#0091DA]" />
+          <span className="text-[10px] font-bold uppercase tracking-widest font-mono text-[#0091DA]">
             Socket Enforcer:
           </span>
         </div>
 
         <div className="flex items-center gap-3 text-[10px] font-mono">
-          <span className="flex items-center gap-1 font-bold text-[#00338D]">
-            <Brain className="w-3 h-3 text-[#00338D]" />
+          <span className="flex items-center gap-1 font-bold text-[#0091DA]">
+            <Brain className="w-3 h-3 text-[#0091DA]" />
             Model
           </span>
           <span className="flex items-center gap-1 font-bold text-[#009A44]">
@@ -167,11 +182,11 @@ export default function Canvas({
             <Server className="w-3 h-3 text-[#00A3A6]" />
             MCP
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#0091DA]">
-            <Wrench className="w-3 h-3 text-[#0091DA]" />
+          <span className="flex items-center gap-1 font-bold text-[#005EB8]">
+            <Wrench className="w-3 h-3 text-[#005EB8]" />
             Tools
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#9E6D00]">
+          <span className="flex items-center gap-1 font-bold text-[#EAAA00]">
             <GitFork className="w-3 h-3 text-[#EAAA00]" />
             Gateway
           </span>
@@ -183,30 +198,237 @@ export default function Canvas({
             <ShieldCheck className="w-3 h-3 text-[#6D2077]" />
             Policies
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#001E50]">
-            <Fingerprint className="w-3 h-3 text-[#001E50]" />
+          <span className="flex items-center gap-1 font-bold text-[#0091DA]">
+            <Fingerprint className="w-3 h-3 text-[#0091DA]" />
             Audit
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#0091DA]">
-            <Activity className="w-3 h-3 text-[#0091DA]" />
+          <span className="flex items-center gap-1 font-bold text-[#00A3A6]">
+            <Activity className="w-3 h-3 text-[#00A3A6]" />
             Telemetry
           </span>
-          <span className="flex items-center gap-1 font-bold text-[#9E6D00]">
+          <span className="flex items-center gap-1 font-bold text-[#EAAA00]">
             <Coins className="w-3 h-3 text-[#EAAA00]" />
             ROI
           </span>
         </div>
 
-        <div className="border-l border-[#E0E0E0] pl-3 flex items-center gap-2 text-[10px] font-mono text-slate-500">
-          <span className="font-bold text-[#00338D]">{nodes.length}</span> Blocks
+        <div className={`border-l pl-3 flex items-center gap-2 text-[10px] font-mono ${isDarkMode ? 'border-white/10 text-slate-400' : 'border-[#E0E0E0] text-slate-500'}`}>
+          <span className="font-bold text-[#0091DA]">{nodes.length}</span> Blocks
           <span>•</span>
-          <span className="font-bold text-[#00338D]">{edges.length}</span> Links
+          <span className="font-bold text-[#0091DA]">{edges.length}</span> Links
         </div>
+      </div>
+
+      {/* Top Right: Light / Dark Mode Toggle & Inspector Control */}
+      <div className="absolute top-4 right-6 z-20 flex items-center gap-2">
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className={`btn-tactile flex items-center gap-2 px-3 py-1.5 border shadow-md transition-all font-mono text-xs font-bold ${
+            isDarkMode
+              ? 'bg-[#181D28] hover:bg-[#202736] border-[#2B354B] text-amber-400'
+              : 'bg-[#FFFFFF] hover:bg-[#F8F9FB] border-[#CBD5E1] text-[#00338D]'
+          }`}
+          title={isDarkMode ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+        >
+          {isDarkMode ? (
+            <>
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-white text-[11px]">Light</span>
+            </>
+          ) : (
+            <>
+              <Moon className="w-3.5 h-3.5 text-[#00338D]" />
+              <span className="text-[#00338D] text-[11px]">Dark</span>
+            </>
+          )}
+        </button>
+
+        {setIsInspectorOpen && (
+          <button
+            onClick={() => setIsInspectorOpen(!isInspectorOpen)}
+            className={`btn-tactile flex items-center gap-2 px-3 py-1.5 border shadow-md transition-all font-mono text-xs font-bold ${
+              isDarkMode
+                ? isInspectorOpen
+                  ? 'bg-[#00338D] border-[#0091DA] text-white'
+                  : 'bg-[#181D28] hover:bg-[#202736] border-[#2B354B] text-slate-300'
+                : isInspectorOpen
+                  ? 'bg-[#00338D] border-[#00338D] text-white'
+                  : 'bg-[#FFFFFF] hover:bg-[#F8F9FB] border-[#CBD5E1] text-[#00338D]'
+            }`}
+            title={isInspectorOpen ? 'Collapse Inspector' : 'Open Inspector Panel'}
+          >
+            {isInspectorOpen ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
+            <span>{selectedNode ? 'Inspect Block' : 'Studio HUD'}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#009A44] beacon-live" />
+          </button>
+        )}
+      </div>
+
+      {/* LEFT FLOATING VERTICAL TOOLBAR: 10 Pillars Icon-Only Dock (matching Stitch SS right toolbar) */}
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex items-start gap-3">
+        {/* The 10 Pillar Icon Buttons (Pure Icons - No text normally) */}
+        <div className={`flex flex-col items-center gap-1 p-1.5 border shadow-2xl backdrop-blur-md transition-colors ${
+          isDarkMode 
+            ? 'bg-[#181D28]/95 border-[#2B354B] shadow-[0_12px_40px_rgba(0,0,0,0.6)]' 
+            : 'bg-[#FFFFFF]/95 border-[#CBD5E1] shadow-[0_12px_40px_rgba(0,30,80,0.12)]'
+        }`}>
+          {Object.entries(PILLARS).map(([pillarKey, pillar]) => {
+            const Icon = PILLAR_ICONS[pillarKey] || Layers;
+            const isSelected = selectedPillarKey === pillarKey;
+
+            return (
+              <div key={pillarKey} className="relative group">
+                <button
+                  onClick={() => handlePillarClick(pillarKey)}
+                  className={`btn-tactile w-10 h-10 flex items-center justify-center transition-all border ${
+                    isSelected
+                      ? 'border-[#0091DA] bg-[#0091DA]/20 text-white shadow-md'
+                      : isDarkMode
+                        ? 'border-transparent text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/15'
+                        : 'border-transparent text-slate-600 hover:text-[#00338D] hover:bg-[#F0F4FA] hover:border-[#CBD5E1]'
+                  }`}
+                  style={{
+                    borderLeft: isSelected ? `3px solid ${pillar.color}` : undefined
+                  }}
+                  title={pillar.label}
+                >
+                  <Icon 
+                    className="w-4 h-4 transition-transform group-hover:scale-110" 
+                    style={{ color: isSelected ? '#0091DA' : pillar.color }} 
+                  />
+                </button>
+
+                {/* Text ONLY upon hover tooltip (right side of icon) */}
+                <div className={`absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-2 px-2.5 py-1.5 text-xs font-mono font-bold whitespace-nowrap shadow-xl border pointer-events-none z-30 animate-in fade-in slide-in-from-left-1 duration-100 ${
+                  isDarkMode 
+                    ? 'bg-[#001438] text-white border-[#00338D]' 
+                    : 'bg-[#001E50] text-white border-[#00338D]'
+                }`}>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: pillar.color }} />
+                  <span>{pillar.label}</span>
+                  <span className="text-[10px] text-slate-400">({pillar.items.length})</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Respective Box upon Click (Floating Popover Box directly next to clicked pillar) */}
+        {selectedPillarKey && activePillarDef && (
+          <div 
+            className={`w-[440px] border shadow-2xl animate-in fade-in slide-in-from-left-2 duration-150 z-30 overflow-hidden ${
+              isDarkMode 
+                ? 'bg-[#141824] border-[#2B354B] text-white shadow-[0_20px_60px_rgba(0,0,0,0.7)]' 
+                : 'bg-[#FFFFFF] border-[#CBD5E1] text-[#0B0F19] shadow-[0_20px_60px_rgba(0,30,80,0.2)]'
+            }`}
+            style={{ borderTop: `4px solid ${activePillarDef.color}` }}
+          >
+            {/* Popover Header */}
+            <div className={`p-3.5 border-b flex items-center justify-between ${
+              isDarkMode ? 'bg-[#181D2A] border-[#2B354B]' : 'bg-[#F8F9FB] border-[#E0E0E0]'
+            }`}>
+              <div className="flex items-center gap-2.5">
+                <div 
+                  className="w-7 h-7 flex items-center justify-center shrink-0 shadow-inner"
+                  style={{ 
+                    backgroundColor: activePillarDef.bgColor, 
+                    color: activePillarDef.color,
+                    border: `1px solid ${activePillarDef.color}40`
+                  }}
+                >
+                  {React.createElement(PILLAR_ICONS[selectedPillarKey] || Layers, { className: 'w-4 h-4' })}
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold tracking-tight">{activePillarDef.label}</h4>
+                  <p className="text-[10px] text-slate-400 font-mono">Port: {activePillarDef.socketId} • Click to instantiate</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedPillarKey(null)}
+                className={`btn-tactile p-1 transition-colors ${
+                  isDarkMode ? 'text-slate-400 hover:text-white hover:bg-white/10' : 'text-slate-400 hover:text-[#0B0F19] hover:bg-[#E0E0E0]'
+                }`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick Search */}
+            <div className={`p-2.5 border-b ${isDarkMode ? 'bg-[#141824] border-[#2B354B]' : 'bg-[#FFFFFF] border-[#E0E0E0]'}`}>
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                <input
+                  type="text"
+                  placeholder={`Search ${activePillarDef.label}...`}
+                  value={canvasSearch}
+                  onChange={(e) => setCanvasSearch(e.target.value)}
+                  className={`w-full pl-8 pr-2.5 py-1.5 text-xs focus:outline-none rounded-none font-mono ${
+                    isDarkMode 
+                      ? 'bg-[#1E2433] border border-[#2B354B] text-white placeholder-slate-500 focus:border-[#0091DA]' 
+                      : 'bg-[#FFFFFF] border border-[#CBD5E1] text-[#0B0F19] placeholder-slate-400 focus:border-[#00338D]'
+                  }`}
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* Items List */}
+            <div className={`max-h-[340px] overflow-y-auto p-2 space-y-2 ${
+              isDarkMode ? 'bg-[#10131C]' : 'bg-[#F8F9FB]'
+            }`}>
+              {activePillarDef.items
+                .filter(item => 
+                  !canvasSearch || 
+                  item.name.toLowerCase().includes(canvasSearch.toLowerCase()) || 
+                  item.description.toLowerCase().includes(canvasSearch.toLowerCase())
+                )
+                .map((item) => {
+                  let ItemIcon = PILLAR_ICONS[selectedPillarKey] || Layers;
+                  if (item.id === 'tool-audio-transcribe') ItemIcon = Mic;
+                  if (item.id === 'tool-doc-parser') ItemIcon = FileText;
+                  if (item.id === 'tool-text-box-ingest') ItemIcon = Type;
+
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => handleAddFromCanvas(selectedPillarKey, item)}
+                      className={`group p-2.5 border cursor-pointer transition-all flex items-start justify-between gap-3 ${
+                        isDarkMode
+                          ? 'border-[#2B354B] bg-[#181D2A] hover:border-[#0091DA] hover:bg-[#202738]'
+                          : 'border-[#CBD5E1] bg-[#FFFFFF] hover:border-[#00338D] hover:bg-[#F5F8FC]'
+                      }`}
+                    >
+                      <div className="flex-1 overflow-hidden">
+                        <div className="flex items-center gap-1.5">
+                          <ItemIcon className="w-3.5 h-3.5 shrink-0" style={{ color: activePillarDef.color }} />
+                          <span className={`text-xs font-bold truncate ${
+                            isDarkMode ? 'text-white group-hover:text-[#0091DA]' : 'text-[#0B0F19] group-hover:text-[#00338D]'
+                          }`}>
+                            {item.name}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+
+                      <button
+                        className="btn-tactile px-2 py-1 bg-[#00338D] text-white text-[10px] font-mono font-bold flex items-center gap-1 shrink-0 mt-0.5 border border-[#0091DA]/40 group-hover:bg-[#005EB8]"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add</span>
+                      </button>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Incompatible Socket Alert Modal / Toast */}
       {invalidConnectionAlert && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 px-6 py-3.5 bg-[#001E50] border-l-4 border-[#6D2077] shadow-[0_16px_40px_rgba(0,30,80,0.4)] text-white animate-in slide-in-from-top-3 duration-150">
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 px-6 py-3.5 bg-[#001E50] border-l-4 border-[#6D2077] shadow-[0_16px_40px_rgba(0,30,80,0.5)] text-white animate-in slide-in-from-top-3 duration-150">
           <AlertTriangle className="w-5 h-5 text-[#EAAA00] shrink-0" />
           <div className="text-xs">
             <span className="font-bold text-white tracking-wide">Incompatible Socket Rejection: </span>
@@ -226,158 +448,45 @@ export default function Canvas({
         </div>
       )}
 
-      {/* Floating Canvas Component Popover Card (when a pillar is clicked on the canvas) */}
-      {selectedPillarKey && activePillarDef && (
-        <div 
-          className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 w-[480px] bg-[#FFFFFF] border-2 border-[#00338D] shadow-[0_16px_48px_rgba(0,30,80,0.22)] animate-in fade-in slide-in-from-bottom-2 duration-150"
-          style={{ borderTop: `4px solid ${activePillarDef.color}` }}
-        >
-          {/* Header */}
-          <div className="p-3 bg-[#F8F9FB] border-b border-[#E0E0E0] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {React.createElement(PILLAR_ICONS[selectedPillarKey] || Layers, {
-                className: 'w-4 h-4',
-                style: { color: activePillarDef.color }
-              })}
-              <div>
-                <h4 className="text-xs font-bold text-[#0B0F19] tracking-tight">{activePillarDef.label}</h4>
-                <p className="text-[10px] text-slate-500 font-mono">Port: {activePillarDef.socketId} • Click to instantiate on canvas</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setSelectedPillarKey(null)}
-              className="btn-tactile p-1 text-slate-400 hover:text-[#0B0F19] hover:bg-[#E0E0E0] transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
+      {/* Bottom Center: Stitch-Style Agent Execution Bar */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[540px] pointer-events-auto">
+        <div className={`p-2.5 border shadow-2xl backdrop-blur-md flex flex-col gap-2 transition-colors ${
+          isDarkMode 
+            ? 'bg-[#181D28]/95 border-[#2B354B] shadow-[0_16px_48px_rgba(0,0,0,0.7)] text-white' 
+            : 'bg-[#FFFFFF]/95 border-[#CBD5E1] shadow-[0_16px_48px_rgba(0,30,80,0.15)] text-[#0B0F19]'
+        }`}>
+          <div className="text-[11px] font-medium text-slate-400 px-1">
+            What would you like the agent to execute or modify?
           </div>
-
-          {/* Quick Search inside selected pillar */}
-          <div className="p-2 border-b border-[#E0E0E0] bg-[#FFFFFF]">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
-              <input
-                type="text"
-                placeholder={`Search ${activePillarDef.label} items...`}
-                value={canvasSearch}
-                onChange={(e) => setCanvasSearch(e.target.value)}
-                className="w-full pl-8 pr-2.5 py-1.5 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#0B0F19] focus:outline-none focus:border-[#00338D] rounded-none font-mono"
-                autoFocus
-              />
-            </div>
-          </div>
-
-          {/* Items List */}
-          <div className="max-h-[300px] overflow-y-auto p-2 space-y-1.5 bg-[#F8F9FB]">
-            {activePillarDef.items
-              .filter(item => 
-                !canvasSearch || 
-                item.name.toLowerCase().includes(canvasSearch.toLowerCase()) || 
-                item.description.toLowerCase().includes(canvasSearch.toLowerCase())
-              )
-              .map((item) => {
-                let ItemIcon = PILLAR_ICONS[selectedPillarKey] || Layers;
-                if (item.id === 'tool-audio-transcribe') ItemIcon = Mic;
-                if (item.id === 'tool-doc-parser') ItemIcon = FileText;
-                if (item.id === 'tool-text-box-ingest') ItemIcon = Type;
-
-                return (
-                  <div
-                    key={item.id}
-                    onClick={() => handleAddFromCanvas(selectedPillarKey, item)}
-                    className="group p-2.5 border border-[#CBD5E1] bg-[#FFFFFF] hover:border-[#00338D] hover:bg-[#F5F8FC] cursor-pointer transition-all flex items-start justify-between gap-3 shadow-xs"
-                  >
-                    <div className="flex-1 overflow-hidden">
-                      <div className="flex items-center gap-1.5">
-                        <ItemIcon className="w-3.5 h-3.5 shrink-0" style={{ color: activePillarDef.color }} />
-                        <span className="text-xs font-bold text-[#0B0F19] group-hover:text-[#00338D]">
-                          {item.name}
-                        </span>
-                      </div>
-                      <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
-
-                    <button
-                      className="btn-tactile px-2 py-1 bg-[#E6EDF7] group-hover:bg-[#00338D] text-[#00338D] group-hover:text-white text-[10px] font-mono font-bold flex items-center gap-1 shrink-0 mt-0.5 border border-[#00338D]/20"
-                    >
-                      <Plus className="w-3 h-3" />
-                      <span>Add</span>
-                    </button>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      )}
-
-      {/* Floating Canvas Component Dock (Anchored right on the main visual canvas screen) */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-        {/* Toggle Bar / Header */}
-        <div className="flex items-center justify-between w-full px-3 py-1 bg-[#001E50] border-t-2 border-[#0091DA] text-white shadow-lg">
           <div className="flex items-center gap-2">
-            <span className="text-[9px] font-mono font-bold tracking-widest text-[#0091DA] uppercase">
-              CANVAS ARCHITECTURAL DOCK
-            </span>
-            <span className="text-[9px] font-mono px-1.5 py-0.2 bg-[#00338D] rounded-full text-slate-200 border border-white/20">
-              10 Pillars
-            </span>
+            <span className="text-xs font-bold text-[#0091DA] pl-1 font-mono">/</span>
+            <input
+              type="text"
+              placeholder="e.g. Synthesize transcripts and extract owner action items..."
+              value={quickPrompt}
+              onChange={(e) => setQuickPrompt(e.target.value)}
+              className={`flex-1 text-xs focus:outline-none font-mono py-1 px-2 ${
+                isDarkMode 
+                  ? 'bg-transparent text-white placeholder-slate-500' 
+                  : 'bg-transparent text-[#0B0F19] placeholder-slate-400'
+              }`}
+            />
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#0091DA]/20 text-[#0091DA] border border-[#0091DA]/30 font-bold">
+                Live
+              </span>
+              <button
+                className="w-7 h-7 bg-[#00338D] hover:bg-[#005EB8] text-white flex items-center justify-center transition-colors shadow-sm"
+                title="Send Command"
+              >
+                <ArrowUp className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
-
-          <button
-            onClick={() => setIsDockExpanded(!isDockExpanded)}
-            className="btn-tactile text-slate-300 hover:text-white flex items-center gap-1 text-[10px] font-mono transition-colors p-0.5"
-            title={isDockExpanded ? 'Collapse Dock' : 'Expand Dock'}
-          >
-            <span>{isDockExpanded ? 'Hide' : 'Show'}</span>
-            {isDockExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
-          </button>
         </div>
-
-        {/* 10 Intuitive Pillar Buttons */}
-        {isDockExpanded && (
-          <div className="flex items-center gap-1.5 p-2 bg-[#FFFFFF] border-2 border-[#001E50] border-t-0 shadow-[0_12px_36px_rgba(0,30,80,0.18)]">
-            {Object.entries(PILLARS).map(([pillarKey, pillar]) => {
-              const Icon = PILLAR_ICONS[pillarKey] || Layers;
-              const isSelected = selectedPillarKey === pillarKey;
-
-              return (
-                <button
-                  key={pillarKey}
-                  onClick={() => handlePillarClick(pillarKey)}
-                  className={`btn-tactile flex flex-col items-center justify-center w-18 h-15 p-1 transition-all border relative ${
-                    isSelected
-                      ? 'border-[#00338D] bg-[#E6EDF7] shadow-md -translate-y-1'
-                      : 'border-[#CBD5E1] bg-[#FFFFFF] hover:border-[#00338D] hover:bg-[#F8F9FB] hover:-translate-y-0.5'
-                  }`}
-                  style={{ borderBottom: `3px solid ${pillar.color}` }}
-                  title={`Click to open ${pillar.label} components`}
-                >
-                  <div
-                    className="w-7 h-7 flex items-center justify-center shrink-0 mb-0.5"
-                    style={{ 
-                      backgroundColor: pillar.bgColor, 
-                      color: pillar.color,
-                      border: `1px solid ${pillar.color}40`
-                    }}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <span className="text-[9px] font-bold text-[#0B0F19] tracking-tight truncate max-w-full">
-                    {pillar.label.split(' ')[0]}
-                  </span>
-                  <span className="text-[8px] font-mono text-slate-400 -mt-0.5">
-                    {pillar.items.length} items
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
       </div>
 
-      {/* ReactFlow Workspace */}
+      {/* ReactFlow Workspace with Stitch Dot Grid */}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -396,15 +505,26 @@ export default function Canvas({
         maxZoom={1.75}
         defaultEdgeOptions={{ animated: true }}
       >
-        <Background variant={BackgroundVariant.Lines} gap={32} size={1} color="#CBD5E1" />
-        <Controls className="!bg-[#FFFFFF] !border-[#CBD5E1] !fill-[#00338D] [&>button]:!bg-[#FFFFFF] [&>button]:!border-[#CBD5E1] [&>button]:!text-[#00338D] hover:[&>button]:!bg-[#F5F6F8] !shadow-md" />
+        <Background 
+          variant={BackgroundVariant.Dots} 
+          gap={24} 
+          size={1.5} 
+          color={isDarkMode ? '#2D3548' : '#CBD5E1'} 
+        />
+        <Controls className={`!shadow-lg ${
+          isDarkMode 
+            ? '!bg-[#181D28] !border-[#2B354B] !fill-slate-300 [&>button]:!bg-[#181D28] [&>button]:!border-[#2B354B] [&>button]:!text-slate-300 hover:[&>button]:!bg-[#202738]' 
+            : '!bg-[#FFFFFF] !border-[#CBD5E1] !fill-[#00338D] [&>button]:!bg-[#FFFFFF] [&>button]:!border-[#CBD5E1] [&>button]:!text-[#00338D] hover:[&>button]:!bg-[#F5F6F8]'
+        }`} />
         <MiniMap
           nodeColor={(n) => {
             if (n.type === 'agentCore') return '#00338D';
             return PILLARS[n.data?.pillarType]?.color || '#005EB8';
           }}
-          maskColor="rgba(245, 246, 248, 0.8)"
-          className="!bg-[#FFFFFF] !border-[#CBD5E1] !shadow-md !bottom-24"
+          maskColor={isDarkMode ? 'rgba(16, 19, 26, 0.85)' : 'rgba(245, 246, 248, 0.85)'}
+          className={`!shadow-lg !bottom-24 !right-6 ${
+            isDarkMode ? '!bg-[#181D28] !border-[#2B354B]' : '!bg-[#FFFFFF] !border-[#CBD5E1]'
+          }`}
         />
       </ReactFlow>
     </div>

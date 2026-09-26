@@ -25,6 +25,7 @@ export default function Inspector({
   onUpdateNodeData,
   onDeleteNode,
   onClose,
+  onCollapse,
   onOpenApiSettings
 }) {
   const [customModelMode, setCustomModelMode] = useState(false);
@@ -35,6 +36,14 @@ export default function Inspector({
       setIsCollapsed(false);
     }
   }, [selectedNode?.id]);
+
+  const handleCollapse = () => {
+    if (onCollapse) {
+      onCollapse();
+    } else {
+      setIsCollapsed(true);
+    }
+  };
 
   if (isCollapsed) {
     return (
@@ -68,7 +77,7 @@ export default function Inspector({
               </p>
             </div>
             <button
-              onClick={() => setIsCollapsed(true)}
+              onClick={handleCollapse}
               className="btn-tactile p-1 text-slate-400 hover:text-[#00338D] hover:bg-[#E6EDF7] border border-transparent hover:border-[#CBD5E1] transition-colors ml-2 shrink-0"
               title="Collapse Right Panel"
             >
@@ -219,7 +228,7 @@ export default function Inspector({
             </button>
           )}
           <button
-            onClick={() => setIsCollapsed(true)}
+            onClick={handleCollapse}
             className="btn-tactile w-7 h-7 hover:bg-[#E0E0E0] text-slate-400 hover:text-[#0B0F19] flex items-center justify-center transition-colors"
             title="Collapse Panel"
           >

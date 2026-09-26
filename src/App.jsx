@@ -296,6 +296,7 @@ export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [viewMode, setViewMode] = useState('canvas'); // 'canvas' | 'simulator' | 'evaluation' | 'code'
   const [isMakeModalOpen, setIsMakeModalOpen] = useState(false);
   const [isApiSettingsOpen, setIsApiSettingsOpen] = useState(false);
@@ -478,7 +479,7 @@ export default function App() {
         <main className="flex-1 flex overflow-hidden relative">
           {viewMode === 'canvas' && (
             <>
-              {/* Center Canvas with Strict Socket Connections */}
+              {/* Center Canvas with Strict Socket Connections & Floating Toolbars */}
               <div className="flex-1 h-full relative">
                 <Canvas
                   nodes={nodes}
@@ -487,26 +488,35 @@ export default function App() {
                   edges={edges}
                   setEdges={setEdges}
                   onEdgesChange={onEdgesChange}
-                  onSelectNode={(node) => setSelectedNode(node)}
+                  onSelectNode={(node) => {
+                    setSelectedNode(node);
+                    if (node) setIsInspectorOpen(true);
+                  }}
                   invalidConnectionAlert={invalidConnectionAlert}
                   setInvalidConnectionAlert={setInvalidConnectionAlert}
                   onAddNode={handleAddNode}
+                  isInspectorOpen={isInspectorOpen}
+                  setIsInspectorOpen={setIsInspectorOpen}
+                  selectedNode={selectedNode}
                 />
               </div>
 
-              {/* Right Inspector */}
-              <Inspector
-                selectedNode={selectedNode}
-                agentConfig={activeUseCase.agent}
-                onUpdateAgentConfig={handleUpdateAgentConfig}
-                onUpdateNodeData={handleUpdateNodeData}
-                onDeleteNode={handleDeleteNode}
-                onClose={() => setSelectedNode(null)}
-                onOpenApiSettings={(providerId) => {
-                  setApiSettingsTab(providerId || 'google');
-                  setIsApiSettingsOpen(true);
-                }}
-              />
+              {/* Right Inspector (Slides in when isInspectorOpen is true) */}
+              {isInspectorOpen && (
+                <Inspector
+                  selectedNode={selectedNode}
+                  agentConfig={activeUseCase.agent}
+                  onUpdateAgentConfig={handleUpdateAgentConfig}
+                  onUpdateNodeData={handleUpdateNodeData}
+                  onDeleteNode={handleDeleteNode}
+                  onClose={() => setSelectedNode(null)}
+                  onCollapse={() => setIsInspectorOpen(false)}
+                  onOpenApiSettings={(providerId) => {
+                    setApiSettingsTab(providerId || 'google');
+                    setIsApiSettingsOpen(true);
+                  }}
+                />
+              )}
             </>
           )}
 
