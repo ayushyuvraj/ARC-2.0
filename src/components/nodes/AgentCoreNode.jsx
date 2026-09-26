@@ -4,15 +4,15 @@ import {
   Bot, 
   Terminal,
   Activity,
-  Layers,
-  Cpu,
+  Server,
+  Brain,
   Wrench,
   GitFork,
   Database,
   Sparkles,
   ShieldCheck,
-  FileCheck,
-  DollarSign
+  Fingerprint,
+  Coins
 } from 'lucide-react';
 
 export default function AgentCoreNode({ data, selected }) {
@@ -97,7 +97,7 @@ export default function AgentCoreNode({ data, selected }) {
                   : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#00338D]" />
+                  <Brain className="w-3.5 h-3.5 shrink-0 text-[#00338D]" />
                   <span className="font-bold text-[11px]">Model Socket</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">{attachedCounts?.model ? 'Active' : 'Unbound'}</span>
@@ -117,7 +117,7 @@ export default function AgentCoreNode({ data, selected }) {
                   : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#005EB8]" />
+                  <Wrench className="w-3.5 h-3.5 shrink-0 text-[#005EB8]" />
                   <span className="font-bold text-[11px]">Ingest Tools</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">{attachedCounts?.tools || 0}</span>
@@ -137,7 +137,7 @@ export default function AgentCoreNode({ data, selected }) {
                   : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#EAAA00]" />
+                  <GitFork className="w-3.5 h-3.5 shrink-0 text-[#EAAA00]" />
                   <span className="font-bold text-[11px]">Ingress Gateway</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">{attachedCounts?.gateway ? 'Capped' : 'Pass'}</span>
@@ -157,7 +157,7 @@ export default function AgentCoreNode({ data, selected }) {
                   : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#483698]" />
+                  <Database className="w-3.5 h-3.5 shrink-0 text-[#483698]" />
                   <span className="font-bold text-[11px]">Sync Memory</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">{attachedCounts?.memory ? 'Sync' : 'Off'}</span>
@@ -180,7 +180,7 @@ export default function AgentCoreNode({ data, selected }) {
                   : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#009A44]" />
+                  <Sparkles className="w-3.5 h-3.5 shrink-0 text-[#009A44]" />
                   <span className="font-bold text-[11px]">Skills Hub</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">{attachedCounts?.skills || 0}</span>
@@ -200,7 +200,7 @@ export default function AgentCoreNode({ data, selected }) {
                   : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#00A3A6]" />
+                  <Server className="w-3.5 h-3.5 shrink-0 text-[#00A3A6]" />
                   <span className="font-bold text-[11px]">MCP Servers</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">{attachedCounts?.mcp || 0}</span>
@@ -220,7 +220,7 @@ export default function AgentCoreNode({ data, selected }) {
                   : 'bg-[#FFFFFF] border-[#CBD5E1] text-slate-400'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#6D2077]" />
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-[#6D2077]" />
                   <span className="font-bold text-[11px]">Policy Guards</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">{attachedCounts?.policies || 0}</span>
@@ -236,7 +236,7 @@ export default function AgentCoreNode({ data, selected }) {
               {/* Audit Socket Row */}
               <div className="p-2 border border-[#001E50] bg-[#001E50]/5 text-[#001E50] flex items-center justify-between relative">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#001E50]" />
+                  <Fingerprint className="w-3.5 h-3.5 shrink-0 text-[#001E50]" />
                   <span className="font-bold text-[11px]">Audit Ledger</span>
                 </div>
                 <span className="font-mono text-[10px] font-bold">SHA-256</span>
@@ -256,7 +256,7 @@ export default function AgentCoreNode({ data, selected }) {
       {/* Bottom Observability & Cost-Benefit Handles */}
       <div className="px-5 py-2.5 bg-[#F8F9FB] border-t border-[#E0E0E0] flex items-center justify-between text-[11px] font-mono font-bold text-slate-600 relative">
         <div className="flex items-center gap-2 relative">
-          <span className="w-2 h-2 rounded-full bg-[#0091DA]" />
+          <Activity className="w-3.5 h-3.5 text-[#0091DA]" />
           <span>Observability Span</span>
           <Handle
             type="target"
@@ -268,7 +268,7 @@ export default function AgentCoreNode({ data, selected }) {
         </div>
 
         <div className="flex items-center gap-2 relative">
-          <span className="w-2 h-2 rounded-full bg-[#EAAA00]" />
+          <Coins className="w-3.5 h-3.5 text-[#EAAA00]" />
           <span>ROI Unit Cost</span>
           <Handle
             type="target"

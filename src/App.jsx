@@ -464,7 +464,6 @@ export default function App() {
           setApiSettingsTab('google');
           setIsApiSettingsOpen(true);
         }}
-        onAddNode={handleAddNode}
       />
 
       {/* Main Right Area: Top Header + View Workspace */}
@@ -491,6 +490,7 @@ export default function App() {
                   onSelectNode={(node) => setSelectedNode(node)}
                   invalidConnectionAlert={invalidConnectionAlert}
                   setInvalidConnectionAlert={setInvalidConnectionAlert}
+                  onAddNode={handleAddNode}
                 />
               </div>
 

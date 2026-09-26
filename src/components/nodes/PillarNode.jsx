@@ -1,16 +1,16 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { 
-  Cpu, 
+  Brain, 
   Sparkles, 
-  Layers, 
+  Server, 
   Wrench, 
   GitFork, 
   Database, 
   ShieldCheck, 
-  FileCheck, 
+  Fingerprint, 
   Activity, 
-  DollarSign, 
+  Coins, 
   X,
   Mic,
   FileText,
@@ -20,16 +20,16 @@ import {
 import { PILLARS } from '../../constants/pillars';
 
 const PILLAR_ICONS = {
-  model: Cpu,
+  model: Brain,
   skills: Sparkles,
-  mcp: Layers,
+  mcp: Server,
   tools: Wrench,
   gateway: GitFork,
   memory: Database,
   policies: ShieldCheck,
-  audit: FileCheck,
+  audit: Fingerprint,
   observability: Activity,
-  cost_benefit: DollarSign
+  cost_benefit: Coins
 };
 
 export default function PillarNode({ id, data, selected }) {
