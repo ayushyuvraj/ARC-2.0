@@ -21,6 +21,7 @@ import {
   GitFork, 
   Database, 
   FileCheck, 
+  DollarSign,
   Mic, 
   FileText, 
   Type,
